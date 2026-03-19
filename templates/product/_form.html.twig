@@ -1,0 +1,111 @@
+<style>
+    .product-form-container {
+        background: #fff;
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        max-width: 600px;
+        margin: auto;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .product-form-container h2 {
+        font-size: 26px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        text-align: center;
+        position: relative;
+    }
+
+    .product-form-container h2::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -8px;
+        width: 60px;
+        height: 4px;
+        border-radius: 2px;
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        font-weight: 500;
+        margin-bottom: 8px;
+        color: #2c3e50;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        font-size: 15px;
+        outline: none;
+        background-color: #fafafa;
+        transition: all 0.3s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #F4C2C2;
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(244, 194, 194, 0.2);
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        color: #fff;
+        padding: 12px 25px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+    }
+
+    .back-link {
+        display: block;
+        margin-top: 20px;
+        text-align: center;
+        color: #7f8c8d;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .back-link:hover {
+        color: #F4C2C2;
+    }
+</style>
+
+<div class="product-form-container">
+    <h2>{{ button_label|default('Save Product') }}</h2>
+
+    {{ form_start(form) }}
+        <div class="form-fields">
+            {{ form_widget(form) }}
+        </div>
+
+        <button class="btn-submit">{{ button_label|default('Save') }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_product_index') }}" class="back-link">← Back to product list</a>
+</div>

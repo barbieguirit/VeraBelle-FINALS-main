@@ -1,0 +1,242 @@
+{% extends 'base_login.html.twig' %}
+
+{% block title %}Login - VeraBelle Collection{% endblock %}
+
+{% block body %}
+<div class="login-container">
+    <div class="login-header">
+        <h1>VeraBelle</h1>
+        <p>Collection</p>
+    </div>
+    
+    <div class="login-body">
+        {% if error %}
+            <div class="error-message">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error.messageKey|trans(error.messageData, 'security') }}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+            
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="input-with-icon">
+                    <span class="input-icon">👤</span>
+                    <input type="text"
+                            value="{{ last_username }}"
+                            name="username"
+                            id="username"
+                            autocomplete="username"
+                            required
+                            autofocus
+                            placeholder="Enter your username">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-with-icon">
+                    <span class="input-icon">🔒</span>
+                    <input type="password"
+                            name="password"
+                            id="password"
+                            autocomplete="current-password"
+                            required
+                            placeholder="Enter your password">
+                </div>
+            </div>
+
+            <div class="remember-me">
+                <input type="checkbox" name="_remember_me" id="remember_me">
+                <label for="remember_me">Remember me</label>
+            </div>
+
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Sign In to Dashboard
+            </button>
+        </form>
+
+        <div class="login-footer">
+            {# Register Link #}
+            <p class="register-text">
+                Don't have an account? 
+                <a href="{{ path('app_register') }}" class="register-link">
+                    <i class="fas fa-user-plus"></i> Register here
+                </a>
+            </p>
+            
+            <p class="copyright">
+                VeraBelle Collection Admin Panel © {{ "now"|date("Y") }}
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Error message styling */
+    .error-message {
+        background: rgba(231, 76, 60, 0.1);
+        border: 1px solid rgba(231, 76, 60, 0.3);
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-bottom: 20px;
+        color: #c0392b;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: shake 0.5s;
+    }
+    
+    .error-message i {
+        font-size: 16px;
+    }
+    
+    /* Register text styling */
+    .register-text {
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 14px;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    }
+    
+    .register-link {
+        color: #F4C2C2;
+        text-decoration: none;
+        font-weight: 600;
+        margin-left: 5px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+    
+    .register-link:hover {
+        color: #e8b3b3;
+        text-decoration: underline;
+        transform: translateX(3px);
+    }
+    
+    .register-link i {
+        font-size: 13px;
+        transition: transform 0.3s ease;
+    }
+    
+    .register-link:hover i {
+        transform: scale(1.1);
+    }
+    
+    .copyright {
+        text-align: center;
+        color: #95a5a6;
+        font-size: 12px;
+        margin-top: 10px;
+    }
+    
+    /* Login button enhancement */
+    .login-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+    
+    .login-btn i {
+        font-size: 14px;
+    }
+    
+    /* Shake animation for errors */
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+        20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+    
+    /* Slide in animation for register text */
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .register-text {
+        animation: slideIn 0.5s ease-out;
+        animation-delay: 0.3s;
+        animation-fill-mode: both;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 480px) {
+        .register-text {
+            font-size: 13px;
+        }
+        
+        .register-link {
+            display: block;
+            margin-top: 5px;
+            margin-left: 0;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            // Add focus effects
+            input.addEventListener('focus', function() {
+                this.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.style.transform = 'scale(1)';
+            });
+            
+            // Add floating label effect
+            const parent = this.parentElement;
+            if (input.value) {
+                parent.classList.add('has-value');
+            }
+            
+            input.addEventListener('input', function() {
+                if (input.value) {
+                    parent.classList.add('has-value');
+                } else {
+                    parent.classList.remove('has-value');
+                }
+            });
+        });
+        
+        // Add enter key submission enhancement
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                const submitBtn = this.querySelector('.login-btn');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
+                submitBtn.disabled = true;
+            });
+        }
+        
+        // Auto-hide error messages after 5 seconds
+        const errorMessage = document.querySelector('.error-message');
+        if (errorMessage) {
+            setTimeout(() => {
+                errorMessage.style.transition = 'opacity 0.5s ease-out';
+                errorMessage.style.opacity = '0';
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 500);
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}

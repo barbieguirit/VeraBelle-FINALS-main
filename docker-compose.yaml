@@ -1,0 +1,36 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: verabelle123
+      MYSQL_DATABASE: verabelledb
+      MYSQL_USER: verabelle
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3310:3306"
+    volumes:
+      - verabelle_mysql_data:/var/lib/mysql
+    networks:
+      - verabelle_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: verabelle
+      PMA_PASSWORD: 1234
+    ports:
+      - "8083:80"
+    depends_on:
+      - mysql
+    networks:
+      - verabelle_network
+
+volumes:
+  verabelle_mysql_data:
+
+networks:
+  verabelle_network:
+    driver: bridge

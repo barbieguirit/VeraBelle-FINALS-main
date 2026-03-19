@@ -1,0 +1,108 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Add New Category - VeraBelle Collection{% endblock %}
+{% block page_title %}Add New Category{% endblock %}
+
+{% block content %}
+<style>
+    .form-wrapper {
+        max-width: 600px;
+        margin: 40px auto;
+        background: #fff;
+        padding: 40px 50px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .form-wrapper h1 {
+        font-size: 26px;
+        color: #2c3e50;
+        margin-bottom: 30px;
+        font-weight: 600;
+        text-align: center;
+    }
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    label {
+        font-weight: 500;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+        border-color: #A8BCA1;
+        box-shadow: 0 0 0 4px rgba(168, 188, 161, 0.2);
+        outline: none;
+    }
+
+    button {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        color: #fff;
+        border: none;
+        padding: 14px 0;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+    }
+
+    button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 25px;
+        text-decoration: none;
+        color: #2c3e50;
+        font-weight: 500;
+        font-size: 14px;
+        transition: color 0.3s ease;
+    }
+
+    .back-link:hover {
+        color: #A8BCA1;
+    }
+
+    .divider {
+        height: 1px;
+        background: #eee;
+        margin: 20px 0;
+    }
+</style>
+
+<div class="form-wrapper">
+    <h1>Create New Category</h1>
+
+    {{ include('category/_form.html.twig') }}
+
+    <div class="divider"></div>
+
+    <a href="{{ path('app_category_index') }}" class="back-link">← Back to Category List</a>
+</div>
+{% endblock %}

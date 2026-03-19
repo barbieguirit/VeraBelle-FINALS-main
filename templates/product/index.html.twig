@@ -1,0 +1,397 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}VeraBelle Collection - Products{% endblock %}
+{% block page_title %}Products{% endblock %}
+
+{% block content %}
+<style>
+    .content-wrapper {
+        max-width: 100%;
+    }
+
+    .products-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .products-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #2c3e50;
+        position: relative;
+        padding-left: 15px;
+    }
+
+    .products-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 5px;
+        height: 30px;
+        background: linear-gradient(180deg, #F4C2C2, #A8BCA1);
+        border-radius: 3px;
+    }
+
+    .btn-add {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        color: #fff;
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+    }
+
+    .btn-add:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+    }
+
+    .products-table {
+        background: #fff;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        padding: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+    }
+
+    thead th {
+        padding: 18px 20px;
+        text-align: left;
+        font-weight: 600;
+        color: #fff;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #f0f0f0;
+        transition: all 0.2s ease;
+    }
+
+    tbody tr:hover {
+        background: rgba(244, 194, 194, 0.05);
+    }
+
+    tbody td {
+        padding: 18px;
+        color: #2c3e50;
+        font-size: 14px;
+        vertical-align: middle;
+    }
+
+    .product-name {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .product-description {
+        color: #555;
+        font-size: 13px;
+        max-width: 300px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .category-badge {
+        background: rgba(168, 188, 161, 0.15);
+        color: #5a6d54;
+        padding: 6px 14px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 500;
+        border: 1px solid rgba(168, 188, 161, 0.3);
+        display: inline-block;
+        max-width: 140px;
+        text-align: center;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+
+    .price {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 15px;
+    }
+
+    .stock {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 500;
+        display: inline-block;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .stock.high {
+        background: rgba(168, 188, 161, 0.15);
+        color: #5a6d54;
+        border: 1px solid rgba(168, 188, 161, 0.3);
+    }
+
+    .stock.medium {
+        background: rgba(244, 194, 194, 0.15);
+        color: #c97878;
+        border: 1px solid rgba(244, 194, 194, 0.3);
+    }
+
+    .stock.low {
+        background: rgba(231, 76, 60, 0.1);
+        color: #c0392b;
+        border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+
+    .actions {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .btn-action {
+        padding: 8px 16px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        border: none;
+        cursor: pointer;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-view {
+        background: rgba(168, 188, 161, 0.15);
+        color: #5a6d54;
+        border: 1px solid rgba(168, 188, 161, 0.3);
+    }
+
+    .btn-view:hover {
+        background: #A8BCA1;
+        color: #fff;
+    }
+
+    .btn-edit {
+        background: rgba(244, 194, 194, 0.15);
+        color: #c97878;
+        border: 1px solid rgba(244, 194, 194, 0.3);
+    }
+
+    .btn-edit:hover {
+        background: #F4C2C2;
+        color: #fff;
+    }
+
+    .btn-delete {
+        background: rgba(231, 76, 60, 0.1);
+        color: #c0392b;
+        border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+
+    .btn-delete:hover {
+        background: #c0392b;
+        color: #fff;
+    }
+
+    .btn-disabled {
+        background: rgba(200, 200, 200, 0.15);
+        color: #999;
+        border: 1px solid rgba(200, 200, 200, 0.3);
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .btn-disabled:hover {
+        background: rgba(200, 200, 200, 0.15);
+        color: #999;
+        transform: none;
+    }
+
+    /* 🌸 DataTable Layout Fixes */
+    .dataTables_wrapper .top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .dataTables_wrapper .dataTables_length {
+        float: left;
+        text-align: left;
+        margin-bottom: 0 !important;
+    }
+
+    .dataTables_wrapper .dataTables_filter {
+        float: right;
+        text-align: right;
+        margin-bottom: 0 !important;
+    }
+
+    .dataTables_wrapper .dataTables_filter input {
+        margin-left: 6px;
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #dcdcdc;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .dataTables_wrapper .dataTables_filter input:focus {
+        border-color: #F4C2C2;
+        box-shadow: 0 0 3px rgba(244, 194, 194, 0.4);
+    }
+
+    .dataTables_wrapper .dataTables_paginate {
+        text-align: right;
+        padding-top: 10px;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        display: inline-block;
+        border-radius: 6px;
+        border: 1px solid #ddd !important;
+        padding: 6px 12px !important;
+        margin: 0 3px !important;
+        font-size: 13px;
+        background: #fff !important;
+        color: #2c3e50 !important;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
+        color: #fff !important;
+        border-color: transparent !important;
+    }
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
+        color: #fff !important;
+        border: none !important;
+        box-shadow: 0 0 5px rgba(244, 194, 194, 0.3);
+    }
+
+    .dataTables_wrapper .dataTables_info {
+        color: #5a6d54;
+        padding-top: 12px;
+        font-size: 13px;
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="products-header">
+        <div class="products-title">All Products</div>
+        <a href="{{ path('app_product_new') }}" class="btn-add">
+            <span>+</span> Add New Product
+        </a>
+    </div>
+
+    <div class="products-table">
+        <table id="productsTable">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>Description</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                {% set isAdmin = is_granted('ROLE_ADMIN') %}
+                {% set isCreator = product.createdBy and app.user and product.createdBy.id == app.user.id %}
+                {% set canEdit = isAdmin or isCreator %}
+                {% set canDelete = isAdmin or isCreator %}
+                <tr>
+                    <td class="product-name">{{ product.name }}</td>
+                    <td class="product-description">{{ product.description }}</td>
+                    <td><span class="category-badge">{{ product.category }}</span></td>
+                    <td class="price">₱{{ product.price|number_format(2) }}</td>
+                    <td>
+                        <span class="stock {% if product.stock < 20 %}low{% elseif product.stock < 50 %}medium{% else %}high{% endif %}">
+                            {{ product.stock }} units
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn-action btn-view">View</a>
+                            
+                            {% if canEdit %}
+                                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn-action btn-edit">Edit</a>
+                            {% else %}
+                                <span class="btn-action btn-disabled" title="You don't have permission to edit this product">Edit</span>
+                            {% endif %}
+                            
+                            {% if canDelete %}
+                                <form method="post" action="{{ path('app_product_delete', {'id': product.id}) }}"
+                                      style="display:inline;"
+                                      onsubmit="return confirm('Are you sure you want to delete {{ product.name }}?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                                    <button type="submit" class="btn-action btn-delete">Delete</button>
+                                </form>
+                            {% else %}
+                                <span class="btn-action btn-disabled" title="You don't have permission to delete this product">Delete</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-4">No products found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ✅ DataTables Integration #}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#productsTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [5, 10, 25, 50],
+            ordering: true,
+            searching: true,
+            language: {
+                search: "Search:",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                paginate: {
+                    previous: "Previous",
+                    next: "Next"
+                }
+            },
+            dom: '<"top"lf>rt<"bottom"ip><"clear">'
+        });
+    });
+</script>
+{% endblock %}

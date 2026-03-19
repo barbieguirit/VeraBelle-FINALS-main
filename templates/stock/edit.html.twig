@@ -1,0 +1,249 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Add Stock Entry - VeraBelle Collection{% endblock %}
+{% block page_title %}Add Stock Entry{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid;
+        border-image: linear-gradient(90deg, #F4C2C2, #A8BCA1) 1;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-header h2 {
+        font-size: 24px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .form-header p {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .form-section {
+        margin-bottom: 35px;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-section-title svg {
+        color: #A8BCA1;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 15px;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .form-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232c3e50' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-color: #f8f9fa;
+        padding-right: 40px;
+    }
+
+    .form-group textarea {
+        min-height: 100px;
+        resize: vertical;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #F4C2C2;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(244, 194, 194, 0.1);
+    }
+
+    .form-hint {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 6px;
+        font-style: italic;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 25px 20px;
+        }
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="form-container">
+    <div class="form-card">
+        <div class="form-header">
+            <h2>Add Stock Entry</h2>
+            <p>Record a new stock transaction for your VeraBelle Collection inventory</p>
+        </div>
+
+        {{ form_start(form) }}
+
+        <!-- Stock Transaction Information Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l10 6.5v7L12 22 2 15.5v-7L12 2z"></path>
+                    <path d="M12 22v-6.5"></path>
+                    <path d="M2 8.5l10 6.5 10-6.5"></path>
+                    <path d="M12 2v6.5"></path>
+                    <path d="M22 8.5v7"></path>
+                    <path d="M2 15.5v-7"></path>
+                    <path d="M7 5.5l10 6.5"></path>
+                    <path d="M7 18.5l10-6.5"></path>
+                </svg>
+                Stock Transaction Information
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.product, 'Product') }}
+                    {{ form_widget(form.product, {'attr': {'placeholder': 'Select product'}}) }}
+                    {{ form_errors(form.product) }}
+                    <div class="form-hint">Select the product for this stock entry</div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.type, 'Transaction Type') }}
+                    {{ form_widget(form.type) }}
+                    {{ form_errors(form.type) }}
+                    <div class="form-hint">Choose stock in or stock out</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    {{ form_label(form.quantity, 'Quantity') }}
+                    {{ form_widget(form.quantity, {'attr': {'placeholder': 'Enter quantity', 'min': '1'}}) }}
+                    {{ form_errors(form.quantity) }}
+                    <div class="form-hint">Number of units in this transaction</div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.date, 'Transaction Date') }}
+                    {{ form_widget(form.date) }}
+                    {{ form_errors(form.date) }}
+                    <div class="form-hint">Date when the transaction occurred</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Information Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Additional Information
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.remarks, 'Remarks') }}
+                {{ form_widget(form.remarks, {'attr': {'placeholder': 'Add any notes or remarks about this stock transaction...'}}) }}
+                {{ form_errors(form.remarks) }}
+                <div class="form-hint">Optional: Additional information about this stock entry (reason for transaction, special notes, etc.)</div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Save Stock Entry
+        </button>
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

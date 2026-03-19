@@ -1,0 +1,465 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Edit User - VeraBelle Collection{% endblock %}
+{% block page_title %}Edit User: {{ user.username }}{% endblock %}
+
+{% block content %}
+<style>
+    .form-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid;
+        border-image: linear-gradient(90deg, #F4C2C2, #A8BCA1) 1;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 35px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .form-header h2 {
+        font-size: 24px;
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-weight: 600;
+    }
+
+    .form-header p {
+        color: #7f8c8d;
+        font-size: 14px;
+    }
+
+    .form-section {
+        margin-bottom: 35px;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .form-section-title svg {
+        color: #A8BCA1;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 15px;
+        color: #2c3e50;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .form-group select {
+        cursor: pointer;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232c3e50' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 16px center;
+        background-color: #f8f9fa;
+        padding-right: 40px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #F4C2C2;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(244, 194, 194, 0.1);
+    }
+
+    .form-hint {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 6px;
+        font-style: italic;
+    }
+
+    .checkbox-group {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid #e2e8f0;
+    }
+
+    .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .checkbox-item:hover {
+        background: rgba(244, 194, 194, 0.1);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        border: 2px solid #A8BCA1;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked {
+        background-color: #A8BCA1;
+        border-color: #A8BCA1;
+    }
+
+    .checkbox-label {
+        font-weight: 500;
+        color: #2c3e50;
+        cursor: pointer;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 15px;
+    }
+
+    .info-item {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid #A8BCA1;
+    }
+
+    .info-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 16px;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .badge-success {
+        background: rgba(39, 174, 96, 0.15);
+        color: #27ae60;
+        border: 1px solid rgba(39, 174, 96, 0.3);
+    }
+
+    .badge-secondary {
+        background: rgba(149, 165, 166, 0.15);
+        color: #7f8c8d;
+        border: 1px solid rgba(149, 165, 166, 0.3);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 14px;
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        font-family: 'Poppins', sans-serif;
+        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .btn-reset {
+        width: 100%;
+        padding: 14px;
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+        border: 2px solid rgba(102, 126, 234, 0.3);
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        font-family: 'Poppins', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .btn-reset:hover {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .form-card {
+            padding: 25px 20px;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Alerts */
+    .alert {
+        padding: 16px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .alert-success {
+        background: rgba(39, 174, 96, 0.1);
+        border-left: 4px solid #27ae60;
+        color: #27ae60;
+    }
+
+    .alert-danger {
+        background: rgba(231, 76, 60, 0.1);
+        border-left: 4px solid #e74c3c;
+        color: #c0392b;
+    }
+
+    .alert strong {
+        font-weight: 600;
+    }
+</style>
+
+<div class="form-container">
+    <!-- Alerts -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">
+            <strong>✅ Success!</strong> {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">
+            <strong>❌ Error!</strong> {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="form-card">
+        <div class="form-header">
+            <h2>Edit User</h2>
+            <p>Update user information and permissions for {{ user.username }}</p>
+        </div>
+
+        <!-- User Information Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                User Information
+            </div>
+            
+            <form method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" 
+                           placeholder="Enter username" value="{{ user.username }}" required minlength="3">
+                    <div class="form-hint">Username must be at least 3 characters long</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" 
+                           placeholder="user@example.com" value="{{ user.email }}">
+                    <div class="form-hint">Optional: User's email address</div>
+                </div>
+
+                <div class="form-group">
+                    <label>User Roles</label>
+                    <div class="checkbox-group">
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="roles[]" value="ROLE_STAFF" 
+                                {% if 'ROLE_STAFF' in user.roles %}checked{% endif %}
+                                id="role_staff">
+                            <label for="role_staff" class="checkbox-label">Staff Member</label>
+                        </div>
+                        <div class="checkbox-item">
+                            <input type="checkbox" name="roles[]" value="ROLE_ADMIN" 
+                                {% if 'ROLE_ADMIN' in user.roles %}checked{% endif %}
+                                id="role_admin">
+                            <label for="role_admin" class="checkbox-label">Administrator</label>
+                        </div>
+                    </div>
+                    <div class="form-hint">Select the user's permission level</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Account Status</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="active" {% if user.status == 'active' %}selected{% endif %}>Active</option>
+                        <option value="disabled" {% if user.status == 'disabled' %}selected{% endif %}>Disabled</option>
+                    </select>
+                    <div class="form-hint">Active users can log in, disabled users cannot</div>
+                </div>
+
+                <button type="submit" class="btn-submit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Update User
+                </button>
+            </form>
+        </div>
+
+        <!-- Password Reset Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                Password Reset
+            </div>
+
+            <form method="post" action="{{ path('app_admin_users_reset_password', {id: user.id}) }}">
+                <div class="form-group">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" class="form-control" 
+                           placeholder="Enter new password" required minlength="8">
+                    <div class="form-hint">Minimum 8 characters</div>
+                </div>
+
+                <button type="submit" class="btn-reset" 
+                        onclick="return confirm('Are you sure you want to reset this user\\'s password?')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M23 4v6h-6"></path>
+                        <path d="M1 20v-6h6"></path>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"></path>
+                        <path d="M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    Reset Password
+                </button>
+            </form>
+        </div>
+
+        <!-- User Details Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                User Details
+            </div>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">User ID</div>
+                    <div class="info-value">#{{ user.id }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Created At</div>
+                    <div class="info-value">{{ user.createdAt ? user.createdAt|date('M d, Y - H:i') : 'N/A' }}</div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Email Verified</div>
+                    <div class="info-value">
+                        <span class="badge badge-{{ user.isVerified ? 'success' : 'secondary' }}">
+                            {{ user.isVerified ? 'Verified' : 'Not Verified' }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-item">
+                    <div class="info-label">Current Status</div>
+                    <div class="info-value">
+                        <span class="badge badge-{{ user.status == 'active' ? 'success' : 'secondary' }}">
+                            {{ user.status|upper }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

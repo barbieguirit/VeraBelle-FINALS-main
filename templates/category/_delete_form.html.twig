@@ -1,0 +1,7 @@
+<form method="post" 
+      action="{{ path('app_category_delete', {'id': category.id}) }}" 
+      onsubmit="return openDeleteModal(this, '{{ category.name }}');" 
+      class="delete-form">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+    <button class="btn-action btn-delete" type="submit">Delete</button>
+</form>

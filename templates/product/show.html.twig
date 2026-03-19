@@ -1,0 +1,343 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}{{ product.name }} - VeraBelle Collection{% endblock %}
+
+{% block page_title %}Product Details{% endblock %}
+
+{% block content %}
+<style>
+    .details-wrapper {
+        max-width: 1200px;  /* Changed from 900px to 1200px for wider layout */
+        margin: 0 auto;
+    }
+
+    .details-container {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        border-top: 4px solid;
+        border-image: linear-gradient(90deg, #F4C2C2, #A8BCA1) 1;
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #2c3e50, #34495e);
+        padding: 40px;  /* Increased padding for wider layout */
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .card-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 250px;  /* Increased size for wider layout */
+        height: 250px;
+        background: linear-gradient(135deg, rgba(244, 194, 194, 0.1), rgba(168, 188, 161, 0.1));
+        border-radius: 50%;
+        transform: translate(50%, -50%);
+    }
+
+    .card-header h1 {
+        font-size: 32px;  /* Increased font size */
+        font-weight: 700;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    .card-header .subtitle {
+        font-size: 16px;  /* Increased font size */
+        color: rgba(255, 255, 255, 0.8);
+        margin-top: 12px;  /* Increased margin */
+    }
+
+    .card-body {
+        padding: 50px;  /* Increased padding for wider layout */
+    }
+
+    .details-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 35px;  /* Increased gap for wider layout */
+    }
+
+    .detail-row {
+        background: #f8f9fa;
+        padding: 25px;  /* Increased padding */
+        border-radius: 12px;  /* Slightly larger radius */
+        border-left: 5px solid transparent;  /* Thicker border */
+        transition: all 0.3s ease;
+    }
+
+    .detail-row:hover {
+        background: #f0f0f0;
+        border-left-color: #F4C2C2;
+    }
+
+    .detail-row.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .detail-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;  /* Increased gap */
+        font-size: 14px;  /* Slightly larger */
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #718096;
+        margin-bottom: 15px;  /* Increased margin */
+    }
+
+    .detail-label::before {
+        content: '•';
+        color: #F4C2C2;
+        font-size: 24px;  /* Larger bullet */
+    }
+
+    .detail-value {
+        font-size: 18px;  /* Increased font size */
+        color: #2d3748;
+        font-weight: 500;
+        line-height: 1.6;
+    }
+
+    .detail-value.price {
+        font-size: 36px;  /* Larger price */
+        font-weight: 700;
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .detail-value.stock {
+        display: inline-block;
+        padding: 10px 22px;  /* Larger padding */
+        border-radius: 25px;  /* Larger radius */
+        font-weight: 600;
+        font-size: 16px;  /* Larger font */
+    }
+
+    .detail-value.stock.high {
+        background: rgba(168, 188, 161, 0.15);
+        color: #5a6d54;
+        border: 1px solid rgba(168, 188, 161, 0.3);
+    }
+
+    .detail-value.stock.low {
+        background: rgba(237, 137, 54, 0.15);
+        color: #c05621;
+        border: 1px solid rgba(237, 137, 54, 0.3);
+    }
+
+    .detail-value.stock.out {
+        background: rgba(231, 76, 60, 0.1);
+        color: #c0392b;
+        border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+
+    .detail-value.category {
+        background: rgba(168, 188, 161, 0.15);
+        color: #5a6d54;
+        padding: 8px 20px;  /* Larger padding */
+        border-radius: 25px;  /* Larger radius */
+        font-size: 16px;  /* Larger font */
+        display: inline-block;
+        border: 1px solid rgba(168, 188, 161, 0.3);
+    }
+
+    .detail-value.description {
+        line-height: 1.8;
+        color: #4a5568;
+        font-size: 16px;  /* Larger font for description */
+    }
+
+    .timestamp {
+        color: #a0aec0;
+        font-size: 15px;  /* Slightly larger */
+    }
+
+    .card-footer {
+        padding: 35px 50px;  /* Increased padding to match body */
+        background: #f8f9fa;
+        display: flex;
+        gap: 15px;  /* Increased gap */
+        justify-content: space-between;
+        align-items: center;
+        border-top: 2px solid #e2e8f0;
+    }
+
+    .btn {
+        padding: 14px 30px;  /* Larger buttons */
+        border-radius: 10px;  /* Larger radius */
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 15px;  /* Larger font */
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;  /* Increased gap */
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .btn-back {
+        background: rgba(168, 188, 161, 0.15);
+        color: #5a6d54;
+        border: 1px solid rgba(168, 188, 161, 0.3);
+    }
+
+    .btn-back:hover {
+        background: #A8BCA1;
+        color: white;
+        border-color: #A8BCA1;
+        transform: translateX(-3px);
+    }
+
+    .btn-edit {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        color: white;
+        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+    }
+
+    .btn-edit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+    }
+
+    .btn-delete {
+        background: rgba(231, 76, 60, 0.1);
+        color: #c0392b;
+        border: 1px solid rgba(231, 76, 60, 0.2);
+    }
+
+    .btn-delete:hover {
+        background: #c0392b;
+        color: white;
+        border-color: #c0392b;
+        transform: translateY(-2px);
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 15px;  /* Increased gap */
+    }
+
+    @media (max-width: 768px) {
+        .details-wrapper {
+            max-width: 100%;
+        }
+
+        .details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .card-header {
+            padding: 30px 20px;  /* Adjusted for mobile */
+        }
+
+        .card-header h1 {
+            font-size: 26px;  /* Slightly smaller for mobile */
+        }
+
+        .card-body {
+            padding: 30px 20px;  /* Adjusted for mobile */
+        }
+
+        .card-footer {
+            padding: 25px 20px;  /* Adjusted for mobile */
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .action-buttons {
+            width: 100%;
+            flex-direction: column;
+        }
+    }
+
+    @media (min-width: 769px) and (max-width: 1200px) {
+        .details-wrapper {
+            max-width: 95%;
+            margin: 0 auto;
+        }
+    }
+</style>
+
+<div class="details-wrapper">
+    <div class="details-container">
+        <div class="card-header">
+            <h1>{{ product.name }}</h1>
+            <div class="subtitle">View complete product information</div>
+        </div>
+        
+        <div class="card-body">
+            <div class="details-grid">
+                <div class="detail-row">
+                    <span class="detail-label">Product Name</span>
+                    <div class="detail-value">{{ product.name }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Category</span>
+                    <div class="detail-value category">{{ product.category }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Price</span>
+                    <div class="detail-value price">₱{{ product.price }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Stock</span>
+                    {% if product.stock <= 0 %}
+                        <div class="detail-value stock out">Out of stock</div>
+                    {% elseif product.stock < 20 %}
+                        <div class="detail-value stock low">{{ product.stock }} units</div>
+                    {% else %}
+                        <div class="detail-value stock high">{{ product.stock }} units</div>
+                    {% endif %}
+                </div>
+
+                <div class="detail-row full-width">
+                    <span class="detail-label">Description</span>
+                    <div class="detail-value description">{{ product.description }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Created At</span>
+                    <div class="detail-value timestamp">{{ product.createdAt|date('M d, Y - h:i A') }}</div>
+                </div>
+
+                <div class="detail-row">
+                    <span class="detail-label">Updated At</span>
+                    <div class="detail-value timestamp">{{ product.updatedAt|date('M d, Y - h:i A') }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-footer">
+            <a href="{{ path('app_product_index') }}" class="btn btn-back">
+                ← Back to List
+            </a>
+            <div class="action-buttons">
+                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-edit">
+                     Edit Product
+                </a>
+                {{ include('product/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

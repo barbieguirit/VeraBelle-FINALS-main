@@ -1,0 +1,331 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}My Profile - VeraBelle Collection{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+
+{% block content %}
+<style>
+    .content-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+
+    .page-title {
+        font-size: 28px;
+        font-weight: 600;
+        color: #2c3e50;
+        position: relative;
+        padding-left: 15px;
+    }
+
+    .page-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 5px;
+        height: 30px;
+        background: linear-gradient(180deg, #F4C2C2, #A8BCA1);
+        border-radius: 3px;
+    }
+
+    .alert {
+        background: rgba(168, 188, 161, 0.15);
+        border: 1px solid rgba(168, 188, 161, 0.3);
+        color: #5a6d54;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+        font-size: 14px;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 30px;
+    }
+
+    .profile-card {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 4px 20px rgba(244, 194, 194, 0.3);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        background: white;
+        color: #F4C2C2;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        font-weight: bold;
+        margin: 0 auto 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 4px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .profile-card h2 {
+        margin: 15px 0 10px 0;
+        font-size: 26px;
+        font-weight: 600;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .role-badge {
+        margin: 15px 0;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 5px;
+    }
+
+    .badge-danger {
+        background: rgba(231, 76, 60, 0.9);
+        color: white;
+        border: 1px solid rgba(231, 76, 60, 0.3);
+    }
+
+    .badge-info {
+        background: rgba(52, 152, 219, 0.9);
+        color: white;
+        border: 1px solid rgba(52, 152, 219, 0.3);
+    }
+
+    .status-badge {
+        margin: 10px 0;
+    }
+
+    .badge-success {
+        background: rgba(39, 174, 96, 0.9);
+        color: white;
+        border: 1px solid rgba(39, 174, 96, 0.3);
+    }
+
+    .badge-secondary {
+        background: rgba(149, 165, 166, 0.9);
+        color: white;
+        border: 1px solid rgba(149, 165, 166, 0.3);
+    }
+
+    .profile-details {
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .profile-details h3 {
+        margin-bottom: 25px;
+        color: #2c3e50;
+        font-size: 22px;
+        font-weight: 600;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+        position: relative;
+    }
+
+    .profile-details h3::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 60px;
+        height: 2px;
+        background: linear-gradient(90deg, #F4C2C2, #A8BCA1);
+    }
+
+    .info-grid {
+        display: grid;
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 18px 20px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border-left: 4px solid transparent;
+    }
+
+    .info-item:hover {
+        background: rgba(244, 194, 194, 0.05);
+        border-left-color: #F4C2C2;
+        transform: translateX(5px);
+    }
+
+    .info-item strong {
+        color: #7f8c8d;
+        font-size: 14px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .info-item span {
+        color: #2c3e50;
+        font-size: 15px;
+        font-weight: 500;
+    }
+
+    .profile-actions {
+        margin-top: 30px;
+        padding-top: 30px;
+        border-top: 2px solid #f0f0f0;
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 15px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
+        color: white;
+        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+        text-decoration: none;
+    }
+
+    @media (max-width: 968px) {
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-card {
+            order: 1;
+        }
+
+        .profile-details {
+            order: 2;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-details {
+            padding: 25px 20px;
+        }
+
+        .info-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+    }
+</style>
+
+<div class="content-wrapper">
+    <div class="page-header">
+        <h1 class="page-title">My Profile</h1>
+    </div>
+
+    {% for message in app.flashes('success') %}
+        <div class="alert">{{ message }}</div>
+    {% endfor %}
+
+    <div class="profile-grid">
+        <div class="profile-card">
+            <div class="profile-avatar">
+                {{ user.username|slice(0, 1)|upper }}
+            </div>
+            <h2>{{ user.username }}</h2>
+            <p class="role-badge">
+                {% for role in user.roles %}
+                    {% if role != 'ROLE_USER' %}
+                        <span class="badge badge-{{ role == 'ROLE_ADMIN' ? 'danger' : 'info' }}">
+                            {{ role|replace({'ROLE_': ''}) }}
+                        </span>
+                    {% endif %}
+                {% endfor %}
+            </p>
+            <p class="status-badge">
+                <span class="badge badge-{{ user.status == 'active' ? 'success' : 'secondary' }}">
+                    {{ user.status|upper }}
+                </span>
+            </p>
+        </div>
+
+        <div class="profile-details">
+            <h3>Account Information</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <strong>Username:</strong>
+                    <span>{{ user.username }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Email:</strong>
+                    <span>{{ user.email ?? 'Not set' }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Account Created:</strong>
+                    <span>{{ user.createdAt ? user.createdAt|date('F d, Y') : 'N/A' }}</span>
+                </div>
+                <div class="info-item">
+                    <strong>Verified:</strong>
+                    <span>{{ user.isVerified ? ' Yes' : ' No' }}</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="{{ path('app_profile_change_password') }}" class="btn btn-primary">
+                     Change Password
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
