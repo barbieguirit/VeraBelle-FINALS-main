@@ -1,0 +1,207 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}About Us — VeraBelle Collection{% endblock %}
+{% block meta_desc %}The story of VeraBelle Collection — a Filipino fashion label born in Dumaguete City, built by women, for women.{% endblock %}
+
+{% block body %}
+
+{# ── PAGE HERO ── #}
+<section class="about-hero">
+    <div class="about-hero-gradient"></div>
+    <div class="about-hero-bg-word" aria-hidden="true">Story</div>
+
+    <div class="about-hero-content">
+        <div class="section-eyebrow reveal-left" style="color:rgba(196,113,74,0.85)">
+            <span style="display:inline-block;width:24px;height:1px;background:rgba(196,113,74,0.6);vertical-align:middle;margin-right:14px"></span>
+            Dumaguete, Philippines · Est. 2020
+        </div>
+        <h1 class="about-hero-title reveal-left" style="transition-delay:0.1s">
+            We Dress the
+            <em>Women Who Move</em>
+        </h1>
+        <p class="about-hero-sub reveal-left" style="transition-delay:0.2s">
+            VeraBelle Collection is more than a fashion label. It is a love letter
+            to every Filipino woman who refuses to shrink herself.
+        </p>
+    </div>
+</section>
+
+{# ── OUR BEGINNING ── #}
+<section class="about-intro">
+    <div class="about-intro-left reveal-left">
+        <div class="about-intro-visual">
+            <div class="about-intro-accent">
+                <div class="about-intro-accent-n">5+</div>
+                <div class="about-intro-accent-l">Years</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="reveal-right" style="transition-delay:0.1s">
+        <div class="section-eyebrow">Our Beginning</div>
+        <h2 class="section-title">
+            A Spare Bedroom.<br><em>A Big Dream.</em>
+        </h2>
+
+        <p class="about-body" style="margin-top:28px">
+            In 2020, Vera Santos turned her spare bedroom in Dumaguete City into a
+            makeshift studio. She had a rail of carefully sourced pieces, a camera,
+            and an unwavering belief that local women deserved fashion that understood them.
+        </p>
+        <p class="about-body">
+            The first collection sold out in three days — not from marketing, but from
+            word of mouth. Woman to woman, friend to friend. That momentum has never stopped.
+        </p>
+        <p class="about-body">
+            Today, VeraBelle Collection has a proper studio, a growing team, and a
+            community of hundreds of women across the Philippines who wear our pieces
+            with pride. But our heart has never left that spare bedroom.
+        </p>
+
+        <div style="margin-top:44px;display:flex;gap:16px;flex-wrap:wrap;">
+            <a href="{{ path('app_landing') }}#products" class="btn-fill">Shop the Collection</a>
+            <a href="{{ path('app_landing') }}#contact" class="btn-outline" style="color:var(--forest);border-color:var(--forest)">Get in Touch →</a>
+        </div>
+    </div>
+</section>
+
+{# ── MISSION / VALUES ── #}
+<section class="about-values">
+    <div class="reveal" style="text-align:center;margin-bottom:0">
+        <div class="section-eyebrow" style="justify-content:center">
+            <span style="display:inline-block;width:24px;height:1px;background:var(--terra);vertical-align:middle;margin-right:12px"></span>
+            What We Stand For
+        </div>
+        <h2 class="section-title" style="margin-top:12px">
+            Our <em>Values.</em>
+        </h2>
+    </div>
+
+    <div class="values-grid">
+        <div class="value-card reveal">
+            <div class="v-num" aria-hidden="true">01</div>
+            <div class="v-icon">🌿</div>
+            <h3 class="v-title">Local First</h3>
+            <p class="v-body">
+                We source from Filipino suppliers, partner with local seamstresses,
+                and reinvest in our community. Every purchase supports livelihoods
+                right here in the Philippines.
+            </p>
+        </div>
+        <div class="value-card reveal" style="transition-delay:0.1s">
+            <div class="v-num" aria-hidden="true">02</div>
+            <div class="v-icon">👗</div>
+            <h3 class="v-title">Intentional Curation</h3>
+            <p class="v-body">
+                We don't follow trends — we curate. Every piece enters our collection
+                because it solves a real styling problem or elevates a real woman's
+                real wardrobe.
+            </p>
+        </div>
+        <div class="value-card reveal" style="transition-delay:0.2s">
+            <div class="v-num" aria-hidden="true">03</div>
+            <div class="v-icon">♻️</div>
+            <h3 class="v-title">Sustainable Choices</h3>
+            <p class="v-body">
+                We choose natural fabrics, small-batch production, and zero-waste
+                packaging wherever possible. Fashion should not cost the earth.
+            </p>
+        </div>
+        <div class="value-card reveal" style="transition-delay:0.15s">
+            <div class="v-num" aria-hidden="true">04</div>
+            <div class="v-icon">💪</div>
+            <h3 class="v-title">Women Empowering Women</h3>
+            <p class="v-body">
+                Our team is majority women. Our clients are women. Our suppliers
+                include women-led businesses. This is intentional. This is who we are.
+            </p>
+        </div>
+        <div class="value-card reveal" style="transition-delay:0.25s">
+            <div class="v-num" aria-hidden="true">05</div>
+            <div class="v-icon">🤝</div>
+            <h3 class="v-title">Radical Inclusivity</h3>
+            <p class="v-body">
+                Fashion is for everyone. We carry pieces designed to look stunning
+                on all body types, all skin tones, and all lifestyles.
+            </p>
+        </div>
+        <div class="value-card reveal" style="transition-delay:0.35s">
+            <div class="v-num" aria-hidden="true">06</div>
+            <div class="v-icon">💌</div>
+            <h3 class="v-title">Personal Touch</h3>
+            <p class="v-body">
+                Every order is packed by hand with a personal note. We know our
+                clients by name. This is not a transaction — it is a relationship.
+            </p>
+        </div>
+    </div>
+</section>
+
+{# ── OUR PROCESS ── #}
+<section class="about-process">
+    <div class="reveal">
+        <div class="section-eyebrow">How We Work</div>
+        <h2 class="section-title">
+            From Discovery<br><em>to Your Door.</em>
+        </h2>
+    </div>
+
+    <div class="process-row">
+        <div class="process-step reveal">
+            <div class="p-num" aria-hidden="true">01</div>
+            <span class="p-icon">🔍</span>
+            <h3 class="p-title">Discovery</h3>
+            <p class="p-body">
+                We travel, research, and source. Every season begins with deep
+                immersion in fabric markets, local artisans, and our clients'
+                evolving lives.
+            </p>
+        </div>
+        <div class="process-step reveal" style="transition-delay:0.1s">
+            <div class="p-num" aria-hidden="true">02</div>
+            <span class="p-icon">✏️</span>
+            <h3 class="p-title">Curation</h3>
+            <p class="p-body">
+                Our team hand-selects every piece against a strict filter: fit,
+                quality, versatility, and that ineffable thing that makes a woman
+                reach for a piece again and again.
+            </p>
+        </div>
+        <div class="process-step reveal" style="transition-delay:0.2s">
+            <div class="p-num" aria-hidden="true">03</div>
+            <span class="p-icon">📸</span>
+            <h3 class="p-title">Styling</h3>
+            <p class="p-body">
+                Maria and the team style every collection — showing real women
+                exactly how each piece can live in their wardrobe across
+                multiple occasions.
+            </p>
+        </div>
+        <div class="process-step reveal" style="transition-delay:0.3s">
+            <div class="p-num" aria-hidden="true">04</div>
+            <span class="p-icon">📦</span>
+            <h3 class="p-title">Delivery</h3>
+            <p class="p-body">
+                Each order is carefully packed with a personal note and dispatched
+                with love. We ship nationwide and take every delivery personally.
+            </p>
+        </div>
+    </div>
+</section>
+
+{# ── CTA ── #}
+<section class="about-cta-section">
+    <div class="section-eyebrow reveal">
+        <span style="display:inline-block;width:24px;height:1px;background:rgba(245,240,232,0.4);vertical-align:middle;margin-right:12px"></span>
+        Ready to explore?
+    </div>
+    <h2 class="about-cta-title reveal" style="transition-delay:0.1s">
+        Find Your Next Favourite Piece.
+    </h2>
+    <div class="reveal" style="transition-delay:0.2s">
+        <a href="{{ path('app_landing') }}#products" class="btn-cream">Browse Collection</a>
+        <a href="{{ path('app_landing') }}#contact" class="btn-outline-cream">Contact Us</a>
+    </div>
+</section>
+
+{% endblock %}

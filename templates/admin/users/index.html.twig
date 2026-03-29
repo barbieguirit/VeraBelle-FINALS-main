@@ -697,8 +697,8 @@
                     <td class="user-id">#{{ user.id }}</td>
                     <td>
                         <div class="user-info">
-                            <div class="user-avatar">{{ user.username|slice(0, 2)|upper }}</div>
-                            <span class="username">{{ user.username }}</span>
+                            <div class="user-avatar">{{ user.email|slice(0, 2)|upper }}</div>
+                            <span class="username">{{ user.email }}</span>
                         </div>
                     </td>
                     <td class="email-cell">{{ user.email ?? 'N/A' }}</td>
@@ -738,7 +738,7 @@
                                 <button type="submit" 
                                         class="btn-action btn-delete" 
                                         title="Delete User"
-                                        onclick="return confirm('⚠️ Are you sure you want to delete user {{ user.username }}?\n\nThis action cannot be undone and all associated data will be permanently removed.')">
+                                        onclick="return confirm('⚠️ Are you sure you want to delete user {{ user.email }}?\n\nThis action cannot be undone and all associated data will be permanently removed.')">
                                     Delete
                                 </button>
                             </form>

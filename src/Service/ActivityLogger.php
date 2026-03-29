@@ -25,7 +25,7 @@ class ActivityLogger
 
         $log = new ActivityLog();
         $log->setUserId($currentUser->getId());
-        $log->setUsername($currentUser->getUsername());
+        $log->setUsername($currentUser->getEmail());
         
         // Get the primary role (first non-ROLE_USER role)
         $roles = $currentUser->getRoles();

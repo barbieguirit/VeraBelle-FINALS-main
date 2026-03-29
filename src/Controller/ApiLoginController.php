@@ -2,50 +2,28 @@
 
 namespace App\Controller;
 
-use App\Repository\UserRepository;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class ApiLoginController extends AbstractController
 {
-    #[Route('/api/login', name: 'api_login', methods: ['POST','GET'])]
-    public function login(
-        Request $request,
-        UserRepository $userRepository,
-        UserPasswordHasherInterface $passwordHasher,
-        JWTTokenManagerInterface $jwtManager
-    ): JsonResponse {
+    #[Route('/api/login', name: 'api_login', methods: ['POST'])]
+    public function login(AuthenticationUtils $authenticationUtils, Request $request): JsonResponse
+    {
+        // When using lexik/jwt-authentication-bundle with json_login,
+        // the security system intercepts this route and handles authentication.
+        // If this controller is ever reached, return a clear JSON error.
 
-        $data = json_decode($request->getContent(), true);
-
-        // ✅ Changed: email → username
-        if (!$data || !isset($data['username'], $data['password'])) {
-            return new JsonResponse(['error' => 'Invalid JSON'], 400);
-        }
-
-        // ✅ Changed: find by username instead of email
-        $user = $userRepository->findOneBy(['username' => $data['username']]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not found'], 401);
-        }
-
-        if (!$passwordHasher->isPasswordValid($user, $data['password'])) {
-            return new JsonResponse(['error' => 'Invalid credentials'], 401);
-        }
-
-        $token = $jwtManager->create($user);
+        $lastUsername = $authenticationUtils->getLastUsername();
+        $error = $authenticationUtils->getLastAuthenticationError();
 
         return new JsonResponse([
-            'token' => $token,
-            'user' => [
-                'id' => $user->getId(),
-                'username' => $user->getUserIdentifier(), // ✅ Changed: email → username
-            ]
-        ]);
+            'message' => 'Authentication is handled by the JSON login firewall.',
+            'username' => $lastUsername,
+            'error' => $error ? $error->getMessageKey() : null,
+        ], JsonResponse::HTTP_UNAUTHORIZED);
     }
 }

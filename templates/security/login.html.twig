@@ -21,17 +21,17 @@
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
             
             <div class="form-group">
-                <label for="username">Username</label>
-                <div class="input-with-icon">
-                    <span class="input-icon">👤</span>
-                    <input type="text"
-                            value="{{ last_username }}"
-                            name="username"
-                            id="username"
-                            autocomplete="username"
-                            required
-                            autofocus
-                            placeholder="Enter your username">
+                <label for="email">Email</label>
+                    <div class="input-with-icon">
+                        <span class="input-icon">📧</span>
+                        <input type="text"
+                                value="{{ last_username }}"
+                                name="email"
+                                id="email"
+                                autocomplete="email"
+                                required
+                                autofocus
+                                placeholder="Enter your email address">
                 </div>
             </div>
 

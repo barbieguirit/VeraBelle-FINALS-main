@@ -4,79 +4,72 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use App\Security\EmailVerifier;
+use App\Security\UserAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
-use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
+use Symfony\Component\Routing\Annotation\Route;
+use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
+use Symfony\Component\Mime\Email;
+use Symfony\Component\Mailer\MailerInterface;
 
 class RegistrationController extends AbstractController
 {
-    public function __construct(private EmailVerifier $emailVerifier)
-    {
-    }
-
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
+    public function register(
+        Request $request,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager,
+        MailerInterface $mailer,
+        VerifyEmailHelperInterface $verifyEmailHelper
+    ): Response
     {
-        // If user is already logged in, redirect to dashboard
-        if ($this->getUser()) {
-            $this->addFlash('info', 'You are already logged in.');
-            return $this->redirectToRoute('app_dashboard');
-        }
-        
         $user = new User();
+
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
-
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-            
-            // SET DEFAULT ROLE: All new users get ROLE_STAFF
-            // Only admin can promote to ROLE_ADMIN through user management
-            $user->setRoles(['ROLE_STAFF']);
-            
-            // Set email verification status
-            // Since you don't have email field, set as verified or skip verification
-            $user->setIsVerified(true); // Set to true if no email verification needed
-            
-            // Alternatively, if you want to add email field later:
-            // $user->setEmail($form->get('email')->getData());
-            // $user->setIsVerified(false); // Requires email verification
+            // Hash password
+            $user->setPassword(
+                $passwordHasher->hashPassword(
+                    $user,
+                    $form->get('plainPassword')->getData()
+                )
+            );
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // COMMENT OUT EMAIL VERIFICATION SINCE YOU DON'T HAVE EMAIL FIELD
-            /*
-            $this->emailVerifier->sendEmailConfirmation('app_verify_email', $user,
-                (new TemplatedEmail())
-                    ->from(new Address('noreply@verabelle.com', 'Verabelle Collection'))
-                    ->to($user->getEmail()) // This will fail since no email field
-                    ->subject('Please Confirm your Email')
-                    ->htmlTemplate('registration/confirmation_email.html.twig')
-            );
-            */
+            // Generate signed email verification link
+          // Generate signed email verification link
+$signatureComponents = $verifyEmailHelper->generateSignature(
+    'app_verify_email', // route name for verification
+    $user->getId(),
+    $user->getEmail(),
+    ['id' => $user->getId()]
+);
 
-            // Add success message
-            $this->addFlash('success', 'Registration successful! You can now login.');
+// Send verification email
+$email = (new Email())
+    ->from('noreply@verabelle.com')
+    ->to($user->getEmail())
+    ->subject('Please Confirm Your Email')
+    ->html(
+        $this->renderView('registration/confirmation_email.html.twig', [
+            'signedUrl' => $signatureComponents->getSignedUrl(),
+            'expirationMessageKey' => $signatureComponents->getExpirationMessageKey(),
+            'expirationMessageData' => $signatureComponents->getExpirationMessageData(),
+        ])
+    );
 
-            // Redirect to login page instead of auto-login
+    $mailer->send($email);
+
+            $this->addFlash('success', 'Registration successful! Please check your email to verify your account.');
+
             return $this->redirectToRoute('app_login');
-            
-            // If you want auto-login, uncomment this and comment the redirect above:
-            // return $security->login($user, 'form_login', 'main');
         }
 
         return $this->render('registration/register.html.twig', [
@@ -85,23 +78,36 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(Request $request, TranslatorInterface $translator): Response
+    public function verifyUserEmail(
+        Request $request,
+        VerifyEmailHelperInterface $verifyEmailHelper,
+        EntityManagerInterface $entityManager
+    ): Response
     {
-        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
+        $userId = $request->get('id');
 
-        // validate email confirmation link, sets User::isVerified=true and persists
+        if (!$userId) {
+            throw $this->createNotFoundException('No user ID provided.');
+        }
+
+        $user = $entityManager->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            throw $this->createNotFoundException('User not found.');
+        }
+
+        // Validate the signed URL
         try {
-            /** @var User $user */
-            $user = $this->getUser();
-            $this->emailVerifier->handleEmailConfirmation($request, $user);
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+            $verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId(), $user->getEmail());
+            $user->setIsVerified(true);
+            $entityManager->flush();
 
+            $this->addFlash('success', 'Your email has been verified successfully!');
+        } catch (\Exception $e) {
+            $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('app_register');
         }
 
-        $this->addFlash('success', 'Your email address has been verified.');
-
-        return $this->redirectToRoute('app_dashboard'); // Redirect to dashboard after verification
+        return $this->redirectToRoute('app_login');
     }
 }

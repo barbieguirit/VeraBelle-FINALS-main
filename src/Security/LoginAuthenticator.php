@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
@@ -27,7 +28,6 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
     }
 
     /**
-     * IMPORTANT FIX
      * Only run authentication when the login form is submitted.
      */
     public function supports(Request $request): bool
@@ -38,18 +38,18 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
 
     public function authenticate(Request $request): Passport
     {
-        $username = $request->getPayload()->getString('username');
+        $email = $request->request->get('email', '');
 
         $request->getSession()->set(
             SecurityRequestAttributes::LAST_USERNAME,
-            $username
+            $email
         );
 
         return new Passport(
-            new UserBadge($username),
-            new PasswordCredentials($request->getPayload()->getString('password')),
+            new UserBadge($email),
+            new PasswordCredentials($request->request->get('password', '')),
             [
-                new CsrfTokenBadge('authenticate', $request->getPayload()->getString('_csrf_token')),
+                new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
                 new RememberMeBadge(),
             ]
         );
@@ -60,18 +60,29 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
         TokenInterface $token,
         string $firewallName
     ): ?Response {
-        
+        $user = $token->getUser();
+
+        // ❌ Prevent login if email not verified
+        if ($user && method_exists($user, 'isVerified') && !$user->isVerified()) {
+            $request->getSession()->getFlashBag()->add(
+                'error',
+                'You must verify your email before logging in.'
+            );
+
+            return new RedirectResponse($this->getLoginUrl($request));
+        }
+
+        // Redirect to originally requested page
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
             return new RedirectResponse($targetPath);
         }
 
-        // Redirect based on role
-        $user = $token->getUser();
+        // Role-based redirects
         if ($user && in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return new RedirectResponse($this->urlGenerator->generate('app_admin_dashboard'));
         }
 
-        // Default: redirect to staff dashboard
+        // Default: staff dashboard
         return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
     }
 

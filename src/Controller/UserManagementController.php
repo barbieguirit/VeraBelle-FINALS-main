@@ -31,7 +31,7 @@ class UserManagementController extends AbstractController
         $queryBuilder = $userRepository->createQueryBuilder('u');
 
         if ($search) {
-            $queryBuilder->andWhere('u.username LIKE :search OR u.email LIKE :search')
+            $queryBuilder->andWhere('u.email LIKE :search')
                 ->setParameter('search', '%' . $search . '%');
         }
 
@@ -59,27 +59,25 @@ class UserManagementController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         if ($request->isMethod('POST')) {
-            $username = $request->request->get('username');
             $email = $request->request->get('email');
             $password = $request->request->get('password');
             $roles = $request->request->all('roles') ?: ['ROLE_STAFF'];
             $status = $request->request->get('status', 'active');
 
             // Validation
-            if (empty($username) || empty($password)) {
-                $this->addFlash('error', 'Username and password are required.');
+            if (empty($email) || empty($password)) {
+                $this->addFlash('error', 'Email and password are required.');
                 return $this->redirectToRoute('app_admin_users_new');
             }
 
-            // Check if username already exists
-            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['username' => $username]);
+            // Check if email already exists
+            $existingUser = $entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
             if ($existingUser) {
-                $this->addFlash('error', 'Username already exists.');
+                $this->addFlash('error', 'Email already exists.');
                 return $this->redirectToRoute('app_admin_users_new');
             }
 
             $user = new User();
-            $user->setUsername($username);
             $user->setEmail($email);
             $user->setRoles($roles);
             $user->setStatus($status);
@@ -102,17 +100,15 @@ class UserManagementController extends AbstractController
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         if ($request->isMethod('POST')) {
-            $username = $request->request->get('username');
             $email = $request->request->get('email');
             $roles = $request->request->all('roles') ?: ['ROLE_STAFF'];
             $status = $request->request->get('status', 'active');
 
-            if (empty($username)) {
-                $this->addFlash('error', 'Username is required.');
+            if (empty($email)) {
+                $this->addFlash('error', 'Email is required.');
                 return $this->redirectToRoute('app_admin_users_edit', ['id' => $user->getId()]);
             }
 
-            $user->setUsername($username);
             $user->setEmail($email);
             $user->setRoles($roles);
             $user->setStatus($status);
@@ -143,7 +139,7 @@ class UserManagementController extends AbstractController
         $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
         $entityManager->flush();
 
-        $this->activityLogger->log('PASSWORD_RESET', sprintf('Password reset for user: %s (ID: %d)', $user->getUsername(), $user->getId()));
+        $this->activityLogger->log('PASSWORD_RESET', sprintf('Password reset for user: %s (ID: %d)', $user->getEmail(), $user->getId()));
         $this->addFlash('success', 'Password reset successfully.');
 
         return $this->redirectToRoute('app_admin_users_edit', ['id' => $user->getId()]);
@@ -157,7 +153,7 @@ class UserManagementController extends AbstractController
         $entityManager->flush();
 
         $action = $newStatus === 'disabled' ? 'DISABLE' : 'ENABLE';
-        $this->activityLogger->log($action, sprintf('User: %s (ID: %d)', $user->getUsername(), $user->getId()));
+        $this->activityLogger->log($action, sprintf('User: %s (ID: %d)', $user->getEmail(), $user->getId()));
         $this->addFlash('success', sprintf('User %s successfully.', $newStatus === 'disabled' ? 'disabled' : 'enabled'));
 
         return $this->redirectToRoute('app_admin_users_index');
@@ -172,7 +168,7 @@ class UserManagementController extends AbstractController
             return $this->redirectToRoute('app_admin_users_index');
         }
 
-        $username = $user->getUsername();
+        $username = $user->getEmail();
         $userId = $user->getId();
 
         $entityManager->remove($user);

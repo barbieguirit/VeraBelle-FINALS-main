@@ -11,7 +11,7 @@ security:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: username
+                property: email
 
     firewalls:
         dev:
@@ -23,7 +23,7 @@ security:
             provider: app_user_provider
             json_login:
                 check_path: /api/login
-                username_path: username
+                username_path: email
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
@@ -38,7 +38,6 @@ security:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\LoginAuthenticator
-            user_checker: App\Security\UserChecker
             logout:
                 path: app_logout
                 target: app_login
@@ -46,12 +45,13 @@ security:
                 secret: '%kernel.secret%'
                 lifetime: 604800
                 path: /
-                # by default, the feature is enabled by checking a checkbox in the
-                # login form, uncomment the following line to always enable it.
-                #always_remember_me: true
 
     access_control:
         # Public areas (must be first)
+        - { path: ^/$,       roles: PUBLIC_ACCESS }
+        - { path: ^/about,   roles: PUBLIC_ACCESS }
+        - { path: ^/contact, roles: PUBLIC_ACCESS }
+        
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
 

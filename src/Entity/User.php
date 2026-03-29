@@ -17,7 +17,7 @@ use ApiPlatform\Metadata\Delete;
 
 #[ApiResource(
     operations: [
-        new Post(processor: UserPasswordHasher::class), // ✅ hash password on register
+        new Post(processor: UserPasswordHasher::class),
         new Get(),
         new GetCollection(),
         new Patch(),
@@ -25,8 +25,9 @@ use ApiPlatform\Metadata\Delete;
     ]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
-#[UniqueEntity(fields: ['username'], message: 'There is already an account with this username')]
+#[ORM\Table(name: 'user')]
+#[ORM\UniqueConstraint(name: 'UNIQ_EMAIL', fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -35,26 +36,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 180)]
-    private ?string $username = null;
-
-    #[ORM\Column(length: 180, nullable: true)]
+    #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
-    /**
-     * @var list<string> The user roles
-     */
     #[ORM\Column]
     private array $roles = [];
 
-    /**
-     * @var string The hashed password
-     */
     #[ORM\Column]
     private ?string $password = null;
-
-    #[ORM\Column]
-    private bool $isVerified = false;
 
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $createdAt = null;
@@ -62,40 +51,45 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 20)]
     private string $status = 'active';
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isVerified = false;
+
+
+    // ========================
+    // GETTERS & SETTERS
+    // ========================
+
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getUsername(): ?string
+    public function getEmail(): ?string
     {
-        return $this->username;
+        return $this->email;
     }
 
-    public function setUsername(string $username): static
+    public function setEmail(string $email): static
     {
-        $this->username = $username;
-
+        $this->email = $email;
         return $this;
     }
 
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return (string) $this->email;
     }
 
     public function getRoles(): array
     {
         $roles = $this->roles;
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
-
         return $this;
     }
 
@@ -107,47 +101,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
-
         return $this;
     }
 
-    public function __serialize(): array
-    {
-        $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
-
-        return $data;
-    }
-
-    #[\Deprecated]
     public function eraseCredentials(): void
     {
-        // @deprecated, to be removed when upgrading to Symfony 8
+        // Clear any temporary sensitive data if needed
     }
 
-    public function isVerified(): bool
-    {
-        return $this->isVerified;
-    }
-
-    public function setIsVerified(bool $isVerified): static
-    {
-        $this->isVerified = $isVerified;
-
-        return $this;
-    }
-
-    public function getEmail(): ?string
-    {
-        return $this->email;
-    }
-
-    public function setEmail(?string $email): static
-    {
-        $this->email = $email;
-
-        return $this;
-    }
+    // ========================
+    // CREATED AT
+    // ========================
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {
@@ -162,6 +126,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
     }
 
+    // ========================
+    // STATUS
+    // ========================
+
     public function getStatus(): string
     {
         return $this->status;
@@ -170,12 +138,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setStatus(string $status): static
     {
         $this->status = $status;
-
         return $this;
     }
 
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    public function isVerified(): bool
+    {
+        return $this->isVerified;
+    }
+
+    public function setIsVerified(bool $isVerified): static
+    {
+        $this->isVerified = $isVerified;
+        return $this;
     }
 }

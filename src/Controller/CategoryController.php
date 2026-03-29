@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
-use App\Service\ActivityLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,8 +17,6 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_STAFF')]
 final class CategoryController extends AbstractController
 {
-    public function __construct(private ActivityLogger $activityLogger) {}
-
     #[Route(name: 'app_category_index', methods: ['GET'])]
     public function index(CategoryRepository $categoryRepository): Response
     {
@@ -36,17 +33,10 @@ final class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // ✅ Set the creator
             $category->setCreatedBy($this->getUser());
-            
+
             $entityManager->persist($category);
             $entityManager->flush();
-
-            // ✅ Log the activity
-            $this->activityLogger->log(
-                'CREATE',
-                'Category: ' . $category->getName() . ' (ID: ' . $category->getId() . ')'
-            );
 
             $this->addFlash('success', 'Category created successfully.');
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
@@ -69,7 +59,6 @@ final class CategoryController extends AbstractController
     #[Route('/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
-        // 🔒 Check permission: Admin or Creator only
         if (!$this->isGranted('ROLE_ADMIN') && $category->getCreatedBy() !== $this->getUser()) {
             $this->addFlash('error', 'You do not have permission to edit this category.');
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
@@ -80,12 +69,6 @@ final class CategoryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
-            // ✅ Log the activity
-            $this->activityLogger->log(
-                'UPDATE',
-                'Category: ' . $category->getName() . ' (ID: ' . $category->getId() . ')'
-            );
 
             $this->addFlash('success', 'Category updated successfully.');
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
@@ -100,7 +83,6 @@ final class CategoryController extends AbstractController
     #[Route('/{id}', name: 'app_category_delete', methods: ['POST'])]
     public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
     {
-        // 🔒 Check permission: Admin or Creator only
         if (!$this->isGranted('ROLE_ADMIN') && $category->getCreatedBy() !== $this->getUser()) {
             $this->addFlash('error', 'You do not have permission to delete this category.');
             return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
@@ -108,17 +90,8 @@ final class CategoryController extends AbstractController
 
         if ($this->isCsrfTokenValid('delete' . $category->getId(), $request->getPayload()->getString('_token'))) {
             try {
-                $categoryName = $category->getName();
-                $categoryId = $category->getId();
-
                 $entityManager->remove($category);
                 $entityManager->flush();
-
-                // ✅ Log the activity
-                $this->activityLogger->log(
-                    'DELETE',
-                    'Category: ' . $categoryName . ' (ID: ' . $categoryId . ')'
-                );
 
                 $this->addFlash('success', 'Category deleted successfully.');
             } catch (ForeignKeyConstraintViolationException $e) {

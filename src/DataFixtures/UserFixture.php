@@ -18,7 +18,7 @@ class UserFixture extends Fixture
     public function load(ObjectManager $manager): void
     {
         $admin = new \App\Entity\User();
-        $admin->setUsername('admin');
+        $admin->setEmail('admin@gmail.com');
         $admin->setRoles(['ROLE_ADMIN']);
         $admin->setStatus('active');
         $admin->setIsVerified(true);
@@ -30,7 +30,7 @@ class UserFixture extends Fixture
         $manager->persist($admin);
 
         $staff = new \App\Entity\User();
-        $staff->setUsername('staff');
+    $staff->setEmail('staff@gmail.com');
         $staff->setRoles(['ROLE_STAFF']);
         $staff->setStatus('active');
         $staff->setIsVerified(true);

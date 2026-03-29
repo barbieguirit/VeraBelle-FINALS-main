@@ -1,0 +1,418 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}VeraBelle Collection — Fashion with Purpose{% endblock %}
+{% block meta_desc %}VeraBelle Collection — curated Filipino clothing & fashion for modern women. Based in Dumaguete City.{% endblock %}
+
+{% block body %}
+
+{# ══════════════════════════════
+   SECTION 1 — HERO BANNER
+══════════════════════════════ #}
+<section id="home">
+    <div class="hero-left">
+        <div class="hero-texture"></div>
+        <div class="hero-number" aria-hidden="true">25</div>
+
+        <div class="hero-eyebrow">Spring / Summer 2025</div>
+
+        <h1 class="hero-title">
+            Wear Your
+            <em>Story.</em>
+        </h1>
+
+        <p class="hero-desc">
+            VeraBelle Collection is a Dumaguete-born fashion label that dresses
+            bold women in thoughtfully curated, locally inspired clothing.
+        </p>
+
+        <div class="hero-actions">
+            <a href="#products" class="btn-fill">Explore Collection</a>
+            <a href="{{ path('app_about') }}" class="btn-outline">Our Story →</a>
+        </div>
+    </div>
+
+    <div class="hero-right">
+        <div class="hero-img-top">
+            <div class="hero-fashion-text" aria-hidden="true">Vera</div>
+            <div class="hero-collection-pill">SS '25</div>
+            <div class="hero-img-label">Editorial Look 01</div>
+        </div>
+        <div class="hero-img-bottom">
+            <div class="hero-fashion-text" aria-hidden="true">Belle</div>
+            <div class="hero-img-label">Editorial Look 02</div>
+        </div>
+    </div>
+
+    <div class="hero-scroll-cue" aria-hidden="true">
+        <div class="hero-scroll-line"></div>
+        Scroll
+    </div>
+</section>
+
+{# ── Ticker Tape ── #}
+<div class="ticker" aria-hidden="true">
+    <div class="ticker-inner">
+        {% for i in 1..2 %}
+            <span class="ticker-item">New Arrivals</span>
+            <span class="ticker-item">Free Shipping</span>
+            <span class="ticker-item">Filipino Made</span>
+            <span class="ticker-item">SS 2025 Collection</span>
+            <span class="ticker-item">Sustainable Fashion</span>
+            <span class="ticker-item">Dumaguete Origin</span>
+        {% endfor %}
+    </div>
+</div>
+
+{# ══════════════════════════════
+   SECTION 2 — PRODUCTS / COLLECTION
+══════════════════════════════ #}
+<section id="products">
+    <div class="products-header reveal">
+        <div>
+            <div class="section-eyebrow">Our Collection</div>
+            <h2 class="section-title">
+                Dressed to<br><em>Be Felt.</em>
+            </h2>
+        </div>
+        <a href="{{ path('app_product_index') }}" class="see-all-link">
+            View All Pieces →
+        </a>
+    </div>
+
+    {# Editorial grid — first card spans 2 rows #}
+    <div class="products-editorial">
+
+        {# Large featured card #}
+        <div class="prod-card large reveal">
+            <div class="prod-img">
+                <div class="prod-img-fill" style="background:linear-gradient(155deg, #2D4A3E 0%, #1E3329 100%);">
+                    <div class="prod-img-glyph">Vb</div>
+                </div>
+                <span class="prod-badge">New</span>
+                <div class="prod-hover-cta">
+                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
+                </div>
+            </div>
+            <div class="prod-info">
+                <div class="prod-cat">Featured · Dress</div>
+                <div class="prod-name">The Palengke Shift</div>
+                <div class="prod-price"><strong>₱2,450</strong></div>
+            </div>
+        </div>
+
+        {# Small cards right side #}
+        <div class="prod-card reveal" style="transition-delay:0.1s">
+            <div class="prod-img">
+                <div class="prod-img-fill" style="background:linear-gradient(155deg, #C4714A 0%, #A5532E 100%);">
+                    <div class="prod-img-glyph">Co</div>
+                </div>
+                <div class="prod-hover-cta">
+                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
+                </div>
+            </div>
+            <div class="prod-info">
+                <div class="prod-cat">Tops</div>
+                <div class="prod-name">Coral Wrap Blouse</div>
+                <div class="prod-price"><strong>₱1,180</strong></div>
+            </div>
+        </div>
+
+        <div class="prod-card reveal" style="transition-delay:0.15s">
+            <div class="prod-img">
+                <div class="prod-img-fill" style="background:linear-gradient(155deg, #C8B49A 0%, #B09878 100%);">
+                    <div class="prod-img-glyph">Sa</div>
+                </div>
+                <span class="prod-badge" style="background:var(--forest)">Limited</span>
+                <div class="prod-hover-cta">
+                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
+                </div>
+            </div>
+            <div class="prod-info">
+                <div class="prod-cat">Bottoms</div>
+                <div class="prod-name">Sandstone Midi Skirt</div>
+                <div class="prod-price"><strong>₱1,650</strong></div>
+            </div>
+        </div>
+
+        <div class="prod-card reveal" style="transition-delay:0.2s">
+            <div class="prod-img">
+                <div class="prod-img-fill" style="background:linear-gradient(155deg, #4A6741 0%, #344D2D 100%);">
+                    <div class="prod-img-glyph">Fo</div>
+                </div>
+                <div class="prod-hover-cta">
+                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
+                </div>
+            </div>
+            <div class="prod-info">
+                <div class="prod-cat">Sets</div>
+                <div class="prod-name">Forest Linen Co-ord</div>
+                <div class="prod-price"><strong>₱3,200</strong></div>
+            </div>
+        </div>
+
+        <div class="prod-card reveal" style="transition-delay:0.25s">
+            <div class="prod-img">
+                <div class="prod-img-fill" style="background:linear-gradient(155deg, #E8C4B0 0%, #D4A892 100%);">
+                    <div class="prod-img-glyph">Bl</div>
+                </div>
+                <div class="prod-hover-cta">
+                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
+                </div>
+            </div>
+            <div class="prod-info">
+                <div class="prod-cat">Accessories</div>
+                <div class="prod-name">Blush Rattan Bag</div>
+                <div class="prod-price"><strong>₱890</strong></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{# ══════════════════════════════
+   SECTION 3 — OUR STORY
+══════════════════════════════ #}
+<section id="story">
+    <div class="story-left">
+        <div class="story-gradient"></div>
+        <div class="story-bg-word" aria-hidden="true">VeraBelle</div>
+
+        <div class="story-year-tag" aria-hidden="true">2020</div>
+        <p class="story-tagline">
+            "Fashion is the armor<br>to survive everyday life."
+        </p>
+        <div class="story-divider"></div>
+        <div class="story-mini-stats">
+            <div>
+                <div class="story-stat-n">5+</div>
+                <div class="story-stat-l">Years</div>
+            </div>
+            <div>
+                <div class="story-stat-n">200+</div>
+                <div class="story-stat-l">Pieces</div>
+            </div>
+            <div>
+                <div class="story-stat-n">500+</div>
+                <div class="story-stat-l">Clients</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="story-right">
+        <div class="section-eyebrow reveal-right">Our Story</div>
+        <h2 class="section-title reveal-right" style="transition-delay:0.1s">
+            Born in<br><em>Dumaguete.</em>
+        </h2>
+
+        <p class="story-body reveal-right" style="transition-delay:0.2s">
+            VeraBelle Collection started in 2020 as a personal project — a small rack of
+            hand-sourced pieces curated for women who wanted to dress with intention.
+            What began in a spare bedroom in Dumaguete City has grown into a label
+            that local women trust to make them feel powerful, comfortable, and seen.
+        </p>
+        <p class="story-body reveal-right" style="transition-delay:0.3s">
+            We don't chase trends. We build wardrobes. Each piece is chosen or created
+            because we believe it earns its place in a real woman's life — office meeting,
+            market run, sunset dinner, or everything in between.
+        </p>
+
+        <div class="story-cta reveal-right" style="transition-delay:0.4s">
+            <a href="{{ path('app_about') }}" class="btn-fill">Read the Full Story</a>
+        </div>
+    </div>
+</section>
+
+{# ══════════════════════════════
+   SECTION 4 — OUR TEAM
+══════════════════════════════ #}
+<section id="team">
+    <div class="reveal" style="margin-bottom:0">
+        <div class="section-eyebrow">The People Behind</div>
+        <h2 class="section-title">Our <em>Team.</em></h2>
+    </div>
+
+    {% set team = [
+        {
+            name: 'Vera Santos',
+            role: 'Founder & Creative Director',
+            initials: 'VS',
+            bg: 'linear-gradient(155deg, #2D4A3E, #1E3329)',
+            bio: 'The visionary behind every collection. Vera built VeraBelle from a love of fashion and a belief that every Filipino woman deserves to look extraordinary.'
+        },
+        {
+            name: 'Maria Cruz',
+            role: 'Head of Styling & Curation',
+            initials: 'MC',
+            bg: 'linear-gradient(155deg, #C4714A, #A5532E)',
+            bio: 'Maria has an eye that does not miss. She selects and styles every piece in the collection, ensuring each one earns its place.'
+        },
+        {
+            name: 'Joel Lim',
+            role: 'Operations & Logistics',
+            initials: 'JL',
+            bg: 'linear-gradient(155deg, #4A6741, #344D2D)',
+            bio: 'Joel keeps the wheels turning — from supplier relationships to last-mile delivery. He is the reason your order arrives on time.'
+        },
+        {
+            name: 'Ana Reyes',
+            role: 'Client Experience Lead',
+            initials: 'AR',
+            bg: 'linear-gradient(155deg, #C8B49A, #B09878)',
+            bio: 'Ana is the first voice you hear when you reach out. She treats every client like a VIP because, to us, they are.'
+        }
+    ] %}
+
+    <div class="team-grid">
+        {% for i, member in team %}
+        <div class="team-card reveal" style="transition-delay:{{ i * 0.1 }}s">
+            <div class="team-photo">
+                <div class="team-photo-fill" style="background: {{ member.bg }};">
+                    <span class="team-photo-initials">{{ member.initials }}</span>
+                </div>
+                <div class="team-overlay">
+                    <div class="team-social-row">
+                        <a href="#" class="team-social">Fb</a>
+                        <a href="#" class="team-social">Ig</a>
+                        <a href="{{ path('app_landing') }}#contact" class="team-social">@</a>
+                    </div>
+                </div>
+            </div>
+            <div class="team-name">{{ member.name }}</div>
+            <div class="team-role">{{ member.role }}</div>
+            <p class="team-bio">{{ member.bio }}</p>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+{# ══════════════════════════════
+   SECTION 5 — CONTACT US
+══════════════════════════════ #}
+<section id="contact">
+    <div class="contact-bg-text" aria-hidden="true">Contact</div>
+
+    <div class="contact-grid">
+        {# Left: info #}
+        <div class="contact-left">
+            <div class="section-eyebrow reveal-left">Get In Touch</div>
+            <h2 class="section-title reveal-left" style="transition-delay:0.1s">
+                Let's Start a<br><em>Conversation.</em>
+            </h2>
+            <p class="contact-desc reveal-left" style="transition-delay:0.2s">
+                Whether you're after a specific piece, a custom styling session,
+                a collaboration proposal, or just want to say hello — we'd love to hear from you.
+            </p>
+
+            <div class="contact-info-list reveal-left" style="transition-delay:0.3s">
+                <div class="contact-info-item">
+                    <div class="c-icon">📍</div>
+                    <div>
+                        <div class="c-label">Studio Location</div>
+                        <div class="c-val">Dumaguete City, Negros Oriental 6200</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="c-icon">✉️</div>
+                    <div>
+                        <div class="c-label">Email Us</div>
+                        <div class="c-val">hello@verabellecollection.com</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="c-icon">📱</div>
+                    <div>
+                        <div class="c-label">WhatsApp / Call</div>
+                        <div class="c-val">+63 912 345 6789</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="c-icon">🕐</div>
+                    <div>
+                        <div class="c-label">Studio Hours</div>
+                        <div class="c-val">Mon – Sat &nbsp;·&nbsp; 9 AM – 6 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Right: form #}
+        <div class="contact-form-box reveal-right">
+            <p class="form-heading">Send a Message</p>
+
+            {% for msg in app.flashes('contact_success') %}
+                <div class="flash-ok">✓ &nbsp; {{ msg }}</div>
+            {% endfor %}
+            {% for msg in app.flashes('contact_error') %}
+                <div class="flash-err">✗ &nbsp; {{ msg }}</div>
+            {% endfor %}
+
+            <form action="{{ path('app_contact') }}" method="POST" id="contactForm">
+                <input type="hidden" name="_token" value="{{ csrf_token('contact') }}">
+                <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
+                <div class="f-row">
+                    <div class="f-group">
+                        <label class="f-label" for="cf_first">First Name *</label>
+                        <input class="f-input" type="text" id="cf_first" name="firstName" placeholder="Maria" required>
+                        <span class="f-underline"></span>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label" for="cf_last">Last Name</label>
+                        <input class="f-input" type="text" id="cf_last" name="lastName" placeholder="Cruz">
+                        <span class="f-underline"></span>
+                    </div>
+                </div>
+
+                <div class="f-group">
+                    <label class="f-label" for="cf_email">Email Address *</label>
+                    <input class="f-input" type="email" id="cf_email" name="email" placeholder="maria@example.com" required>
+                    <span class="f-underline"></span>
+                </div>
+
+                <div class="f-group">
+                    <label class="f-label" for="cf_phone">Phone / WhatsApp</label>
+                    <input class="f-input" type="tel" id="cf_phone" name="phone" placeholder="+63 9XX XXX XXXX">
+                    <span class="f-underline"></span>
+                </div>
+
+                <div class="f-group">
+                    <label class="f-label" for="cf_subject">Subject *</label>
+                    <select class="f-select" id="cf_subject" name="subject" required>
+                        <option value="" disabled selected>Select a topic…</option>
+                        <option>General Inquiry</option>
+                        <option>Custom Styling Request</option>
+                        <option>Wholesale / Bulk Order</option>
+                        <option>Collaboration / Partnership</option>
+                        <option>Shipping & Delivery</option>
+                        <option>Returns & Exchanges</option>
+                        <option>Press / Media</option>
+                        <option>Other</option>
+                    </select>
+                    <span class="f-underline"></span>
+                </div>
+
+                <div class="f-group">
+                    <label class="f-label" for="cf_msg">Message *</label>
+                    <textarea class="f-textarea" id="cf_msg" name="message" placeholder="Tell us how we can help…" required></textarea>
+                    <span class="f-underline"></span>
+                </div>
+
+                <button type="submit" class="f-submit" id="submitBtn">
+                    Send Message
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Submit loading state
+document.getElementById('contactForm')?.addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
+});
+</script>
+{% endblock %}

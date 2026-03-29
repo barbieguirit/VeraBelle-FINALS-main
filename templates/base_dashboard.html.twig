@@ -397,7 +397,7 @@
             <h2>{% block page_title %}Dashboard{% endblock %}</h2>
             <div class="user">
                 <div class="user-info">
-                    <strong>{{ app.user.username }}</strong>
+                    <strong>{{ app.user.email }}</strong>
                     <small>
                         {% for role in app.user.roles %}
                             {% if role != 'ROLE_USER' %}
@@ -407,7 +407,7 @@
                     </small>
                 </div>
                 <div class="user-avatar">
-                    {{ app.user.username|slice(0, 1)|upper }}
+                    {{ app.user.email|slice(0, 1)|upper }}
                 </div>
             </div>
         </header>
