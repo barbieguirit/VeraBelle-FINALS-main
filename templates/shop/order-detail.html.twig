@@ -1,0 +1,265 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}Order #{{ order.id }} — VeraBelle Collection{% endblock %}
+{% block meta_desc %}View details for order #{{ order.id }}.{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory:#F9F4EE; --parchment:#EFE6D8; --mauve:#C4A0A0; --deep-mauve:#9E6F6F;
+        --sage:#8FAF8C; --deep-sage:#5C7A5A; --charcoal:#3A3232; --warm-gray:#7A6F6F;
+        --blush:#E8CECE; --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(58,50,50,0.08); --shadow-sm:0 2px 12px rgba(58,50,50,0.06);
+        --shadow-md:0 8px 32px rgba(58,50,50,0.10);
+        --serif:'Playfair Display',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:var(--sans); background:var(--ivory); color:var(--charcoal); }
+
+    .page-wrap { max-width:1600px; margin:0 auto; padding:120px 60px 100px; }
+
+    /* Back link */
+    .back-link { display:inline-flex; align-items:center; gap:6px; color:var(--warm-gray); text-decoration:none; font-size:13px; font-weight:500; margin-bottom:28px; transition:color 0.2s; }
+    .back-link:hover { color:var(--deep-mauve); }
+
+    /* Hero card */
+    .order-hero {
+        background:linear-gradient(135deg,#2A2020,var(--charcoal));
+        border-radius:20px; padding:40px 48px; margin-bottom:24px;
+        display:flex; align-items:center; justify-content:space-between;
+        position:relative; overflow:hidden; border:1px solid rgba(196,160,160,0.1);
+    }
+    .order-hero::before { content:''; position:absolute; top:-60px; right:60px; width:280px; height:280px; background:radial-gradient(circle,rgba(196,160,160,0.12) 0%,transparent 65%); pointer-events:none; }
+    .oh-left { position:relative; z-index:1; }
+    .oh-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .oh-eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--gold); }
+    .oh-title { font-family:var(--serif); font-size:clamp(28px,4vw,42px); font-weight:300; color:white; margin-bottom:8px; }
+    .oh-title em { font-style:italic; color:var(--mauve); }
+    .oh-date { font-size:13px; color:rgba(255,255,255,0.4); font-weight:300; }
+    .oh-right { position:relative; z-index:1; text-align:right; }
+    .oh-amount { font-family:var(--serif); font-size:48px; font-weight:300; color:white; line-height:1; }
+    .oh-amount-label { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:4px; }
+
+    /* Status badges */
+    .status-badge { display:inline-flex; align-items:center; gap:5px; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+    .status-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.7; }
+    .s-pending    { background:rgba(196,160,160,0.12); color:var(--deep-mauve); border:1px solid rgba(196,160,160,0.25); }
+    .s-processing { background:rgba(143,175,140,0.12); color:var(--deep-sage); border:1px solid rgba(143,175,140,0.22); }
+    .s-completed  { background:rgba(92,122,90,0.12); color:var(--deep-sage); border:1px solid rgba(92,122,90,0.22); }
+    .s-cancelled  { background:rgba(180,80,80,0.08); color:#b05050; border:1px solid rgba(180,80,80,0.18); }
+    .s-paid       { background:rgba(92,122,90,0.12); color:var(--deep-sage); border:1px solid rgba(92,122,90,0.22); }
+    .s-unpaid     { background:rgba(196,160,160,0.12); color:var(--deep-mauve); border:1px solid rgba(196,160,160,0.25); }
+
+    /* Grid layout */
+    .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+    .detail-grid.three { grid-template-columns:1fr 1fr 1fr; }
+
+    /* Info panels */
+    .info-panel { background:var(--white); border-radius:16px; border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-sm); }
+    .ip-header { padding:18px 24px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .ip-icon { width:32px; height:32px; border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ip-title { font-family:var(--serif); font-size:16px; font-weight:400; color:var(--charcoal); }
+    .ip-body { padding:20px 24px; display:flex; flex-direction:column; gap:12px; }
+    .ip-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; }
+    .ip-label { color:var(--warm-gray); font-weight:500; }
+    .ip-value { font-weight:600; color:var(--charcoal); text-align:right; max-width:60%; }
+    .ip-value.green { color:var(--deep-sage); }
+    .ip-value.address { font-size:12px; line-height:1.6; }
+
+    /* Timeline */
+    .timeline { padding:20px 24px; display:flex; flex-direction:column; gap:0; }
+    .tl-item { display:flex; gap:16px; position:relative; padding-bottom:20px; }
+    .tl-item:last-child { padding-bottom:0; }
+    .tl-item:not(:last-child)::before { content:''; position:absolute; left:15px; top:32px; bottom:0; width:1px; background:var(--border); }
+    .tl-dot { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; border:2px solid var(--border); background:var(--white); }
+    .tl-dot.active { background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); border-color:transparent; }
+    .tl-dot.done { background:linear-gradient(135deg,var(--sage),var(--deep-sage)); border-color:transparent; }
+    .tl-content { flex:1; padding-top:4px; }
+    .tl-label { font-size:13px; font-weight:700; color:var(--charcoal); margin-bottom:2px; }
+    .tl-time { font-size:11px; color:var(--warm-gray); }
+
+    /* Summary */
+    .summary-panel { background:var(--charcoal); border-radius:16px; padding:28px; color:white; }
+    .sum-row { display:flex; justify-content:space-between; align-items:center; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13px; }
+    .sum-row:last-child { border-bottom:none; padding-top:14px; }
+    .sum-label { color:rgba(255,255,255,0.5); }
+    .sum-value { font-weight:600; color:white; }
+    .sum-total .sum-label { color:rgba(255,255,255,0.7); font-weight:700; font-size:14px; }
+    .sum-total .sum-value { font-family:var(--serif); font-size:24px; font-weight:300; color:var(--mauve); }
+
+    /* Actions */
+    .actions-bar { display:flex; gap:12px; margin-top:24px; flex-wrap:wrap; }
+    .btn-primary { display:inline-flex; align-items:center; gap:8px; padding:13px 28px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:white; border-radius:10px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; transition:all 0.2s; }
+    .btn-primary:hover { opacity:0.9; transform:translateY(-1px); }
+    .btn-outline { display:inline-flex; align-items:center; gap:8px; padding:13px 24px; background:transparent; color:var(--warm-gray); border:1.5px solid rgba(196,160,160,0.3); border-radius:10px; font-size:12px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+    .btn-outline:hover { border-color:var(--mauve); color:var(--deep-mauve); }
+
+    @media (max-width:768px) {
+        .page-wrap { padding:100px 20px 80px; }
+        .order-hero { flex-direction:column; gap:20px; padding:28px 24px; }
+        .oh-right { text-align:left; }
+        .detail-grid, .detail-grid.three { grid-template-columns:1fr; }
+    }
+</style>
+
+<div class="page-wrap">
+   
+
+    <!-- Hero -->
+    <div class="order-hero">
+        <div class="oh-left">
+            <div class="oh-eyebrow">Order Details</div>
+            <div class="oh-title">Order <em>#{{ order.id }}</em></div>
+            <div class="oh-date">Placed on {{ order.orderDate|date('F d, Y \a\t g:i A') }}</div>
+            <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+                <span class="status-badge s-{{ order.orderStatus|lower }}">{{ order.orderStatus }}</span>
+                <span class="status-badge {{ order.paymentStatus == 'paid' ? 's-paid' : 's-unpaid' }}">{{ order.paymentStatus }}</span>
+            </div>
+        </div>
+        <div class="oh-right">
+            <div class="oh-amount">₱{{ order.totalAmount|number_format(2) }}</div>
+            <div class="oh-amount-label">Total Amount</div>
+        </div>
+    </div>
+
+    <!-- Info Grid -->
+    <div class="detail-grid">
+        <!-- Customer Info -->
+        <div class="info-panel">
+            <div class="ip-header">
+                <div class="ip-icon" style="background:rgba(196,160,160,0.15);">
+                    <i data-lucide="user" style="width:15px;height:15px;stroke:var(--deep-mauve);stroke-width:1.75;"></i>
+                </div>
+                <span class="ip-title">Customer Information</span>
+            </div>
+            <div class="ip-body">
+                <div class="ip-row">
+                    <span class="ip-label">Name</span>
+                    <span class="ip-value">{{ order.customerName }}</span>
+                </div>
+                {% if order.customerEmail %}
+                <div class="ip-row">
+                    <span class="ip-label">Email</span>
+                    <span class="ip-value" style="font-size:12px;">{{ order.customerEmail }}</span>
+                </div>
+                {% endif %}
+                {% if order.customerPhone %}
+                <div class="ip-row">
+                    <span class="ip-label">Phone</span>
+                    <span class="ip-value">{{ order.customerPhone }}</span>
+                </div>
+                {% endif %}
+                {% if order.shippingAddress %}
+                <div class="ip-row" style="align-items:flex-start;">
+                    <span class="ip-label">Address</span>
+                    <span class="ip-value address">{{ order.shippingAddress }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Payment Info -->
+        <div class="info-panel">
+            <div class="ip-header">
+                <div class="ip-icon" style="background:rgba(143,175,140,0.15);">
+                    <i data-lucide="credit-card" style="width:15px;height:15px;stroke:var(--deep-sage);stroke-width:1.75;"></i>
+                </div>
+                <span class="ip-title">Payment & Order</span>
+            </div>
+            <div class="ip-body">
+                <div class="ip-row">
+                    <span class="ip-label">Order Status</span>
+                    <span class="status-badge s-{{ order.orderStatus|lower }}">{{ order.orderStatus }}</span>
+                </div>
+                <div class="ip-row">
+                    <span class="ip-label">Payment Status</span>
+                    <span class="status-badge {{ order.paymentStatus == 'paid' ? 's-paid' : 's-unpaid' }}">{{ order.paymentStatus }}</span>
+                </div>
+                {% if order.paymentMethod %}
+                <div class="ip-row">
+                    <span class="ip-label">Payment Method</span>
+                    <span class="ip-value">{{ order.paymentMethod|replace({'_':' '})|capitalize }}</span>
+                </div>
+                {% endif %}
+                <div class="ip-row">
+                    <span class="ip-label">Order Date</span>
+                    <span class="ip-value">{{ order.orderDate|date('M d, Y') }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline + Summary -->
+    <div class="detail-grid">
+        <!-- Timeline -->
+        <div class="info-panel">
+            <div class="ip-header">
+                <div class="ip-icon" style="background:rgba(201,169,110,0.12);">
+                    <i data-lucide="clock" style="width:15px;height:15px;stroke:var(--gold);stroke-width:1.75;"></i>
+                </div>
+                <span class="ip-title">Order Timeline</span>
+            </div>
+            <div class="timeline">
+                <div class="tl-item">
+                    <div class="tl-dot done">
+                        <i data-lucide="check" style="width:12px;height:12px;stroke:white;stroke-width:2.5;"></i>
+                    </div>
+                    <div class="tl-content">
+                        <div class="tl-label">Order Placed</div>
+                        <div class="tl-time">{{ order.orderDate|date('M d, Y \a\t g:i A') }}</div>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot {{ order.orderStatus in ['processing','completed'] ? 'done' : '' }}">
+                        {% if order.orderStatus in ['processing','completed'] %}
+                            <i data-lucide="check" style="width:12px;height:12px;stroke:white;stroke-width:2.5;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="tl-content">
+                        <div class="tl-label" style="color:{{ order.orderStatus in ['processing','completed'] ? 'var(--charcoal)' : 'var(--warm-gray)' }};">Order Confirmed</div>
+                        <div class="tl-time">{{ order.orderStatus in ['processing','completed'] ? 'Order is being prepared' : 'Awaiting confirmation' }}</div>
+                    </div>
+                </div>
+                <div class="tl-item">
+                    <div class="tl-dot {{ order.orderStatus == 'completed' ? 'done' : '' }}">
+                        {% if order.orderStatus == 'completed' %}
+                            <i data-lucide="check" style="width:12px;height:12px;stroke:white;stroke-width:2.5;"></i>
+                        {% endif %}
+                    </div>
+                    <div class="tl-content">
+                        <div class="tl-label" style="color:{{ order.orderStatus == 'completed' ? 'var(--charcoal)' : 'var(--warm-gray)' }};">Order Completed</div>
+                        <div class="tl-time">{{ order.orderStatus == 'completed' ? 'Thank you for your order!' : 'Pending completion' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-panel">
+            <div style="font-family:var(--serif);font-size:18px;font-weight:300;color:white;margin-bottom:20px;">Order Summary</div>
+            <div class="sum-row">
+                <span class="sum-label">Subtotal</span>
+                <span class="sum-value">₱{{ order.totalAmount|number_format(2) }}</span>
+            </div>
+            <div class="sum-row">
+                <span class="sum-label">Shipping</span>
+                <span class="sum-value">TBD</span>
+            </div>
+            <div class="sum-row">
+                <span class="sum-label">Payment Method</span>
+                <span class="sum-value">{{ order.paymentMethod ? order.paymentMethod|replace({'_':' '})|capitalize : 'N/A' }}</span>
+            </div>
+            <div class="sum-row sum-total">
+                <span class="sum-label">Total</span>
+                <span class="sum-value">₱{{ order.totalAmount|number_format(2) }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-bar">
+        <a href="{{ path('app_my_orders') }}" class="btn-outline">← Back to Orders</a>
+      
+    </div>
+</div>
+{% endblock %}

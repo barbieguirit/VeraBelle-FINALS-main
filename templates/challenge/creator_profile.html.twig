@@ -1,0 +1,272 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}{{ creator.email }} - Creator Profile{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --cream: #F5F0E8;
+        --forest: #2f4256;
+        --terra: #f5c2c2;
+        --blush: #E8C4B0;
+        --ink: #1A1A18;
+        --warm-gray: #8C8479;
+        --serif: 'Playfair Display', Georgia, serif;
+        --sans: 'DM Sans', system-ui, sans-serif;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, var(--forest) 0%, #3a5468 100%);
+        color: var(--cream);
+        padding: 80px 40px;
+        text-align: center;
+        margin-top: 60px;
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        background: var(--terra);
+        border-radius: 50%;
+        margin: 0 auto 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+    }
+
+    .profile-name {
+        font-family: var(--serif);
+        font-size: 42px;
+        font-weight: 400;
+        margin-bottom: 12px;
+    }
+
+    .profile-title {
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.9;
+    }
+
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+        max-width: 400px;
+        margin: 40px auto 0;
+    }
+
+    .stat {
+        padding: 16px;
+        background: rgba(255, 255, 255, 0.1);
+        border-left: 3px solid var(--terra);
+    }
+
+    .stat-num {
+        font-family: var(--serif);
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--terra);
+    }
+
+    .stat-label {
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        opacity: 0.8;
+        margin-top: 6px;
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .section {
+        padding: 80px 0;
+    }
+
+    .section-title {
+        font-family: var(--serif);
+        font-size: 36px;
+        font-weight: 400;
+        color: var(--forest);
+        margin-bottom: 50px;
+    }
+
+    .section-title em {
+        color: var(--terra);
+        font-style: italic;
+    }
+
+    .badges-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 20px;
+    }
+
+    .badge-item {
+        text-align: center;
+        padding: 20px;
+        background: var(--cream);
+        border: 1px solid rgba(45, 74, 62, 0.08);
+    }
+
+    .badge-icon {
+        font-size: 48px;
+        margin-bottom: 12px;
+    }
+
+    .badge-name {
+        font-family: var(--serif);
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--forest);
+        margin-bottom: 6px;
+    }
+
+    .badge-date {
+        font-size: 10px;
+        color: var(--warm-gray);
+    }
+
+    .entries-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 24px;
+    }
+
+    .entry-card {
+        background: var(--cream);
+        border: 1px solid rgba(45, 74, 62, 0.08);
+        transition: transform 0.3s;
+    }
+
+    .entry-card:hover {
+        transform: translateY(-8px);
+    }
+
+    .entry-image {
+        width: 100%;
+        aspect-ratio: 3/4;
+        background: linear-gradient(135deg, var(--terra) 0%, var(--blush) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 56px;
+    }
+
+    .entry-info {
+        padding: 16px;
+    }
+
+    .entry-title {
+        font-family: var(--serif);
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--forest);
+        margin-bottom: 6px;
+    }
+
+    .entry-votes {
+        font-size: 12px;
+        color: var(--terra);
+        font-weight: 600;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: var(--cream);
+        border: 1px solid rgba(45, 74, 62, 0.08);
+    }
+
+    .empty-state-icon {
+        font-size: 56px;
+        margin-bottom: 16px;
+    }
+
+    .empty-state-text {
+        color: var(--warm-gray);
+        margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+        .profile-header { padding: 60px 20px; }
+        .container { padding: 0 20px; }
+        .profile-stats { grid-template-columns: 1fr; }
+        .entries-grid { grid-template-columns: 1fr 1fr; }
+        .section { padding: 60px 0; }
+    }
+</style>
+
+<!-- Profile Header -->
+<div class="profile-header">
+    <div class="profile-avatar">{{ creator.email|slice(0, 2)|upper }}</div>
+    <h1 class="profile-name">{{ creator.email }}</h1>
+    <p class="profile-title">Fashion Creator</p>
+    
+    <div class="profile-stats">
+        <div class="stat">
+            <div class="stat-num">{{ entries|length }}</div>
+            <div class="stat-label">Entries</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">{{ totalVotes }}</div>
+            <div class="stat-label">Votes</div>
+        </div>
+        <div class="stat">
+            <div class="stat-num">{{ badges|length }}</div>
+            <div class="stat-label">Badges</div>
+        </div>
+    </div>
+</div>
+
+<!-- Badges Section -->
+{% if badges|length > 0 %}
+<div class="container section">
+    <h2 class="section-title">Earned <em>Badges</em></h2>
+    <div class="badges-grid">
+        {% for badge in badges %}
+            <div class="badge-item">
+                <div class="badge-icon">{{ badge.getBadgeIcon() }}</div>
+                <div class="badge-name">{{ badge.badgeName|replace('_', ' ')|title }}</div>
+                <div class="badge-date">{{ badge.earnedAt|date('M Y') }}</div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Entries Section -->
+<div class="container section">
+    <h2 class="section-title">Creative <em>Submissions</em></h2>
+    
+    {% if entries|length > 0 %}
+        <div class="entries-grid">
+            {% for entry in entries %}
+                <div class="entry-card">
+                    <div class="entry-image">
+                        {% if entry.files|length > 0 %}
+                            <img src="{{ entry.files[0] }}" alt="{{ entry.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            {% if entry.entryType == 'outfit' %}👗{% else %}✏️{% endif %}
+                        {% endif %}
+                    </div>
+                    <div class="entry-info">
+                        <h3 class="entry-title">{{ entry.title }}</h3>
+                        <p class="entry-votes">{{ entry.voteCount }} votes</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-state-icon">📭</div>
+            <p class="empty-state-text">No entries submitted yet</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

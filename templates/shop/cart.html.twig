@@ -1,0 +1,360 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}Shopping Cart — VeraBelle Collection{% endblock %}
+{% block meta_desc %}Review your items and proceed to checkout.{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory:      #F9F4EE;
+        --mauve:      #C4A0A0;
+        --sage:       #8FAF8C;
+        --deep-sage:  #5C7A5A;
+        --charcoal:   #3A3232;
+        --warm-gray:  #7A6F6F;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--ivory); color: var(--charcoal); }
+
+    .cart-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 120px 40px 60px;
+    }
+
+    .cart-header {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 40px;
+        text-align: center;
+        color: var(--charcoal);
+    }
+
+    .cart-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 40px;
+    }
+
+    .cart-items {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid #eee;
+        gap: 20px;
+    }
+
+    .cart-item:last-child { border-bottom: none; }
+
+    .item-checkbox {
+        width: 20px; height: 20px; cursor: pointer;
+        accent-color: var(--deep-sage); flex-shrink: 0;
+    }
+
+    .select-all-row {
+        display: flex; align-items: center; gap: 10px;
+        padding-bottom: 14px; border-bottom: 2px solid #eee; margin-bottom: 4px;
+        font-size: 13px; font-weight: 600; color: var(--warm-gray); cursor: pointer;
+    }
+
+    .item-info {
+        flex: 1;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: var(--charcoal);
+        font-size: 15px;
+        margin-bottom: 6px;
+    }
+
+    .item-price {
+        color: var(--warm-gray);
+        font-size: 13px;
+    }
+
+    .item-controls {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .qty-input {
+        width: 50px;
+        padding: 6px 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 13px;
+    }
+
+    .item-total {
+        font-weight: 600;
+        color: var(--charcoal);
+        min-width: 80px;
+        text-align: right;
+        font-size: 14px;
+    }
+
+    .btn-remove {
+        background: rgba(196, 160, 160, 0.15);
+        color: var(--mauve);
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-remove:hover {
+        background: var(--mauve);
+        color: white;
+    }
+
+    .cart-empty {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--warm-gray);
+    }
+
+    .cart-empty p { margin-bottom: 20px; }
+
+    .btn-continue-shopping {
+        display: inline-block;
+        background: var(--sage);
+        color: white;
+        padding: 12px 28px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-continue-shopping:hover {
+        background: var(--deep-sage);
+        transform: translateY(-2px);
+    }
+
+    .cart-summary {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        height: fit-content;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 120px;
+    }
+
+    .summary-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--charcoal);
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .summary-row.total {
+        border-top: 2px solid #eee;
+        padding-top: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--charcoal);
+    }
+
+    .btn-checkout {
+        width: 100%;
+        background: linear-gradient(135deg, #C4A0A0, #A8BCA1);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-checkout:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(196, 160, 160, 0.3);
+    }
+
+    .btn-checkout:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    @media (max-width: 768px) {
+        .cart-container {
+            grid-template-columns: 1fr;
+        }
+        .cart-summary {
+            position: static;
+        }
+        .item-controls {
+            flex-direction: column;
+        }
+    }
+</style>
+
+<div class="cart-wrapper">
+    <h1 class="cart-header">🛒 Your Shopping Cart</h1>
+
+    {% if cart|length > 0 %}
+        <div class="cart-container">
+            <div class="cart-items">
+                <label class="select-all-row">
+                    <input type="checkbox" id="selectAll" class="item-checkbox" onchange="toggleSelectAll(this)">
+                    Select All
+                </label>
+                {% for itemId, item in cart %}
+                    <div class="cart-item" data-product-id="{{ itemId }}" data-price="{{ item.price }}" data-qty="{{ item.quantity }}">
+                        <input type="checkbox" class="item-checkbox item-check" value="{{ itemId }}"
+                               checked onchange="updateSummary()">
+                        <div class="item-image">
+                            {% if item.image|default(null) %}
+                                <img src="/uploads/{{ item.image }}" alt="{{ item.name }}"
+                                     style="width:72px;height:72px;object-fit:cover;border-radius:10px;flex-shrink:0;">
+                            {% else %}
+                                <div style="width:72px;height:72px;border-radius:10px;background:linear-gradient(135deg,#C4A0A0,#9E6F6F);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:18px;flex-shrink:0;">
+                                    {{ item.name|slice(0,2)|upper }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="item-info">
+                            <div class="item-name">{{ item.name }}</div>
+                            <div class="item-price">₱{{ item.price|number_format(2) }} each</div>
+                        </div>
+
+                        <div class="item-controls">
+                            <input type="number" class="qty-input" value="{{ item.quantity }}" min="1" max="100" 
+                                   onchange="updateQuantity({{ itemId }}, this.value)">
+                            <div class="item-total">₱{{ (item.price * item.quantity)|number_format(2) }}</div>
+                            <button class="btn-remove" onclick="removeFromCart({{ itemId }})">Remove</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="cart-summary">
+                <h3 class="summary-title">Order Summary</h3>
+                
+                <div class="summary-row">
+                    <span><span id="selectedCount">0</span> item(s) selected</span>
+                    <span id="selectedTotal">₱0.00</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Shipping</span>
+                    <span>TBD</span>
+                </div>
+
+                <div class="summary-row total">
+                    <span>Total</span>
+                    <span id="selectedTotalFinal">₱0.00</span>
+                </div>
+
+                {% if app.user %}
+                    <form method="GET" action="{{ path('app_checkout') }}" id="checkoutForm" style="margin-top: 0;">
+                        <input type="hidden" name="selected" id="selectedIds">
+                        <button type="submit" class="btn-checkout" id="checkoutBtn" disabled>Proceed to Checkout</button>
+                    </form>
+                {% else %}
+                    <a href="{{ path('app_login') }}"
+                       style="display: block; text-align: center; margin-top: 20px; padding: 14px; background: linear-gradient(135deg, #C4A0A0, #A8BCA1); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px;">
+                        Login to Checkout
+                    </a>
+                    <p style="font-size: 12px; color: var(--warm-gray); text-align: center; margin-top: 12px;">
+                        Don't have an account? <a href="{{ path('app_register') }}" style="color: var(--sage); text-decoration: none; font-weight: 600;">Register here</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    {% else %}
+        <div class="cart-empty">
+            <p style="font-size: 48px; margin-bottom: 20px;">🛍️</p>
+            <h2 style="font-size: 22px; margin-bottom: 12px; color: var(--charcoal);">Your cart is empty</h2>
+            <p>Start shopping to fill your cart with amazing pieces.</p>
+            <a href="{{ path('app_shop') }}" class="btn-continue-shopping">Continue Shopping</a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleSelectAll(cb) {
+    document.querySelectorAll('.item-check').forEach(c => c.checked = cb.checked);
+    updateSummary();
+}
+
+function updateSummary() {
+    const checks = document.querySelectorAll('.item-check');
+    const allChecked = [...checks].every(c => c.checked);
+    const anyChecked = [...checks].some(c => c.checked);
+    document.getElementById('selectAll').checked = allChecked;
+    document.getElementById('selectAll').indeterminate = !allChecked && anyChecked;
+
+    let total = 0, count = 0;
+    const ids = [];
+    checks.forEach(c => {
+        if (c.checked) {
+            const card = c.closest('.cart-item');
+            const price = parseFloat(card.dataset.price);
+            const qty   = parseInt(card.dataset.qty);
+            total += price * qty;
+            count += qty;
+            ids.push(c.value);
+        }
+    });
+
+    document.getElementById('selectedCount').textContent = count;
+    document.getElementById('selectedTotal').textContent = '₱' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    document.getElementById('selectedTotalFinal').textContent = '₱' + total.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    const btn = document.getElementById('checkoutBtn');
+    const idsInput = document.getElementById('selectedIds');
+    if (btn) { btn.disabled = ids.length === 0; }
+    if (idsInput) { idsInput.value = ids.join(','); }
+}
+
+function updateQuantity(productId, quantity) {
+    quantity = Math.max(1, parseInt(quantity));
+    fetch(`/cart/update/${productId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `quantity=${quantity}`
+    }).then(r => r.json()).then(data => { if (data.success) location.reload(); });
+}
+
+function removeFromCart(productId) {
+    if (confirm('Remove this item from cart?')) {
+        fetch(`/cart/remove/${productId}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => { if (data.success) location.reload(); });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', updateSummary);
+</script>
+
+{% endblock %}

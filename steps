@@ -1,0 +1,183 @@
+╔══════════════════════════════════════════════════════════════════════════════════╗
+║            VeraBelle Collection — Email Verification Setup Guide                 ║
+╚══════════════════════════════════════════════════════════════════════════════════╝
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ FILE PLACEMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  EmailVerificationService.php        → src/Service/
+  EmailVerificationController.php     → src/Controller/
+  ApiEmailVerificationController.php  → src/Controller/
+  ApiRegistrationController.php       → src/Controller/
+  JWTAuthenticationSuccessHandler.php → src/Security/
+  verification.html.twig              → templates/emails/
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 1 — Add fields to User entity
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Run in terminal:
+  php bin/console make:entity User
+
+Add these 3 fields when prompted:
+  • email            → string, 180, not null
+  • isVerified       → boolean, not null, default: false
+  • verificationToken → string, 255, nullable
+
+Then run migrations:
+  php bin/console make:migration
+  php bin/console doctrine:migrations:migrate
+
+Make sure your User entity has these methods:
+  getEmail() / setEmail()
+  isVerified() / setIsVerified()
+  getVerificationToken() / setVerificationToken()
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 2 — Update .env
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Add to your .env (or .env.local):
+
+  # Brevo SMTP — from your PDF
+  MAILER_DSN=smtp://a45e93001@smtp-brevo.com:xsmtpsib6b7011de27cc0b318ae1d8765f140bfdf2fc8f2fd2f257ba7ad29a6e5ad789cf-gxNWAtsp6rqsS2QF@smtprelay.brevo.com:587
+
+  # Sender identity (must be verified in Brevo)
+  MAILER_FROM_EMAIL=hello@verabellecollection.com
+  MAILER_FROM_NAME=VeraBelle Collection
+
+  # Admin receives contact form submissions
+  ADMIN_EMAIL=admin@verabellecollection.com
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 3 — Update security.yaml
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Under access_control: add these (at the TOP, before other rules):
+
+    access_control:
+        # Public landing pages
+        - { path: ^/$,                     roles: PUBLIC_ACCESS }
+        - { path: ^/about,                 roles: PUBLIC_ACCESS }
+        - { path: ^/contact,               roles: PUBLIC_ACCESS }
+        - { path: ^/login,                 roles: PUBLIC_ACCESS }
+        - { path: ^/register,              roles: PUBLIC_ACCESS }
+
+        # Email verification (must be public — user is not logged in yet)
+        - { path: ^/verify-email,          roles: PUBLIC_ACCESS }
+
+        # API public endpoints
+        - { path: ^/api/login,             roles: PUBLIC_ACCESS }
+        - { path: ^/api/register,          roles: PUBLIC_ACCESS }
+        - { path: ^/api/verify-email,      roles: PUBLIC_ACCESS }
+
+        # API protected (JWT required)
+        - { path: ^/api/resend-verification,   roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/verification-status,   roles: IS_AUTHENTICATED_FULLY }
+
+        # Admin
+        - { path: ^/admin,                 roles: ROLE_ADMIN }
+
+        # Everything else requires login
+        - { path: ^/,                      roles: ROLE_STAFF }
+
+Under firewalls > main, add the success handler:
+    firewalls:
+        main:
+            json_login:
+                check_path: /api/login
+                username_path: username
+                password_path: password
+                success_handler: App\Security\JWTAuthenticationSuccessHandler
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 4 — Update messenger.yaml
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+File: config/packages/messenger.yaml
+Change email routing from async to sync:
+
+  framework:
+      messenger:
+          transports:
+              sync: 'sync://'
+
+          routing:
+              Symfony\Component\Mailer\Messenger\SendEmailMessage: sync
+
+This makes emails send immediately (not queued).
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 5 — Update RegistrationController (existing)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+In your existing src/Controller/RegistrationController.php,
+add these imports at the top:
+
+  use App\Service\EmailVerificationService;
+  use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+Update the register() method signature:
+
+  public function register(
+      Request $request,
+      UserPasswordHasherInterface $userPasswordHasher,
+      EntityManagerInterface $entityManager,
+      EmailVerificationService $emailVerificationService   // ADD THIS
+  ): Response {
+
+Add this code BEFORE $entityManager->flush():
+
+      // Generate verification token
+      $verificationToken = $emailVerificationService->generateVerificationToken();
+      $user->setVerificationToken($verificationToken);
+      $user->setIsVerified(false);
+
+Add this code AFTER $entityManager->flush():
+
+      // Build the verification URL
+      $verificationUrl = $this->generateUrl(
+          'app_verify_email',
+          ['token' => $verificationToken],
+          UrlGeneratorInterface::ABSOLUTE_URL
+      );
+
+      // Send verification email
+      $emailVerificationService->sendVerificationEmail($user, $verificationUrl);
+
+      $this->addFlash('success', 'Registration successful! Please check your email to verify your account.');
+      return $this->redirectToRoute('app_login');
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ STEP 6 — Install dependencies (if not already)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  composer require symfony/mailer
+  composer require symfony/twig-bridge
+  composer require lexik/jwt-authentication-bundle   ← for JWT
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ HOW THE FLOW WORKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  1. User registers  → token generated → verification email sent via Brevo
+  2. User clicks link in email  → /verify-email?token=xxxx
+  3. EmailVerificationController verifies token → marks isVerified=true
+  4. User tries to login → JWTAuthenticationSuccessHandler checks isVerified
+     • NOT verified → 403 "Please verify your email"
+     • Verified → JWT token returned ✓
+
+  API endpoints:
+  POST /api/register              → register + send verification email
+  POST /api/verify-email          → verify token (body: {"token":"xxxx"})
+  POST /api/resend-verification   → resend email (requires JWT)
+  GET  /api/verification-status   → check status (requires JWT)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ QUICK TEST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  php bin/console debug:router | grep verify
+  php bin/console debug:mailer
+  php bin/console debug:container EmailVerificationService

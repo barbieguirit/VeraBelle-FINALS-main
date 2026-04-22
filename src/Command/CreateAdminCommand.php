@@ -35,29 +35,30 @@ class CreateAdminCommand extends Command
     {
         $this
             ->setDescription('Creates an admin user for VeraBelle Collection')
-            ->setHelp('This command creates an admin user with username: admin and password: admin123');
+            ->setHelp('This command creates an admin user with email: admin@verabellecollection.com and password: admin123');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        // Check if user already exists
+        // Check if user already exists (by email)
         $existingUser = $this->entityManager
             ->getRepository(User::class)
-            ->findOneBy(['username' => 'admin']);
+            ->findOneBy(['email' => 'admin@verabellecollection.com']);
 
         if ($existingUser) {
             $io->warning('Admin user already exists!');
-            $io->text('Username: admin');
+            $io->text('Email: admin@verabellecollection.com');
             $io->text('Password: [previously set]');
             return Command::SUCCESS;
         }
 
         // Create new admin user
         $admin = new User();
-        $admin->setUsername('admin');
+        $admin->setEmail('admin@verabellecollection.com');
         $admin->setRoles(['ROLE_ADMIN']);
+        $admin->setStatus('active');
         
         // Hash the password
         $hashedPassword = $this->passwordHasher->hashPassword($admin, 'admin123');
@@ -72,7 +73,7 @@ class CreateAdminCommand extends Command
 
         $io->success('✅ Admin user created successfully!');
         $io->text([
-            'Username: <info>admin</info>',
+            'Email: <info>admin@verabellecollection.com</info>',
             'Password: <info>admin123</info>',
             '',
             '⚠️  <comment>Important: Change this password after first login!</comment>',

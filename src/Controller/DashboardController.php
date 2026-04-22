@@ -6,6 +6,8 @@ use App\Repository\ProductRepository;
 use App\Repository\OrderRepository;
 use App\Repository\PaymentRepository;
 use App\Repository\CustomerRepository;
+use App\Repository\ChallengeRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -19,8 +21,13 @@ class DashboardController extends AbstractController
         ProductRepository $productRepository,
         OrderRepository $orderRepository,
         PaymentRepository $paymentRepository,
-        CustomerRepository $customerRepository
+        CustomerRepository $customerRepository,
+        ChallengeRepository $challengeRepository
     ): Response {
+        // Redirect customers to product page
+        if (!$this->isGranted('ROLE_STAFF')) {
+            return $this->redirectToRoute('app_product_index');
+        }
         // ✅ Total products
         $totalProducts = $productRepository->count([]);
 
@@ -36,11 +43,9 @@ class DashboardController extends AbstractController
         // ✅ Total customers
         $totalCustomers = $customerRepository->count([]);
 
-        // ✅ Total revenue (sum of all successful payment amounts)
-        $totalRevenue = $paymentRepository->createQueryBuilder('pay')
-            ->select('SUM(pay.amount)')
-            ->where('pay.status = :status')
-            ->setParameter('status', 'completed')
+        // ✅ Total revenue (sum of all order amounts)
+        $totalRevenue = $orderRepository->createQueryBuilder('o')
+            ->select('SUM(o.totalAmount)')
             ->getQuery()
             ->getSingleScalarResult() ?? 0;
 
@@ -58,6 +63,9 @@ class DashboardController extends AbstractController
             ->getQuery()
             ->getResult();
 
+        // ✅ Active challenges count
+        $activeChallenges = count($challengeRepository->findBy(['status' => 'active']));
+
         return $this->render('dashboard/index.html.twig', [
             'totalProducts' => $totalProducts,
             'totalStocks' => $totalStocks,
@@ -66,6 +74,7 @@ class DashboardController extends AbstractController
             'totalRevenue' => $totalRevenue,
             'topProducts' => $topProducts,
             'recentOrders' => $recentOrders,
+            'activeChallenges' => $activeChallenges,
         ]);
     }
 }

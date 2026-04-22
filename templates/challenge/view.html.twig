@@ -1,0 +1,246 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}{{ challenge.title }} — VeraBelle Challenge{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory:#F9F4EE; --parchment:#EFE6D8; --mauve:#C4A0A0;
+        --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A;
+        --charcoal:#3A3232; --warm-gray:#7A6F6F; --blush:#E8CECE;
+        --serif:'Playfair Display',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; }
+    body { font-family:var(--sans); background:var(--ivory); color:var(--charcoal); }
+
+    /* ── HERO ── */
+    .view-hero {
+        background: var(--charcoal); padding: 80px 40px 60px;
+        margin-top: 60px; text-align: center; position: relative; overflow: hidden;
+    }
+    .view-hero::before { content:''; position:absolute; top:-60px; left:50%; transform:translateX(-50%); width:500px; height:500px; background:radial-gradient(circle,rgba(196,160,160,0.12) 0%,transparent 65%); pointer-events:none; }
+    .hero-eyebrow { font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--mauve); margin-bottom:14px; display:flex; align-items:center; justify-content:center; gap:12px; }
+    .hero-eyebrow::before, .hero-eyebrow::after { content:''; display:block; width:32px; height:1px; background:var(--mauve); }
+    .hero-title { font-family:var(--serif); font-size:clamp(36px,6vw,64px); font-weight:300; color:white; line-height:1.1; margin-bottom:14px; }
+    .hero-title em { font-style:italic; color:var(--blush); }
+    .hero-desc { font-size:15px; color:rgba(255,255,255,0.5); max-width:600px; margin:0 auto 32px; line-height:1.8; font-weight:300; }
+
+    .hero-stats { display:flex; justify-content:center; gap:0; margin-bottom:36px; }
+    .stat-item { padding:16px 36px; border-right:1px solid rgba(255,255,255,0.08); }
+    .stat-item:last-child { border-right:none; }
+    .stat-num { font-family:var(--serif); font-size:28px; font-weight:300; color:var(--mauve); }
+    .stat-lbl { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-top:4px; }
+
+    .hero-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+    .btn-hero-primary { display:inline-flex; align-items:center; gap:8px; padding:14px 32px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:white; border:none; border-radius:10px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; cursor:pointer; transition:all 0.2s; }
+    .btn-hero-primary:hover { opacity:0.9; transform:translateY(-2px); }
+    .btn-hero-outline { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:transparent; color:rgba(255,255,255,0.7); border:1.5px solid rgba(255,255,255,0.2); border-radius:10px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; transition:all 0.2s; }
+    .btn-hero-outline:hover { border-color:rgba(255,255,255,0.5); color:white; }
+
+    /* ── FLASH ── */
+    .flash-bar { padding:14px 40px; font-size:13px; font-weight:500; text-align:center; }
+    .flash-success { background:rgba(92,122,90,0.12); color:#3d6b3a; border-bottom:1px solid rgba(92,122,90,0.2); }
+    .flash-error   { background:rgba(196,120,90,0.1); color:#c4785a; border-bottom:1px solid rgba(196,120,90,0.2); }
+
+    /* ── ENTRIES ── */
+    .entries-wrap { max-width:1280px; margin:0 auto; padding:72px 40px 100px; }
+
+    .entries-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:40px; flex-wrap:wrap; gap:16px; }
+    .entries-title { font-family:var(--serif); font-size:36px; font-weight:300; color:var(--charcoal); }
+    .entries-title em { font-style:italic; color:var(--deep-mauve); }
+    .entries-count { background:white; border:1px solid rgba(196,160,160,0.2); border-radius:20px; padding:6px 16px; font-size:13px; font-weight:600; color:var(--warm-gray); }
+
+    /* Filter tabs */
+    .filter-tabs { display:flex; gap:8px; margin-bottom:32px; flex-wrap:wrap; }
+    .filter-tab { padding:8px 20px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:0.5px; cursor:pointer; border:1.5px solid rgba(196,160,160,0.25); background:white; color:var(--warm-gray); transition:all 0.2s; }
+    .filter-tab.active, .filter-tab:hover { background:var(--deep-mauve); color:white; border-color:var(--deep-mauve); }
+
+    /* Grid */
+    .entries-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:24px; }
+
+    .entry-card { background:white; border-radius:16px; overflow:hidden; border:1px solid rgba(196,160,160,0.12); transition:all 0.3s; display:flex; flex-direction:column; }
+    .entry-card:hover { transform:translateY(-6px); box-shadow:0 16px 40px rgba(58,50,50,0.1); }
+
+    .entry-img { width:100%; aspect-ratio:3/4; background:linear-gradient(135deg,var(--parchment),var(--blush)); position:relative; overflow:hidden; }
+    .entry-img img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.5s; }
+    .entry-card:hover .entry-img img { transform:scale(1.04); }
+    .entry-img-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:64px; color:rgba(196,160,160,0.4); }
+
+    .entry-rank-badge { position:absolute; top:12px; left:12px; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; background:white; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+    .entry-type-badge { position:absolute; top:12px; right:12px; padding:4px 10px; border-radius:20px; font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+    .badge-outfit { background:rgba(196,160,160,0.9); color:white; }
+    .badge-design { background:rgba(92,122,90,0.9); color:white; }
+
+    .entry-body { padding:18px 20px 20px; flex:1; display:flex; flex-direction:column; }
+    .entry-title { font-family:var(--serif); font-size:17px; font-weight:400; color:var(--charcoal); margin-bottom:6px; line-height:1.3; }
+    .entry-creator { font-size:12px; color:var(--warm-gray); margin-bottom:14px; }
+    .entry-creator a { color:var(--deep-mauve); text-decoration:none; font-weight:600; }
+    .entry-creator a:hover { text-decoration:underline; }
+
+    .entry-footer { display:flex; align-items:center; justify-content:space-between; padding-top:14px; border-top:1px solid rgba(239,230,216,0.8); margin-top:auto; }
+    .vote-count { font-family:var(--serif); font-size:22px; font-weight:600; color:var(--charcoal); }
+    .vote-label { font-size:10px; color:var(--warm-gray); margin-top:1px; }
+
+    .vote-btn { padding:9px 18px; border-radius:8px; font-size:11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; border:none; transition:all 0.2s; text-decoration:none; display:inline-flex; align-items:center; gap:5px; }
+    .vote-btn.unvoted { background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:white; }
+    .vote-btn.unvoted:hover { opacity:0.85; transform:translateY(-1px); }
+    .vote-btn.voted { background:rgba(92,122,90,0.12); color:var(--deep-sage); border:1px solid rgba(92,122,90,0.25); }
+    .vote-btn.login { background:var(--parchment); color:var(--warm-gray); border:1px solid rgba(196,160,160,0.3); }
+
+    /* Empty */
+    .empty-state { text-align:center; padding:80px 20px; grid-column:1/-1; }
+    .empty-icon { font-size:56px; margin-bottom:16px; opacity:0.4; }
+    .empty-title { font-family:var(--serif); font-size:28px; font-weight:300; color:var(--charcoal); margin-bottom:10px; }
+    .empty-text { color:var(--warm-gray); font-size:15px; margin-bottom:28px; font-weight:300; }
+
+    @media (max-width:768px) {
+        .view-hero { padding:60px 24px 48px; }
+        .hero-stats { flex-wrap:wrap; }
+        .stat-item { border-right:none; border-bottom:1px solid rgba(255,255,255,0.08); width:50%; }
+        .entries-wrap { padding:48px 24px 80px; }
+        .entries-grid { grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px; }
+    }
+</style>
+
+{% for msg in app.flashes('success') %}
+    <div class="flash-bar flash-success">✓ {{ msg }}</div>
+{% endfor %}
+{% for msg in app.flashes('error') %}
+    <div class="flash-bar flash-error">✗ {{ msg }}</div>
+{% endfor %}
+
+<!-- Hero -->
+<div class="view-hero">
+    <div class="hero-eyebrow">Fashion Challenge</div>
+    <h1 class="hero-title">{{ challenge.title|split(' ')|first }} <em>{{ challenge.title|split(' ')|slice(1)|join(' ') }}</em></h1>
+    {% if challenge.theme %}
+        <p class="hero-desc">{{ challenge.theme }}</p>
+    {% endif %}
+
+    <div class="hero-stats">
+        <div class="stat-item">
+            <div class="stat-num">{{ entries|length }}</div>
+            <div class="stat-lbl">Entries</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">{{ challenge.endDate|date('M d') }}</div>
+            <div class="stat-lbl">Ends</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">{{ challenge.status|capitalize }}</div>
+            <div class="stat-lbl">Status</div>
+        </div>
+    </div>
+
+    <div class="hero-actions">
+        {% if challenge.isActive() %}
+            <a href="{{ path('app_challenge_submit', {id: challenge.id}) }}" class="btn-hero-primary">
+                📸 Submit Entry
+            </a>
+        {% endif %}
+        <a href="{{ path('app_challenge_index') }}" class="btn-hero-outline">← All Challenges</a>
+    </div>
+</div>
+
+<!-- Entries -->
+<div class="entries-wrap">
+    <div class="entries-header">
+        <h2 class="entries-title">Community <em>Submissions</em></h2>
+        <span class="entries-count">{{ entries|length }} entries</span>
+    </div>
+
+    {% if entries|length > 0 %}
+    <div class="filter-tabs">
+        <button class="filter-tab active" onclick="filterEntries('all', this)">All</button>
+        <button class="filter-tab" onclick="filterEntries('outfit', this)">Outfit</button>
+        <button class="filter-tab" onclick="filterEntries('design', this)">Design</button>
+    </div>
+
+    <div class="entries-grid" id="entriesGrid">
+        {% for entry in entries %}
+        <div class="entry-card" data-type="{{ entry.entryType }}">
+            <div class="entry-img">
+                {% if entry.files|length > 0 %}
+                    <img src="{{ entry.files[0] }}" alt="{{ entry.title }}">
+                {% else %}
+                    <div class="entry-img-placeholder">
+                        {{ entry.entryType == 'outfit' ? '👗' : '✏️' }}
+                    </div>
+                {% endif %}
+                {% if entry.rank %}
+                    <div class="entry-rank-badge">
+                        {{ entry.rank == 1 ? '🥇' : (entry.rank == 2 ? '🥈' : '🥉') }}
+                    </div>
+                {% endif %}
+                <span class="entry-type-badge badge-{{ entry.entryType }}">{{ entry.entryType }}</span>
+            </div>
+            <div class="entry-body">
+                <div class="entry-title">{{ entry.title }}</div>
+                <div class="entry-creator">
+                    by <a href="{{ path('app_challenge_creator_profile', {id: entry.submittedBy.id}) }}">{{ entry.submittedBy.email }}</a>
+                </div>
+                <div class="entry-footer">
+                    <div>
+                        <div class="vote-count">{{ entry.voteCount }}</div>
+                        <div class="vote-label">votes</div>
+                    </div>
+                    {% set hasVoted = userVotes[entry.id]|default(false) %}
+                    {% if challenge.isVotingOpen() and app.user %}
+                        <button class="vote-btn {{ hasVoted ? 'voted' : 'unvoted' }}"
+                                onclick="voteEntry({{ entry.id }}, this)">
+                            {{ hasVoted ? '✓ Voted' : '♡ Vote' }}
+                        </button>
+                    {% elseif not app.user and challenge.isVotingOpen() %}
+                        <a href="{{ path('app_login') }}" class="vote-btn login">Login to Vote</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="entries-grid">
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No Submissions Yet</div>
+            <p class="empty-text">Be the first to share your creative work!</p>
+            {% if challenge.isActive() %}
+                <a href="{{ path('app_challenge_submit', {id: challenge.id}) }}" class="btn-hero-primary">Submit Your Entry</a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function filterEntries(type, btn) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.entry-card').forEach(card => {
+        card.style.display = (type === 'all' || card.dataset.type === type) ? 'flex' : 'none';
+    });
+}
+
+function voteEntry(entryId, button) {
+    if (!{{ app.user ? 'true' : 'false' }}) {
+        window.location.href = '{{ path('app_login') }}';
+        return;
+    }
+    button.disabled = true;
+    fetch(`/challenge/${entryId}/vote`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            button.textContent = data.voted ? '✓ Voted' : '♡ Vote';
+            button.className = 'vote-btn ' + (data.voted ? 'voted' : 'unvoted');
+            button.closest('.entry-footer').querySelector('.vote-count').textContent = data.voteCount;
+        }
+        button.disabled = false;
+    })
+    .catch(() => { button.disabled = false; });
+}
+</script>
+{% endblock %}

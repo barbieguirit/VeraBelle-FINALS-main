@@ -17,10 +17,27 @@ class StockController extends AbstractController
     #[Route('/', name: 'app_stock_index', methods: ['GET'])]
     public function index(EntityManagerInterface $em): Response
     {
+        $products = $em->getRepository(Product::class)->findBy([], ['updatedAt' => 'DESC']);
         $stocks = $em->getRepository(Stock::class)->findBy([], ['date' => 'DESC']);
 
+        // Keep only the latest stock movement for each product.
+        $latestStocks = [];
+        foreach ($stocks as $stock) {
+            $product = $stock->getProduct();
+            if (!$product) {
+                continue;
+            }
+
+            $productId = $product->getId();
+            if ($productId !== null && !isset($latestStocks[$productId])) {
+                $latestStocks[$productId] = $stock;
+            }
+        }
+
         return $this->render('stock/index.html.twig', [
+            'products' => $products,
             'stocks' => $stocks,
+            'latestStocks' => $latestStocks,
         ]);
     }
 
@@ -28,6 +45,14 @@ class StockController extends AbstractController
     public function new(Request $request, EntityManagerInterface $em): Response
     {
         $stock = new Stock();
+
+        $productId = $request->query->getInt('product');
+        if ($productId > 0) {
+            $product = $em->getRepository(Product::class)->find($productId);
+            if ($product) {
+                $stock->setProduct($product);
+            }
+        }
         
         // ✅ Set the current user as the creator
         $stock->setCreatedBy($this->getUser());

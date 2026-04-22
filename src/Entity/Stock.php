@@ -24,7 +24,7 @@ class Stock
 
     // 👤 Who created this stock entry (for permission checking)
     #[ORM\ManyToOne(targetEntity: User::class)]
-    #[ORM\JoinColumn(nullable: true)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $createdBy = null;
 
     // 📦 Type of stock movement (e.g. "in", "out", "adjustment")

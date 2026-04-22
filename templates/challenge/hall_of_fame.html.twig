@@ -1,0 +1,248 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}Hall of Fame — VeraBelle Fashion Challenge{% endblock %}
+{% block meta_desc %}Celebrating the most creative fashion entries from our VeraBelle community.{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory:#F9F4EE; --parchment:#EFE6D8; --mauve:#C4A0A0;
+        --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A;
+        --charcoal:#3A3232; --warm-gray:#7A6F6F; --blush:#E8CECE;
+        --gold:#C9A96E; --serif:'Playfair Display',Georgia,serif;
+        --sans:'DM Sans',system-ui,sans-serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:var(--sans); background:var(--ivory); color:var(--charcoal); }
+
+    /* ── HERO ── */
+    .hof-hero {
+        background: var(--charcoal); padding: 100px 40px 80px;
+        margin-top: 60px; text-align: center; position: relative; overflow: hidden;
+    }
+    .hof-hero::before { content:''; position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:600px; height:600px; background:radial-gradient(circle,rgba(201,169,110,0.12) 0%,transparent 65%); pointer-events:none; }
+    .hof-hero::after  { content:''; position:absolute; bottom:-60px; right:-60px; width:300px; height:300px; background:radial-gradient(circle,rgba(196,160,160,0.1) 0%,transparent 65%); pointer-events:none; }
+
+    .hero-eyebrow { font-size:10px; font-weight:700; letter-spacing:5px; text-transform:uppercase; color:var(--gold); margin-bottom:16px; display:flex; align-items:center; justify-content:center; gap:14px; position:relative; z-index:1; }
+    .hero-eyebrow::before, .hero-eyebrow::after { content:''; display:block; width:40px; height:1px; background:var(--gold); }
+    .hof-title { font-family:var(--serif); font-size:clamp(48px,8vw,96px); font-weight:300; color:white; line-height:1.05; margin-bottom:16px; position:relative; z-index:1; }
+    .hof-title em { font-style:italic; color:var(--gold); }
+    .hof-subtitle { font-size:16px; color:rgba(255,255,255,0.45); max-width:560px; margin:0 auto 40px; line-height:1.8; font-weight:300; position:relative; z-index:1; }
+
+    .hof-stats { display:flex; justify-content:center; gap:0; margin-bottom:48px; position:relative; z-index:1; }
+    .hof-stat { padding:16px 40px; border-right:1px solid rgba(255,255,255,0.08); }
+    .hof-stat:last-child { border-right:none; }
+    .hof-stat-num { font-family:var(--serif); font-size:32px; font-weight:300; color:var(--gold); }
+    .hof-stat-lbl { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:4px; }
+
+    .hof-actions { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; position:relative; z-index:1; }
+    .btn-gold { display:inline-flex; align-items:center; gap:8px; padding:14px 32px; background:linear-gradient(135deg,var(--gold),#b8924a); color:white; border:none; border-radius:10px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; transition:all 0.2s; }
+    .btn-gold:hover { opacity:0.9; transform:translateY(-2px); }
+    .btn-outline-light { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:transparent; color:rgba(255,255,255,0.7); border:1.5px solid rgba(255,255,255,0.2); border-radius:10px; font-size:12px; font-weight:700; letter-spacing:1px; text-transform:uppercase; text-decoration:none; transition:all 0.2s; }
+    .btn-outline-light:hover { border-color:rgba(255,255,255,0.5); color:white; }
+
+    /* ── FEATURED GALLERY ── */
+    .gallery-section { max-width:1400px; margin:0 auto; padding:80px 40px 100px; }
+
+    .section-head { text-align:center; margin-bottom:56px; }
+    .s-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--deep-mauve); margin-bottom:12px; }
+    .s-title { font-family:var(--serif); font-size:clamp(32px,5vw,52px); font-weight:300; color:var(--charcoal); }
+    .s-title em { font-style:italic; color:var(--deep-mauve); }
+    .s-desc { font-size:15px; color:var(--warm-gray); max-width:520px; margin:14px auto 0; line-height:1.8; font-weight:300; }
+
+    /* Masonry-style grid */
+    .hof-grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-auto-rows: 180px;
+        gap: 12px;
+    }
+
+    .hof-item { position:relative; overflow:hidden; border-radius:14px; cursor:pointer; }
+    .hof-item.c2r2 { grid-column: span 4; grid-row: span 2; }
+    .hof-item.c3r1 { grid-column: span 4; grid-row: span 1; }
+    .hof-item.c2r1 { grid-column: span 3; grid-row: span 1; }
+    .hof-item.c3r2 { grid-column: span 5; grid-row: span 2; }
+    .hof-item.c4r1 { grid-column: span 6; grid-row: span 1; }
+    .hof-item.c2r3 { grid-column: span 4; grid-row: span 2; }
+    .hof-item.c3r3 { grid-column: span 4; grid-row: span 2; }
+
+    .hof-item img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.6s cubic-bezier(0.22,1,0.36,1); min-height:220px; }
+    .hof-item:hover img { transform:scale(1.06); }
+
+    .hof-overlay {
+        position:absolute; inset:0;
+        background:linear-gradient(to top, rgba(58,50,50,0.75) 0%, transparent 50%);
+        opacity:0; transition:opacity 0.3s;
+        display:flex; align-items:flex-end; padding:20px;
+    }
+    .hof-item:hover .hof-overlay { opacity:1; }
+    .hof-overlay-text { color:white; }
+    .hof-overlay-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--gold); margin-bottom:4px; }
+    .hof-overlay-title { font-family:var(--serif); font-size:16px; font-weight:300; }
+
+    /* Gold badge for top entries */
+    .hof-badge { position:absolute; top:14px; left:14px; background:linear-gradient(135deg,var(--gold),#b8924a); color:white; padding:5px 12px; border-radius:20px; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+
+    /* ── COMMUNITY STRIP ── */
+    .community-strip { background:var(--charcoal); padding:72px 40px; text-align:center; }
+    .community-strip h2 { font-family:var(--serif); font-size:clamp(28px,4vw,44px); font-weight:300; color:white; margin-bottom:14px; }
+    .community-strip h2 em { font-style:italic; color:var(--gold); }
+    .community-strip p { font-size:15px; color:rgba(255,255,255,0.45); max-width:500px; margin:0 auto 32px; line-height:1.8; font-weight:300; }
+
+    @media (max-width:900px) {
+        .hof-grid { grid-template-columns:repeat(6,1fr); grid-auto-rows:160px; }
+        .hof-item.c2r2, .hof-item.c3r2, .hof-item.c2r3, .hof-item.c3r3 { grid-column:span 3; grid-row:span 2; }
+        .hof-item.c3r1, .hof-item.c4r1 { grid-column:span 3; grid-row:span 1; }
+        .hof-item.c2r1 { grid-column:span 3; grid-row:span 1; }
+        .hof-stat { padding:14px 24px; }
+    }
+    @media (max-width:600px) {
+        .hof-grid { grid-template-columns:repeat(2,1fr); grid-auto-rows:140px; }
+        .hof-item, .hof-item.c2r2, .hof-item.c3r1, .hof-item.c2r1, .hof-item.c3r2, .hof-item.c4r1, .hof-item.c2r3, .hof-item.c3r3 { grid-column:span 1; grid-row:span 1; }
+        .gallery-section { padding:56px 20px 80px; }
+        .hof-hero { padding:80px 24px 60px; }
+        .hof-stats { flex-wrap:wrap; }
+        .hof-stat { border-right:none; border-bottom:1px solid rgba(255,255,255,0.08); width:50%; }
+    }
+</style>
+
+<!-- Hero -->
+<div class="hof-hero">
+    <div class="hero-eyebrow">VeraBelle Community</div>
+    <h1 class="hof-title">Hall of <em>Fame</em></h1>
+    <p class="hof-subtitle">Celebrating the most creative and inspiring fashion entries from our growing community of style creators.</p>
+
+    <div class="hof-stats">
+        <div class="hof-stat">
+            <div class="hof-stat-num">{{ topEntries|length }}</div>
+            <div class="hof-stat-lbl">Featured Entries</div>
+        </div>
+        <div class="hof-stat">
+            <div class="hof-stat-num">8+</div>
+            <div class="hof-stat-lbl">Challenges</div>
+        </div>
+        <div class="hof-stat">
+            <div class="hof-stat-num">500+</div>
+            <div class="hof-stat-lbl">Creators</div>
+        </div>
+    </div>
+
+    <div class="hof-actions">
+        <a href="{{ path('app_challenge_index') }}" class="btn-gold">🏆 Join a Challenge</a>
+        <a href="{{ path('app_challenge_index') }}" class="btn-outline-light">← Back to Challenges</a>
+    </div>
+</div>
+
+<!-- Gallery -->
+<div class="gallery-section">
+    <div class="section-head">
+        <div class="s-eyebrow">Past Winners</div>
+        <h2 class="s-title">Inspiring <em>Creations</em></h2>
+        <p class="s-desc">A curated showcase of the most voted and celebrated entries from our fashion challenges.</p>
+    </div>
+
+    <div class="hof-grid">
+        <div class="hof-item c2r2">
+            <img src="/uploads/hof-1.jpg" alt="Hall of Fame Entry">
+            <div class="hof-badge">🥇 Winner</div>
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Outfit Category</div>
+                    <div class="hof-overlay-title">Fashion Design Excellence</div>
+                </div>
+            </div>
+        </div>
+        <div class="hof-item c3r1">
+            <img src="/uploads/hof-2.jpg" alt="Hall of Fame Entry">
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Outfit Category</div>
+                    <div class="hof-overlay-title">Urban Style</div>
+                </div>
+            </div>
+        </div>
+        <div class="hof-item c2r1">
+            <img src="/uploads/hof-7.jpg" alt="Hall of Fame Entry">
+            <div class="hof-badge">🥈 Runner Up</div>
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Outfit Category</div>
+                    <div class="hof-overlay-title">Power Dressing</div>
+                </div>
+            </div>
+        </div>
+        <div class="hof-item c3r1">
+            <img src="/uploads/hof-3.jpg" alt="Hall of Fame Entry">
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Design Category</div>
+                    <div class="hof-overlay-title">Creative Vision</div>
+                </div>
+            </div>
+        </div>
+        <div class="hof-item c2r1">
+            <img src="/uploads/hof-8.jpg" alt="Hall of Fame Entry">
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Outfit Category</div>
+                    <div class="hof-overlay-title">Timeless Grace</div>
+                </div>
+            </div>
+        </div>
+        <div class="hof-item c3r2">
+            <img src="/uploads/hof-4.jpg" alt="Hall of Fame Entry">
+            <div class="hof-badge">🥉 Top 3</div>
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Outfit Category</div>
+                    <div class="hof-overlay-title">Street Chic</div>
+                </div>
+            </div>
+        </div>
+        <div class="hof-item c4r1">
+            <img src="/uploads/hof-5.jpg" alt="Hall of Fame Entry">
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Outfit Category</div>
+                    <div class="hof-overlay-title">Elegant Minimalism</div>
+                </div>
+            </div>
+        </div>
+        <div class="hof-item c2r2">
+            <img src="/uploads/hof-6.jpg" alt="Hall of Fame Entry">
+            <div class="hof-overlay">
+                <div class="hof-overlay-text">
+                    <div class="hof-overlay-label">Design Category</div>
+                    <div class="hof-overlay-title">Bold Expression</div>
+                </div>
+            </div>
+        </div>
+
+        {% if topEntries|length > 0 %}
+            {% for entry in topEntries %}
+            {% if entry.files|length > 0 %}
+            <div class="hof-item">
+                <img src="{{ entry.files[0] }}" alt="{{ entry.title }}">
+                {% if entry.rank == 1 %}<div class="hof-badge">🥇 Winner</div>{% endif %}
+                <div class="hof-overlay">
+                    <div class="hof-overlay-text">
+                        <div class="hof-overlay-label">{{ entry.entryType|capitalize }}</div>
+                        <div class="hof-overlay-title">{{ entry.title }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>
+
+<!-- Community CTA -->
+<div class="community-strip">
+    <h2>Your Work Could Be <em>Here</em></h2>
+    <p>Join our fashion challenges and get featured in the Hall of Fame. Show the world your creative vision.</p>
+    <a href="{{ path('app_challenge_index') }}" class="btn-gold">Enter a Challenge →</a>
+</div>
+
+{% endblock %}

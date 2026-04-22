@@ -1,306 +1,145 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}
-    {% if order is defined %}Edit Order{% else %}Add New Order{% endif %} - VeraBelle Collection
-{% endblock %}
-
-{% block page_title %}
-    {% if order is defined %}Edit Order{% else %}Add New Order{% endif %}
-{% endblock %}
+{% block title %}Edit Order #{{ order.id }} — VeraBelle Collection{% endblock %}
+{% block page_title %}Edit Order{% endblock %}
 
 {% block content %}
 <style>
-    .form-container {
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+    .form-container { max-width: 1400px; margin: 0 auto; }
+
+    .btn-back { display:inline-flex; align-items:center; gap:6px; margin-bottom:24px; color:var(--ink-soft); text-decoration:none; font-size:13px; font-weight:500; transition:color 0.2s; }
+    .btn-back:hover { color:var(--ink); }
 
     .form-card {
-        background: #fff;
-        border-radius: 12px;
-        padding: 40px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        background: #fff; border-radius: 12px; padding: 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         border-top: 4px solid;
-        border-image: linear-gradient(90deg, #F4C2C2, #A8BCA1) 1;
+        border-image: linear-gradient(90deg, #C4A0A0, #8FAF8C) 1;
     }
 
-    .form-header {
-        text-align: center;
-        margin-bottom: 35px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
-    }
+    .form-header { text-align:center; margin-bottom:35px; padding-bottom:20px; border-bottom:2px solid #f0f0f0; }
+    .form-header h2 { font-size:24px; color:#2c3e50; margin-bottom:8px; font-weight:600; }
+    .form-header p  { color:#7f8c8d; font-size:14px; }
 
-    .form-header h2 {
-        font-size: 24px;
-        color: #2c3e50;
-        margin-bottom: 8px;
-        font-weight: 600;
-    }
+    .order-meta { display:flex; gap:12px; justify-content:center; margin-bottom:8px; flex-wrap:wrap; }
+    .meta-badge { padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; }
+    .meta-id { background:rgba(58,50,50,0.06); color:#3A3232; }
+    .meta-status { background:rgba(143,175,140,0.15); color:#5C7A5A; }
 
-    .form-header p {
-        color: #7f8c8d;
-        font-size: 14px;
-    }
+    .section-divider { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#7f8c8d; margin:28px 0 18px; padding-bottom:10px; border-bottom:1px solid #f0f0f0; }
 
-    .form-section {
-        margin-bottom: 35px;
+    .form-group { margin-bottom:22px; }
+    .form-group label { display:block; color:#2c3e50; font-weight:600; margin-bottom:8px; font-size:14px; }
+    .form-group input, .form-group select, .form-group textarea {
+        width:100%; padding:12px 16px; border:2px solid #e2e8f0; border-radius:8px;
+        font-size:15px; color:#2c3e50; transition:all 0.3s; background:#f8f9fa;
+        font-family:'Figtree',sans-serif;
     }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+        outline:none; border-color:#C4A0A0; background:#fff; box-shadow:0 0 0 3px rgba(196,160,160,0.1);
+    }
+    .form-group textarea { resize:vertical; min-height:100px; }
+    .form-hint { font-size:12px; color:#7f8c8d; margin-top:6px; font-style:italic; }
 
-    .form-section-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        padding-bottom: 10px;
-        border-bottom: 2px solid #f0f0f0;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 
-    .form-section-title svg {
-        color: #A8BCA1;
-    }
-
-    .form-group {
-        margin-bottom: 25px;
-    }
-
-    .form-group label {
-        display: block;
-        color: #2c3e50;
-        font-weight: 600;
-        margin-bottom: 8px;
-        font-size: 14px;
-    }
-
-    .form-group input,
-    .form-group select,
-    .form-group textarea {
-        width: 100%;
-        padding: 12px 16px;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 15px;
-        color: #2c3e50;
-        transition: all 0.3s ease;
-        background: #f8f9fa;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .form-group select {
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232c3e50' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 16px center;
-        background-color: #f8f9fa;
-        padding-right: 40px;
-    }
-
-    .form-group textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-
-    .form-group input:focus,
-    .form-group select:focus,
-    .form-group textarea:focus {
-        outline: none;
-        border-color: #F4C2C2;
-        background: #fff;
-        box-shadow: 0 0 0 3px rgba(244, 194, 194, 0.1);
-    }
-
-    .form-hint {
-        font-size: 12px;
-        color: #7f8c8d;
-        margin-top: 6px;
-        font-style: italic;
-    }
-
-    .input-group {
-        position: relative;
-    }
-
-    .input-icon {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #a0aec0;
-        font-weight: 600;
-        font-size: 16px;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 20px;
-    }
+    .input-group { position:relative; }
+    .input-icon { position:absolute; right:16px; top:50%; transform:translateY(-50%); color:#a0aec0; font-weight:600; font-size:16px; }
 
     .btn-submit {
-        width: 100%;
-        padding: 14px;
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        margin-top: 10px;
-        font-family: 'Poppins', sans-serif;
-        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
+        width:100%; padding:14px;
+        background:linear-gradient(135deg,#C4A0A0,#8FAF8C);
+        color:white; border:none; border-radius:8px;
+        font-size:16px; font-weight:600; cursor:pointer;
+        transition:all 0.3s; margin-top:10px;
+        font-family:'Figtree',sans-serif;
+        box-shadow:0 4px 15px rgba(196,160,160,0.3);
+        display:flex; align-items:center; justify-content:center; gap:8px;
     }
+    .btn-submit:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(196,160,160,0.4); }
 
-    .btn-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
-    }
-
-    .btn-submit:active {
-        transform: translateY(0);
-    }
-
-    @media (max-width: 768px) {
-        .form-card {
-            padding: 25px 20px;
-        }
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-    }
+    @media (max-width:768px) { .form-card { padding:25px 20px; } .form-row { grid-template-columns:1fr; } }
 </style>
 
 <div class="form-container">
+
     <div class="form-card">
         <div class="form-header">
-            <h2>{% if order is defined %}Edit Order{% else %}Create New Order{% endif %}</h2>
-            <p>{% if order is defined %}Update order details and tracking information{% else %}Add a new order to your VeraBelle Collection{% endif %}</p>
+            <div class="order-meta">
+                <span class="meta-badge meta-id">Order #{{ order.id }}</span>
+                <span class="meta-badge meta-status">{{ order.orderStatus|capitalize }}</span>
+            </div>
+            <h2>Edit Order</h2>
+            <p>Update order details and tracking information</p>
         </div>
 
         {{ form_start(form) }}
 
-        <!-- Customer Information Section -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                Customer Information
-            </div>
-            
+        <div class="section-divider">Customer Information</div>
+
+        <div class="form-group">
+            {{ form_label(form.customerName, 'Customer Name') }}
+            {{ form_widget(form.customerName, {'attr': {'placeholder': 'Enter customer full name'}}) }}
+            {{ form_errors(form.customerName) }}
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
-                {{ form_label(form.customerName, 'Customer Name') }}
-                {{ form_widget(form.customerName, {'attr': {'placeholder': 'Enter customer full name'}}) }}
-                {{ form_errors(form.customerName) }}
+                {{ form_label(form.customerEmail, 'Email Address') }}
+                {{ form_widget(form.customerEmail, {'attr': {'placeholder': 'customer@example.com'}}) }}
+                {{ form_errors(form.customerEmail) }}
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    {{ form_label(form.customerEmail, 'Email Address') }}
-                    {{ form_widget(form.customerEmail, {'attr': {'placeholder': 'customer@example.com'}}) }}
-                    {{ form_errors(form.customerEmail) }}
-                </div>
-
-                <div class="form-group">
-                    {{ form_label(form.customerPhone, 'Phone Number') }}
-                    {{ form_widget(form.customerPhone, {'attr': {'placeholder': '+63 912 345 6789'}}) }}
-                    {{ form_errors(form.customerPhone) }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Order Details Section -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="3" y1="9" x2="21" y2="9"></line>
-                    <line x1="9" y1="21" x2="9" y2="9"></line>
-                </svg>
-                Order Details
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    {{ form_label(form.totalAmount, 'Total Amount') }}
-                    <div class="input-group">
-                        {{ form_widget(form.totalAmount, {'attr': {'placeholder': '0.00', 'step': '0.01'}}) }}
-                        <span class="input-icon">₱</span>
-                    </div>
-                    {{ form_errors(form.totalAmount) }}
-                    <div class="form-hint">Total order amount in Philippine Peso</div>
-                </div>
-
-                <div class="form-group">
-                    {{ form_label(form.orderDate, 'Order Date') }}
-                    {{ form_widget(form.orderDate) }}
-                    {{ form_errors(form.orderDate) }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Status & Tracking Section -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                </svg>
-                Status & Tracking
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    {{ form_label(form.paymentStatus, 'Payment Status') }}
-                    {{ form_widget(form.paymentStatus) }}
-                    {{ form_errors(form.paymentStatus) }}
-                </div>
-
-                <div class="form-group">
-                    {{ form_label(form.orderStatus, 'Order Status') }}
-                    {{ form_widget(form.orderStatus) }}
-                    {{ form_errors(form.orderStatus) }}
-                </div>
-            </div>
-        </div>
-
-        <!-- Shipping Information Section -->
-        <div class="form-section">
-            <div class="form-section-title">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                </svg>
-                Shipping Information
-            </div>
-
             <div class="form-group">
-                {{ form_label(form.shippingAddress, 'Shipping Address') }}
-                {{ form_widget(form.shippingAddress, {'attr': {'placeholder': 'Enter complete shipping address...', 'rows': '4'}}) }}
-                {{ form_errors(form.shippingAddress) }}
-                <div class="form-hint">Include street, barangay, city, province, and postal code</div>
+                {{ form_label(form.customerPhone, 'Phone Number') }}
+                {{ form_widget(form.customerPhone, {'attr': {'placeholder': '+63 912 345 6789'}}) }}
+                {{ form_errors(form.customerPhone) }}
             </div>
+        </div>
+
+        <div class="section-divider">Order Details</div>
+
+        <div class="form-row">
+            <div class="form-group">
+                {{ form_label(form.totalAmount, 'Total Amount') }}
+                <div class="input-group">
+                    {{ form_widget(form.totalAmount, {'attr': {'placeholder': '0.00', 'step': '0.01'}}) }}
+                    <span class="input-icon">₱</span>
+                </div>
+                {{ form_errors(form.totalAmount) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.orderDate, 'Order Date') }}
+                {{ form_widget(form.orderDate) }}
+                {{ form_errors(form.orderDate) }}
+            </div>
+        </div>
+
+        <div class="section-divider">Status & Tracking</div>
+
+        <div class="form-row">
+            <div class="form-group">
+                {{ form_label(form.paymentStatus, 'Payment Status') }}
+                {{ form_widget(form.paymentStatus) }}
+                {{ form_errors(form.paymentStatus) }}
+            </div>
+            <div class="form-group">
+                {{ form_label(form.orderStatus, 'Order Status') }}
+                {{ form_widget(form.orderStatus) }}
+                {{ form_errors(form.orderStatus) }}
+            </div>
+        </div>
+
+        <div class="section-divider">Shipping</div>
+
+        <div class="form-group">
+            {{ form_label(form.shippingAddress, 'Shipping Address') }}
+            {{ form_widget(form.shippingAddress, {'attr': {'placeholder': 'Street, Barangay, City, Province, Postal Code', 'rows': '3'}}) }}
+            {{ form_errors(form.shippingAddress) }}
         </div>
 
         <button type="submit" class="btn-submit">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                {% if order is defined %}
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                {% else %}
-                    <path d="M12 5v14M5 12h14"></path>
-                {% endif %}
-            </svg>
-            {% if order is defined %}Update Order{% else %}Save Order{% endif %}
+            <i data-lucide="save" style="width:16px;height:16px;stroke:white;stroke-width:2;"></i>
+            Update Order
         </button>
 
         {{ form_end(form) }}

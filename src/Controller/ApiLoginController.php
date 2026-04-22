@@ -22,7 +22,7 @@ class ApiLoginController extends AbstractController
 
         return new JsonResponse([
             'message' => 'Authentication is handled by the JSON login firewall.',
-            'username' => $lastUsername,
+            'email' => $lastUsername,
             'error' => $error ? $error->getMessageKey() : null,
         ], JsonResponse::HTTP_UNAUTHORIZED);
     }

@@ -1,128 +1,58 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}View Category - VeraBelle Collection{% endblock %}
+{% block title %}{{ category.name }} — VeraBelle Collection{% endblock %}
 {% block page_title %}Category Details{% endblock %}
 
 {% block content %}
 <style>
-    .details-card {
-        max-width: 700px;
-        margin: 50px auto;
-        background: #fff;
-        border-radius: 16px;
-        padding: 40px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .details-card h1 {
-        text-align: center;
-        color: #2c3e50;
-        font-size: 26px;
-        margin-bottom: 30px;
-        font-weight: 600;
-    }
-
-    table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 30px;
-    }
-
-    th {
-        text-align: left;
-        background: #f7f7f7;
-        padding: 12px 14px;
-        color: #555;
-        font-weight: 600;
-        width: 25%;
-        border-radius: 8px 0 0 8px;
-    }
-
-    td {
-        padding: 12px 14px;
-        background: #fafafa;
-        border-radius: 0 8px 8px 0;
-        color: #333;
-    }
-
-    .actions {
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
-    }
-
-    .btn {
-        display: inline-block;
-        padding: 12px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        font-size: 14px;
-        transition: all 0.3s ease;
-        text-align: center;
-    }
-
-    .btn-back {
-        background: #f4f4f4;
-        color: #2c3e50;
-    }
-
-    .btn-back:hover {
-        background: #e0e0e0;
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #A8BCA1, #8FAF8F);
-        color: #fff;
-    }
-
-    .btn-edit:hover {
-        box-shadow: 0 6px 20px rgba(168, 188, 161, 0.4);
-        transform: translateY(-2px);
-    }
-
-    .btn-delete button {
-        background: linear-gradient(135deg, #F4C2C2, #E89B9B);
-        color: #fff;
-        border: none;
-        border-radius: 8px;
-        padding: 12px 25px;
-        font-size: 14px;
-        font-weight: 500;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-
-    .btn-delete button:hover {
-        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
-        transform: translateY(-2px);
-    }
+    :root { --mauve:#C4A0A0; --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A; --charcoal:#3A3232; --warm-gray:#7A6F6F; --ivory:#F9F4EE; --parchment:#EFE6D8; --gold:#C9A96E; --white:#FFFFFF; --border:rgba(58,50,50,0.08); --shadow-sm:0 2px 12px rgba(58,50,50,0.06); --r:16px; --r-sm:10px; }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
+    .cw { max-width:700px; margin:0 auto; }
+    .cat-hero { background:linear-gradient(135deg,#2A2020,var(--charcoal)); border-radius:var(--r); padding:36px 44px; margin-bottom:20px; position:relative; overflow:hidden; border:1px solid rgba(196,160,160,0.1); }
+    .cat-hero::before { content:''; position:absolute; top:-60px; right:40px; width:220px; height:220px; background:radial-gradient(circle,rgba(196,160,160,0.12) 0%,transparent 65%); pointer-events:none; }
+    .ch-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; display:flex; align-items:center; gap:8px; position:relative; z-index:1; }
+    .ch-eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--gold); }
+    .ch-name { font-family:'Nunito',sans-serif; font-size:32px; font-weight:800; color:white; position:relative; z-index:1; }
+    .ch-id { font-size:12px; color:rgba(255,255,255,0.3); margin-top:6px; position:relative; z-index:1; }
+    .info-panel { background:var(--white); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-sm); margin-bottom:20px; }
+    .ip-head { padding:18px 24px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .ip-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ip-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--charcoal); }
+    .ip-body { padding:20px 24px; display:flex; flex-direction:column; gap:10px; }
+    .ip-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--ivory); border-radius:8px; font-size:13px; }
+    .ip-lbl { color:var(--warm-gray); font-weight:500; }
+    .ip-val { font-weight:700; color:var(--charcoal); }
+    .actions-row { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn-edit { display:inline-flex; align-items:center; gap:7px; padding:11px 24px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:white; border-radius:8px; font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; text-decoration:none; transition:all 0.2s; }
+    .btn-edit:hover { opacity:0.9; transform:translateY(-1px); }
+    .btn-back { display:inline-flex; align-items:center; gap:7px; padding:11px 20px; background:var(--ivory); color:var(--warm-gray); border:1px solid var(--border); border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+    .btn-back:hover { background:var(--parchment); color:var(--charcoal); }
+    .btn-delete { display:inline-flex; align-items:center; gap:7px; padding:11px 20px; background:rgba(180,80,80,0.08); color:#b05050; border:1px solid rgba(180,80,80,0.18); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'Figtree',sans-serif; }
+    .btn-delete:hover { background:#e74c3c; color:white; border-color:#e74c3c; }
 </style>
-
-<div class="details-card">
-    <h1>Category Information</h1>
-
-    <table>
-        <tbody>
-            <tr>
-                <th>ID</th>
-                <td>{{ category.id }}</td>
-            </tr>
-            <tr>
-                <th>Name</th>
-                <td>{{ category.name }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="actions">
-        <a href="{{ path('app_category_index') }}" class="btn btn-back">← Back to List</a>
-        <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn btn-edit">Edit</a>
-        <div class="btn-delete">
-            {{ include('category/_delete_form.html.twig') }}
+<div class="cw">
+    <div class="cat-hero">
+        <div class="ch-eyebrow">Category Details</div>
+        <div class="ch-name">{{ category.name }}</div>
+        <div class="ch-id">ID #{{ category.id }}</div>
+    </div>
+    <div class="info-panel">
+        <div class="ip-head">
+            <div class="ip-icon" style="background:rgba(196,160,160,0.15);"><i data-lucide="tag" style="width:15px;height:15px;stroke:var(--deep-mauve);stroke-width:1.75;"></i></div>
+            <span class="ip-title">Category Information</span>
         </div>
+        <div class="ip-body">
+            <div class="ip-row"><span class="ip-lbl">ID</span><span class="ip-val">#{{ category.id }}</span></div>
+            <div class="ip-row"><span class="ip-lbl">Name</span><span class="ip-val">{{ category.name }}</span></div>
+        </div>
+    </div>
+    <div class="actions-row">
+        <a href="{{ path('app_category_index') }}" class="btn-back"><i data-lucide="arrow-left" style="width:13px;height:13px;stroke:currentColor;stroke-width:2;"></i> Back</a>
+        <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn-edit"><i data-lucide="pencil" style="width:13px;height:13px;stroke:white;stroke-width:2;"></i> Edit</a>
+        <form method="post" action="{{ path('app_category_delete', {'id': category.id}) }}" onsubmit="return confirm('Delete {{ category.name }}?');" style="display:inline;">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+            <button type="submit" class="btn-delete"><i data-lucide="trash-2" style="width:13px;height:13px;stroke:currentColor;stroke-width:2;"></i> Delete</button>
+        </form>
     </div>
 </div>
 {% endblock %}

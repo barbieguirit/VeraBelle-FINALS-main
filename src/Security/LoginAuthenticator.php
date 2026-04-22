@@ -22,6 +22,19 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
     use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'app_login';
+    public const CUSTOMER_LOGIN_ROUTE = 'app_customer_login';
+    private const LOGIN_ROUTES = [self::LOGIN_ROUTE, self::CUSTOMER_LOGIN_ROUTE];
+    private const STAFF_ONLY_PREFIXES = [
+        '/admin',
+        '/dashboard',
+        '/profile',
+        '/product',
+        '/category',
+        '/stock',
+        '/order',
+        '/customer',
+        '/payment',
+    ];
 
     public function __construct(private UrlGeneratorInterface $urlGenerator)
     {
@@ -32,7 +45,9 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
      */
     public function supports(Request $request): bool
     {
-        return $request->attributes->get('_route') === self::LOGIN_ROUTE
+        $route = $request->attributes->get('_route');
+
+        return in_array($route, self::LOGIN_ROUTES, true)
             && $request->isMethod('POST');
     }
 
@@ -72,22 +87,61 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
             return new RedirectResponse($this->getLoginUrl($request));
         }
 
-        // Redirect to originally requested page
+        // Redirect to originally requested page when allowed for the current user
         if ($targetPath = $this->getTargetPath($request->getSession(), $firewallName)) {
-            return new RedirectResponse($targetPath);
+            if ($this->isTargetPathAllowed($targetPath, $user)) {
+                return new RedirectResponse($targetPath);
+            }
+
+            $this->removeTargetPath($request->getSession(), $firewallName);
         }
 
         // Role-based redirects
-        if ($user && in_array('ROLE_ADMIN', $user->getRoles(), true)) {
-            return new RedirectResponse($this->urlGenerator->generate('app_admin_dashboard'));
+        if ($user) {
+            $roles = $user->getRoles();
+
+            if (in_array('ROLE_ADMIN', $roles, true)) {
+                return new RedirectResponse($this->urlGenerator->generate('app_admin_dashboard'));
+            }
+
+            if (in_array('ROLE_STAFF', $roles, true)) {
+                return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+            }
         }
 
-        // Default: staff dashboard
-        return new RedirectResponse($this->urlGenerator->generate('app_dashboard'));
+        // Default: send regular users to landing page
+        return new RedirectResponse($this->urlGenerator->generate('app_landing'));
     }
 
     protected function getLoginUrl(Request $request): string
     {
+        $route = $request->attributes->get('_route');
+
+        if ($route === self::CUSTOMER_LOGIN_ROUTE) {
+            return $this->urlGenerator->generate(self::CUSTOMER_LOGIN_ROUTE);
+        }
+
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+    }
+
+    private function isTargetPathAllowed(string $targetPath, mixed $user): bool
+    {
+        if (!$user || !method_exists($user, 'getRoles')) {
+            return true;
+        }
+
+        $roles = $user->getRoles();
+        if (in_array('ROLE_ADMIN', $roles, true) || in_array('ROLE_STAFF', $roles, true)) {
+            return true;
+        }
+
+        $path = parse_url($targetPath, PHP_URL_PATH) ?? $targetPath;
+        foreach (self::STAFF_ONLY_PREFIXES as $prefix) {
+            if (strpos($path, $prefix) === 0) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

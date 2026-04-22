@@ -1,0 +1,436 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}Checkout — VeraBelle Collection{% endblock %}
+{% block meta_desc %}Complete your order at VeraBelle.{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory:      #F9F4EE;
+        --mauve:      #C4A0A0;
+        --sage:       #8FAF8C;
+        --deep-sage:  #5C7A5A;
+        --charcoal:   #3A3232;
+        --warm-gray:  #7A6F6F;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body { font-family: 'DM Sans', sans-serif; background: var(--ivory); color: var(--charcoal); }
+
+    .checkout-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 120px 40px 60px;
+    }
+
+    .checkout-header {
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 40px;
+        text-align: center;
+        color: var(--charcoal);
+    }
+
+    .checkout-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 40px;
+    }
+
+    .checkout-form {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .form-section {
+        margin-bottom: 40px;
+    }
+
+    .form-section:last-of-type {
+        margin-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--charcoal);
+        padding-bottom: 12px;
+        border-bottom: 2px solid #eee;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 16px;
+    }
+
+    .form-row.full {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .form-group label {
+        font-weight: 600;
+        font-size: 13px;
+        margin-bottom: 6px;
+        color: var(--charcoal);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 14px;
+        color: var(--charcoal);
+        transition: all 0.2s ease;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: var(--sage);
+        box-shadow: 0 0 0 3px rgba(143, 175, 140, 0.1);
+    }
+
+    .form-group textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .checkout-summary {
+        background: white;
+        border-radius: 12px;
+        padding: 24px;
+        height: fit-content;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 120px;
+    }
+
+    .summary-title {
+        font-size: 16px;
+        font-weight: 700;
+        margin-bottom: 20px;
+        color: var(--charcoal);
+    }
+
+    .order-items {
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .order-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+        font-size: 13px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        font-size: 14px;
+    }
+
+    .summary-row.total {
+        border-top: 2px solid #eee;
+        padding-top: 12px;
+        font-weight: 700;
+        font-size: 16px;
+        color: var(--charcoal);
+    }
+
+    .btn-submit {
+        width: 100%;
+        background: linear-gradient(135deg, #C4A0A0, #A8BCA1);
+        color: white;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        margin-top: 20px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(196, 160, 160, 0.3);
+    }
+
+    .btn-back {
+        display: block;
+        text-align: center;
+        color: var(--sage);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 13px;
+        margin-top: 12px;
+    }
+
+    .btn-back:hover {
+        text-decoration: underline;
+    }
+
+    .payment-options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+    .payment-option { cursor: pointer; }
+    .payment-option input[type="radio"] { display: none; }
+    .payment-card {
+        display: flex; align-items: center; gap: 14px;
+        padding: 14px 18px; border: 2px solid #eee; border-radius: 10px;
+        transition: all 0.2s;
+    }
+    .payment-option input:checked + .payment-card {
+        border-color: var(--sage); background: rgba(143,175,140,0.08);
+    }
+    .payment-card:hover { border-color: var(--mauve); }
+    .payment-icon { font-size: 24px; }
+    .payment-name { font-weight: 700; font-size: 14px; color: var(--charcoal); }
+    .payment-desc { font-size: 12px; color: var(--warm-gray); margin-top: 2px; }
+    .payment-details {
+        background: rgba(239,230,216,0.4); border-radius: 8px;
+        padding: 14px 16px; font-size: 13px; color: var(--charcoal);
+        line-height: 1.8; margin-top: 4px;
+    }
+
+    .alert {
+        padding: 16px;
+        border-radius: 8px;
+        margin-bottom: 24px;
+        font-size: 14px;
+    }
+
+    .alert.warning {
+        background: rgba(196, 160, 160, 0.15);
+        color: var(--mauve);
+        border-left: 4px solid var(--mauve);
+    }
+
+    @media (max-width: 768px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+        }
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+        .checkout-summary {
+            position: static;
+        }
+    }
+</style>
+
+<div class="checkout-wrapper">
+    <h1 class="checkout-header">Checkout</h1>
+
+    {% if app.user %}
+        <form method="POST" action="{{ path('app_checkout') }}">
+            <input type="hidden" name="selected" value="{{ selected|default('') }}">
+            <div class="checkout-container">
+                <div class="checkout-form">
+                    {% if cartEmpty %}
+                        <div class="alert warning">
+                            ⚠️ Your cart is empty. <a href="{{ path('app_shop') }}" style="text-decoration: underline;">Continue shopping</a>
+                        </div>
+                    {% endif %}
+
+                    <div class="form-section">
+                        <h2 class="section-title">Shipping Address</h2>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name *</label>
+                                <input type="text" id="firstName" name="firstName" value="{{ app.user.firstName|default('') }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" name="lastName" value="{{ app.user.lastName|default('') }}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" value="{{ app.user.email|default('') }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone *</label>
+                                <input type="tel" id="phone" name="phone" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="address">Complete Address *</label>
+                                <textarea id="address" name="address" required placeholder="Street Address, City, Province, Postal Code"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Payment Method</h2>
+
+                        <div class="payment-options">
+                            <label class="payment-option">
+                                <input type="radio" name="paymentMethod" value="cod" checked onchange="togglePaymentDetails(this.value)">
+                                <div class="payment-card">
+                                    <span class="payment-icon"></span>
+                                    <div>
+                                        <div class="payment-name">Cash on Delivery</div>
+                                        <div class="payment-desc">Pay when your order arrives</div>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="paymentMethod" value="gcash" onchange="togglePaymentDetails(this.value)">
+                                <div class="payment-card">
+                                    <span class="payment-icon"></span>
+                                    <div>
+                                        <div class="payment-name">GCash</div>
+                                        <div class="payment-desc">Send via GCash mobile wallet</div>
+                                    </div>
+                                </div>
+                            </label>
+                            <label class="payment-option">
+                                <input type="radio" name="paymentMethod" value="bank_transfer" onchange="togglePaymentDetails(this.value)">
+                                <div class="payment-card">
+                                    <span class="payment-icon"></span>
+                                    <div>
+                                        <div class="payment-name">Bank Transfer</div>
+                                        <div class="payment-desc">Direct bank deposit or transfer</div>
+                                    </div>
+                                </div>
+                            </label>
+                        </div>
+
+                        <div id="gcash-details" class="payment-details" style="display:none;">
+                            <p>Send payment to: <strong>0917 123 4567</strong> (VeraBelle Collection)</p>
+                            <p>After sending, enter your GCash reference number below:</p>
+                            <input type="text" name="paymentReference" id="paymentReference" placeholder="GCash Reference No." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-top:8px;font-size:14px;">
+                        </div>
+                        <div id="bank-details" class="payment-details" style="display:none;">
+                            <p>Bank: <strong>BDO</strong> — Account Name: <strong>VeraBelle Collection</strong></p>
+                            <p>Account No.: <strong>1234 5678 9012</strong></p>
+                            <p>After transferring, enter your reference number below:</p>
+                            <input type="text" name="paymentReference" id="paymentReferencBank" placeholder="Bank Transfer Reference No." style="width:100%;padding:12px;border:1px solid #ddd;border-radius:6px;margin-top:8px;font-size:14px;">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h2 class="section-title">Order Notes (Optional)</h2>
+                        
+                        <div class="form-row full">
+                            <div class="form-group">
+                                <label for="notes">Special Requests or Notes</label>
+                                <textarea id="notes" name="notes" placeholder="Any special requests? Let us know!"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="checkout-summary">
+                    <h3 class="summary-title">Order Summary</h3>
+                    
+                    <div class="order-items">
+                        {% set totalItems = 0 %}
+                        {% if cart|length > 0 %}
+                            {% for productId, item in cart %}
+                                {% set totalItems = totalItems + item.quantity %}
+                                <div class="order-item">
+                                    {% if item.image|default(null) %}
+                                        <img src="/uploads/{{ item.image }}" alt="{{ item.name }}"
+                                             style="width:48px;height:48px;object-fit:cover;border-radius:8px;flex-shrink:0;">
+                                    {% else %}
+                                        <div style="width:48px;height:48px;border-radius:8px;background:linear-gradient(135deg,#C4A0A0,#9E6F6F);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;flex-shrink:0;">
+                                            {{ item.name|slice(0,2)|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <span style="flex:1;">{{ item.name }} × {{ item.quantity }}</span>
+                                    <span>₱{{ (item.price * item.quantity)|number_format(2) }}</span>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p style="color: var(--warm-gray); font-size: 13px; text-align: center;">Your cart is empty</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="summary-row">
+                        <span>{{ totalItems }} item{{ totalItems != 1 ? 's' : '' }}</span>
+                        <span>₱{{ total|number_format(2) }}</span>
+                    </div>
+
+                    <div class="summary-row">
+                        <span>Shipping</span>
+                        <span class="text-muted">TBD</span>
+                    </div>
+
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span>₱{{ total|number_format(2) }}</span>
+                    </div>
+
+                    {% if not cartEmpty %}
+                        <button type="submit" class="btn-submit">Place Order (₱{{ total|number_format(2) }})</button>
+                    {% else %}
+                        <button type="submit" class="btn-submit" disabled style="opacity: 0.5; cursor: not-allowed;">Place Order</button>
+                    {% endif %}
+
+                    <a href="{{ path('app_cart') }}" class="btn-back">← Back to Cart</a>
+                </div>
+            </div>
+        </form>
+    {% else %}
+        <div class="checkout-form" style="text-align: center; padding: 60px 40px;">
+            <p style="font-size: 48px; margin-bottom: 20px;"></p>
+            <h2 style="font-size: 24px; margin-bottom: 12px; color: var(--charcoal);">Login Required</h2>
+            <p style="color: var(--warm-gray); margin-bottom: 24px;">You need to be logged in to place an order.</p>
+            
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                <a href="{{ path('app_login') }}" 
+                   style="display: inline-block; background: linear-gradient(135deg, #C4A0A0, #A8BCA1); color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.3s ease;"
+                   onmouseover="this.style.transform='translateY(-2px)'"
+                   onmouseout="this.style.transform='none'">
+                    Login
+                </a>
+                <a href="{{ path('app_register') }}" 
+                   style="display: inline-block; background: var(--sage); color: white; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 14px; transition: all 0.3s ease;"
+                   onmouseover="this.style.transform='translateY(-2px)'"
+                   onmouseout="this.style.transform='none'">
+                    Register
+                </a>
+            </div>
+
+            <a href="{{ path('app_shop') }}" style="display: inline-block; margin-top: 24px; color: var(--sage); text-decoration: none; font-weight: 600; font-size: 14px;">
+                ← Continue Shopping
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function togglePaymentDetails(val) {
+    document.getElementById('gcash-details').style.display = val === 'gcash' ? 'block' : 'none';
+    document.getElementById('bank-details').style.display = val === 'bank_transfer' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

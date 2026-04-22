@@ -2,11 +2,11 @@ security:
     password_hashers:
         App\Entity\User:
             algorithm: auto
-    
+
     # Role hierarchy - Admin inherits all staff permissions
     role_hierarchy:
         ROLE_ADMIN: ROLE_STAFF
-    
+
     providers:
         app_user_provider:
             entity:
@@ -17,6 +17,7 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
         login:
             pattern: ^/api/login
             stateless: true
@@ -25,9 +26,9 @@ security:
                 check_path: /api/login
                 username_path: email
                 password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+                success_handler: App\Security\JWTAuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-                
+
         api_platform:
             pattern: ^/api
             stateless: true
@@ -37,10 +38,12 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\LoginAuthenticator
+            custom_authenticators:
+                - App\Security\LoginAuthenticator
+                - App\Security\GoogleAuthenticator
             logout:
                 path: app_logout
-                target: app_login
+                target: app_landing
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
@@ -48,35 +51,115 @@ security:
 
     access_control:
         # Public areas (must be first)
-        - { path: ^/$,       roles: PUBLIC_ACCESS }
-        - { path: ^/about,   roles: PUBLIC_ACCESS }
-        - { path: ^/contact, roles: PUBLIC_ACCESS }
-        
-        - { path: ^/login, roles: PUBLIC_ACCESS }
-        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - path: ^/$
+          roles: PUBLIC_ACCESS
+        - path: ^/favicon\.ico$
+          roles: PUBLIC_ACCESS
+        - path: ^/about
+          roles: PUBLIC_ACCESS
+        - path: ^/contact
+          roles: PUBLIC_ACCESS
 
-        - { path: ^/api/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: IS_AUTHENTICATED }
+        - path: ^/login
+          roles: PUBLIC_ACCESS
+        - path: ^/login/customer
+          roles: PUBLIC_ACCESS
+        - path: ^/customer/login
+          roles: PUBLIC_ACCESS
+        - path: ^/connect/google
+          roles: PUBLIC_ACCESS
+        - path: ^/connect/google/check
+          roles: PUBLIC_ACCESS
+        - path: ^/register
+          roles: PUBLIC_ACCESS
+        - path: ^/verify-email
+          roles: PUBLIC_ACCESS
+
+        # Public product listing only
+        - path: ^/product/$
+          roles: PUBLIC_ACCESS
+          methods: [GET]
+        - path: ^/product/[0-9]+$
+          roles: PUBLIC_ACCESS
+          methods: [GET]
+        - path: ^/product/shop
+          roles: PUBLIC_ACCESS
+
+        # Cart pages (public can view, authorized users can add/checkout)
+        - path: ^/cart
+          roles: PUBLIC_ACCESS
+          methods: [GET]
         
+        # Checkout & order tracking require login
+        - path: ^/checkout
+          roles: ROLE_USER
+        - path: ^/my-orders
+          roles: ROLE_USER
+
+        # Public challenge areas
+        - path: ^/challenge$
+          roles: PUBLIC_ACCESS
+          methods: [GET]
+        - path: ^/challenge/[0-9]+$
+          roles: PUBLIC_ACCESS
+          methods: [GET]
+        - path: ^/challenge/creator/
+          roles: PUBLIC_ACCESS
+          methods: [GET]
+        - path: ^/challenge/hall-of-fame
+          roles: PUBLIC_ACCESS
+          methods: [GET]
+
+        # Challenge submissions - any logged-in user can submit
+        - path: ^/challenge/[0-9]+/submit$
+          roles: ROLE_USER
+          methods: [GET, POST]
+
+        # Challenge voting - any logged-in user can vote via AJAX
+        - path: ^/challenge/[0-9]+/vote$
+          roles: ROLE_USER
+          methods: [POST]
+
+        - path: ^/api/login
+          roles: PUBLIC_ACCESS
+        - path: ^/api/register
+          roles: PUBLIC_ACCESS
+        - path: ^/api
+          roles: IS_AUTHENTICATED
+
         # Admin only areas
-        - { path: ^/admin/users, roles: ROLE_ADMIN }
-        - { path: ^/admin/activity-logs, roles: ROLE_ADMIN }
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        
+        - path: ^/admin/users
+          roles: ROLE_ADMIN
+        - path: ^/admin/activity-logs
+          roles: ROLE_ADMIN
+        - path: ^/admin
+          roles: ROLE_ADMIN
+
+        # Staff dashboard
+        - path: ^/dashboard
+          roles: ROLE_STAFF
+
         # Profile (accessible by all authenticated users)
-        - { path: ^/profile, roles: ROLE_STAFF }
-        
+        - path: ^/profile
+          roles: ROLE_STAFF
+
         # All CRUD pages require at least ROLE_STAFF
-        - { path: ^/product, roles: ROLE_STAFF }
-        - { path: ^/category, roles: ROLE_STAFF }
-        - { path: ^/stock, roles: ROLE_STAFF }
-        - { path: ^/order, roles: ROLE_STAFF }
-        - { path: ^/customer, roles: ROLE_STAFF }
-        - { path: ^/payment, roles: ROLE_STAFF }
-        
+        - path: ^/product
+          roles: ROLE_STAFF
+        - path: ^/category
+          roles: ROLE_STAFF
+        - path: ^/stock
+          roles: ROLE_STAFF
+        - path: ^/order
+          roles: ROLE_STAFF
+        - path: ^/customer
+          roles: ROLE_STAFF
+        - path: ^/payment
+          roles: ROLE_STAFF
+
         # Fallback - all other pages require authentication
-        - { path: ^/, roles: ROLE_STAFF }
+        - path: ^/
+          roles: ROLE_USER
 
 when@test:
     security:

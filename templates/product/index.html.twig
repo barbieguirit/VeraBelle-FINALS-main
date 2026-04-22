@@ -1,397 +1,226 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}VeraBelle Collection - Products{% endblock %}
+{% block title %}Products — VeraBelle Collection{% endblock %}
 {% block page_title %}Products{% endblock %}
 
 {% block content %}
 <style>
-    .content-wrapper {
-        max-width: 100%;
+    :root {
+        --blush:#F0C4C4; --sage:#A8BCA1; --sage-deep:#7A9972;
+        --ink:#1A1F2E; --ink-soft:#4A5568; --cream:#FAF8F5;
+        --cream-warm:#F4F0EA; --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(26,31,46,0.08); --shadow-sm:0 2px 12px rgba(26,31,46,0.06);
+        --shadow-md:0 8px 32px rgba(26,31,46,0.10); --radius:16px; --radius-sm:10px;
     }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
-    .products-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .products-title {
-        font-size: 28px;
-        font-weight: 600;
-        color: #2c3e50;
-        position: relative;
-        padding-left: 15px;
-    }
-
-    .products-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 5px;
-        height: 30px;
-        background: linear-gradient(180deg, #F4C2C2, #A8BCA1);
-        border-radius: 3px;
-    }
+    /* Header */
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; animation:fadeUp 0.4s ease both; }
+    .page-eyebrow { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:4px; }
+    .page-title { font-family:'Nunito',sans-serif; font-size:26px; font-weight:800; color:var(--ink); line-height:1; }
+    .page-sub { font-size:13px; color:var(--ink-soft); margin-top:2px; }
 
     .btn-add {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        color: #fff;
-        padding: 12px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+        display:inline-flex; align-items:center; gap:8px; padding:11px 22px;
+        background:var(--ink); color:#fff; border-radius:40px; text-decoration:none;
+        font-size:13.5px; font-weight:600; transition:all 0.22s;
+        box-shadow:0 4px 16px rgba(26,31,46,0.18);
+    }
+    .btn-add:hover { background:var(--ink-soft); transform:translateY(-2px); box-shadow:0 8px 24px rgba(26,31,46,0.22); color:#fff; }
+    .btn-add-icon {
+        width:22px; height:22px; background:linear-gradient(135deg,var(--blush),var(--sage));
+        border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0;
     }
 
-    .btn-add:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
-    }
+    /* Stats */
+    .stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; animation:fadeUp 0.4s 0.08s ease both; }
+    .strip-card { background:var(--white); border-radius:var(--radius-sm); padding:18px 20px; border:1px solid var(--border); display:flex; align-items:center; gap:14px; transition:all 0.2s; }
+    .strip-card:hover { box-shadow:var(--shadow-sm); transform:translateY(-2px); }
+    .strip-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .si-blush { background:rgba(240,196,196,0.18); }
+    .si-sage  { background:rgba(168,188,161,0.18); }
+    .si-gold  { background:rgba(201,169,110,0.15); }
+    .si-red   { background:rgba(231,76,60,0.10); }
+    .strip-val { font-family:'Nunito',sans-serif; font-size:22px; font-weight:800; color:var(--ink); line-height:1; }
+    .strip-lbl { font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
 
-    .products-table {
-        background: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-    }
+    /* Grid section */
+    .products-grid-section { background:var(--white); border-radius:var(--radius); border:1px solid var(--border); padding:24px; animation:fadeUp 0.4s 0.16s ease both; }
+    .grid-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .grid-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--ink); }
+    .grid-count { background:var(--cream); border-radius:12px; padding:4px 12px; font-size:12px; font-weight:700; color:var(--ink-soft); }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+    /* Product cards */
+    .products-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:18px; }
+    .product-card { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; transition:all 0.22s; display:flex; flex-direction:column; }
+    .product-card:hover { box-shadow:var(--shadow-md); transform:translateY(-4px); border-color:rgba(240,196,196,0.3); }
+    .card-top-bar { height:4px; background:linear-gradient(90deg,var(--blush),var(--sage)); }
 
-    thead {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-    }
+    .card-image { width:100%; height:160px; background:linear-gradient(135deg,rgba(240,196,196,0.12),rgba(168,188,161,0.12)); display:flex; align-items:center; justify-content:center; overflow:hidden; position:relative; }
+    .card-image img { width:100%; height:100%; object-fit:cover; display:block; }
+    .card-image-placeholder { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
 
-    thead th {
-        padding: 18px 20px;
-        text-align: left;
-        font-weight: 600;
-        color: #fff;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+    .card-body { padding:16px; display:flex; flex-direction:column; gap:12px; flex:1; }
 
-    tbody tr {
-        border-bottom: 1px solid #f0f0f0;
-        transition: all 0.2s ease;
-    }
+    .card-header-row { display:flex; align-items:flex-start; gap:12px; }
+    .prod-avatar { width:44px; height:44px; min-width:44px; border-radius:10px; background:linear-gradient(135deg,rgba(240,196,196,0.2),rgba(168,188,161,0.2)); display:flex; align-items:center; justify-content:center; border:1px solid var(--border); overflow:hidden; flex-shrink:0; }
+    .prod-avatar img { width:100%; height:100%; object-fit:cover; }
+    .prod-name { font-weight:700; color:var(--ink); font-size:14px; line-height:1.3; }
+    .prod-desc { font-size:12px; color:var(--ink-soft); margin-top:2px; line-height:1.4; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
 
-    tbody tr:hover {
-        background: rgba(244, 194, 194, 0.05);
-    }
+    .card-meta { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .cat-badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; background:rgba(168,188,161,0.14); color:var(--sage-deep); border-radius:16px; font-size:11px; font-weight:600; border:1px solid rgba(168,188,161,0.25); }
+    .price-tag { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--ink); margin-left:auto; }
 
-    tbody td {
-        padding: 18px;
-        color: #2c3e50;
-        font-size: 14px;
-        vertical-align: middle;
-    }
+    .card-details { padding-top:10px; border-top:1px solid var(--border); }
+    .detail-row { display:flex; justify-content:space-between; align-items:center; font-size:12.5px; }
+    .detail-label { color:var(--ink-soft); font-weight:500; }
+    .stock-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:16px; font-size:11px; font-weight:700; }
+    .stock-badge::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; opacity:0.7; }
+    .stock-high   { background:rgba(168,188,161,0.14); color:var(--sage-deep); border:1px solid rgba(168,188,161,0.25); }
+    .stock-medium { background:rgba(201,169,110,0.12); color:#a07830; border:1px solid rgba(201,169,110,0.25); }
+    .stock-low    { background:rgba(231,76,60,0.08); color:#c0392b; border:1px solid rgba(231,76,60,0.18); }
 
-    .product-name {
-        font-weight: 600;
-        color: #2c3e50;
-    }
+    .card-actions { display:flex; gap:6px; padding-top:12px; border-top:1px solid var(--border); }
+    .btn-action { flex:1; padding:8px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.18s; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:4px; border:1px solid transparent; font-family:'Figtree',sans-serif; }
+    .btn-view   { background:var(--cream); color:var(--ink-soft); border-color:var(--border); }
+    .btn-view:hover   { background:var(--cream-warm); color:var(--ink); }
+    .btn-edit   { background:rgba(240,196,196,0.14); color:#b86060; border-color:rgba(240,196,196,0.3); }
+    .btn-edit:hover   { background:var(--blush); color:#fff; border-color:var(--blush); }
+    .btn-delete { background:rgba(231,76,60,0.07); color:#c0392b; border-color:rgba(231,76,60,0.18); }
+    .btn-delete:hover { background:#e74c3c; color:#fff; border-color:#e74c3c; }
+    .btn-disabled { background:rgba(200,200,200,0.12); color:#bbb; border-color:rgba(200,200,200,0.2); cursor:not-allowed; opacity:0.6; pointer-events:none; }
 
-    .product-description {
-        color: #555;
-        font-size: 13px;
-        max-width: 300px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+    /* Empty */
+    .empty-state { grid-column:1/-1; display:flex; flex-direction:column; align-items:center; padding:80px 20px; text-align:center; gap:10px; }
+    .empty-icon-wrap { width:64px; height:64px; background:var(--cream-warm); border-radius:20px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; }
+    .empty-state h3 { font-family:'Nunito',sans-serif; font-size:17px; font-weight:800; color:var(--ink); }
+    .empty-state p { font-size:13px; color:var(--ink-soft); }
 
-    .category-badge {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        padding: 6px 14px;
-        border-radius: 12px;
-        font-size: 13px;
-        font-weight: 500;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-        display: inline-block;
-        max-width: 140px;
-        text-align: center;
-        line-height: 1.4;
-        word-wrap: break-word;
-    }
-
-    .price {
-        font-weight: 600;
-        color: #2c3e50;
-        font-size: 15px;
-    }
-
-    .stock {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 500;
-        display: inline-block;
-        white-space: nowrap;
-        text-align: center;
-    }
-
-    .stock.high {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-    }
-
-    .stock.medium {
-        background: rgba(244, 194, 194, 0.15);
-        color: #c97878;
-        border: 1px solid rgba(244, 194, 194, 0.3);
-    }
-
-    .stock.low {
-        background: rgba(231, 76, 60, 0.1);
-        color: #c0392b;
-        border: 1px solid rgba(231, 76, 60, 0.2);
-    }
-
-    .actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .btn-action {
-        padding: 8px 16px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border: none;
-        cursor: pointer;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .btn-view {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-    }
-
-    .btn-view:hover {
-        background: #A8BCA1;
-        color: #fff;
-    }
-
-    .btn-edit {
-        background: rgba(244, 194, 194, 0.15);
-        color: #c97878;
-        border: 1px solid rgba(244, 194, 194, 0.3);
-    }
-
-    .btn-edit:hover {
-        background: #F4C2C2;
-        color: #fff;
-    }
-
-    .btn-delete {
-        background: rgba(231, 76, 60, 0.1);
-        color: #c0392b;
-        border: 1px solid rgba(231, 76, 60, 0.2);
-    }
-
-    .btn-delete:hover {
-        background: #c0392b;
-        color: #fff;
-    }
-
-    .btn-disabled {
-        background: rgba(200, 200, 200, 0.15);
-        color: #999;
-        border: 1px solid rgba(200, 200, 200, 0.3);
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-
-    .btn-disabled:hover {
-        background: rgba(200, 200, 200, 0.15);
-        color: #999;
-        transform: none;
-    }
-
-    /* 🌸 DataTable Layout Fixes */
-    .dataTables_wrapper .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .dataTables_wrapper .dataTables_length {
-        float: left;
-        text-align: left;
-        margin-bottom: 0 !important;
-    }
-
-    .dataTables_wrapper .dataTables_filter {
-        float: right;
-        text-align: right;
-        margin-bottom: 0 !important;
-    }
-
-    .dataTables_wrapper .dataTables_filter input {
-        margin-left: 6px;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid #dcdcdc;
-        outline: none;
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: #F4C2C2;
-        box-shadow: 0 0 3px rgba(244, 194, 194, 0.4);
-    }
-
-    .dataTables_wrapper .dataTables_paginate {
-        text-align: right;
-        padding-top: 10px;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        display: inline-block;
-        border-radius: 6px;
-        border: 1px solid #ddd !important;
-        padding: 6px 12px !important;
-        margin: 0 3px !important;
-        font-size: 13px;
-        background: #fff !important;
-        color: #2c3e50 !important;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
-        color: #fff !important;
-        border-color: transparent !important;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
-        color: #fff !important;
-        border: none !important;
-        box-shadow: 0 0 5px rgba(244, 194, 194, 0.3);
-    }
-
-    .dataTables_wrapper .dataTables_info {
-        color: #5a6d54;
-        padding-top: 12px;
-        font-size: 13px;
-    }
+    @media (max-width:900px) { .stats-strip { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:600px) { .stats-strip { grid-template-columns:1fr; } .page-header { flex-direction:column; align-items:flex-start; } .products-grid { grid-template-columns:1fr; } }
 </style>
 
-<div class="content-wrapper">
-    <div class="products-header">
-        <div class="products-title">All Products</div>
-        <a href="{{ path('app_product_new') }}" class="btn-add">
-            <span>+</span> Add New Product
-        </a>
+<!-- Header -->
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Inventory</div>
+        <div class="page-title">Products</div>
+        <div class="page-sub">Manage your VeraBelle collection items</div>
     </div>
+    <a href="{{ path('app_product_new') }}" class="btn-add">
+        <span class="btn-add-icon"><i data-lucide="plus" style="width:13px;height:13px;stroke:white;stroke-width:2.5;"></i></span>
+        Add New Product
+    </a>
+</div>
 
-    <div class="products-table">
-        <table id="productsTable">
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Description</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                {% set isAdmin = is_granted('ROLE_ADMIN') %}
-                {% set isCreator = product.createdBy and app.user and product.createdBy.id == app.user.id %}
-                {% set canEdit = isAdmin or isCreator %}
-                {% set canDelete = isAdmin or isCreator %}
-                <tr>
-                    <td class="product-name">{{ product.name }}</td>
-                    <td class="product-description">{{ product.description }}</td>
-                    <td><span class="category-badge">{{ product.category }}</span></td>
-                    <td class="price">₱{{ product.price|number_format(2) }}</td>
-                    <td>
-                        <span class="stock {% if product.stock < 20 %}low{% elseif product.stock < 50 %}medium{% else %}high{% endif %}">
-                            {{ product.stock }} units
-                        </span>
-                    </td>
-                    <td>
-                        <div class="actions">
-                            <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn-action btn-view">View</a>
-                            
-                            {% if canEdit %}
-                                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn-action btn-edit">Edit</a>
-                            {% else %}
-                                <span class="btn-action btn-disabled" title="You don't have permission to edit this product">Edit</span>
-                            {% endif %}
-                            
-                            {% if canDelete %}
-                                <form method="post" action="{{ path('app_product_delete', {'id': product.id}) }}"
-                                      style="display:inline;"
-                                      onsubmit="return confirm('Are you sure you want to delete {{ product.name }}?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
-                                    <button type="submit" class="btn-action btn-delete">Delete</button>
-                                </form>
-                            {% else %}
-                                <span class="btn-action btn-disabled" title="You don't have permission to delete this product">Delete</span>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="6" class="text-center py-4">No products found.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Stats -->
+<div class="stats-strip">
+    <div class="strip-card">
+        <div class="strip-icon si-blush"><i data-lucide="shirt" style="width:18px;height:18px;stroke:#e8a8a8;stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|length }}</div><div class="strip-lbl">Total Products</div></div>
+    </div>
+    <div class="strip-card">
+        <div class="strip-icon si-sage"><i data-lucide="check-circle" style="width:18px;height:18px;stroke:var(--sage-deep);stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|filter(p => p.stock >= 50)|length }}</div><div class="strip-lbl">Well Stocked</div></div>
+    </div>
+    <div class="strip-card">
+        <div class="strip-icon si-gold"><i data-lucide="alert-triangle" style="width:18px;height:18px;stroke:#a07830;stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|filter(p => p.stock < 50 and p.stock >= 20)|length }}</div><div class="strip-lbl">Low Stock</div></div>
+    </div>
+    <div class="strip-card">
+        <div class="strip-icon si-red"><i data-lucide="alert-circle" style="width:18px;height:18px;stroke:#c0392b;stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|filter(p => p.stock < 20)|length }}</div><div class="strip-lbl">Critical Stock</div></div>
     </div>
 </div>
 
-{# ✅ DataTables Integration #}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<!-- Products Grid -->
+<div class="products-grid-section">
+    <div class="grid-header">
+        <span class="grid-title">All Products</span>
+        <span class="grid-count">{{ products|length }} items</span>
+    </div>
+    <div class="products-grid">
+        {% for product in products %}
+        {% set isAdmin = is_granted('ROLE_ADMIN') %}
+        {% set isCreator = product.createdBy and app.user and product.createdBy.id == app.user.id %}
+        {% set canEdit = isAdmin or isCreator %}
 
-<script>
-    $(document).ready(function() {
-        $('#productsTable').DataTable({
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50],
-            ordering: true,
-            searching: true,
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ entries",
-                info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                paginate: {
-                    previous: "Previous",
-                    next: "Next"
-                }
-            },
-            dom: '<"top"lf>rt<"bottom"ip><"clear">'
-        });
-    });
-</script>
+        <div class="product-card">
+            <div class="card-top-bar"></div>
+            <div class="card-image">
+                {% if product.image %}
+                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="card-image-placeholder">
+                        <i data-lucide="shirt" style="width:48px;height:48px;stroke:rgba(168,188,161,0.4);stroke-width:1;"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                <div class="card-header-row">
+                    <div class="prod-avatar">
+                        {% if product.image %}
+                            <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
+                        {% else %}
+                            <i data-lucide="shirt" style="width:20px;height:20px;stroke:rgba(168,188,161,0.6);stroke-width:1.5;"></i>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <div class="prod-name">{{ product.name }}</div>
+                        <div class="prod-desc">{{ product.description }}</div>
+                    </div>
+                </div>
+
+                <div class="card-meta">
+                    <span class="cat-badge">
+                        <i data-lucide="tag" style="width:10px;height:10px;stroke:currentColor;stroke-width:2;"></i>
+                        {{ product.category }}
+                    </span>
+                    <span class="price-tag">₱{{ product.price|number_format(2) }}</span>
+                </div>
+
+                <div class="card-details">
+                    <div class="detail-row">
+                        <span class="detail-label">Stock</span>
+                        <span class="stock-badge {% if product.stock < 20 %}stock-low{% elseif product.stock < 50 %}stock-medium{% else %}stock-high{% endif %}">
+                            {{ product.stock }} units
+                        </span>
+                    </div>
+                </div>
+
+                <div class="card-actions">
+                    <a href="{{ path('app_product_show', {'id': product.id}) }}" class="btn-action btn-view">
+                        <i data-lucide="eye" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> View
+                    </a>
+                    {% if canEdit %}
+                        <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn-action btn-edit">
+                            <i data-lucide="pencil" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> Edit
+                        </a>
+                    {% else %}
+                        <span class="btn-action btn-disabled">Edit</span>
+                    {% endif %}
+                    {% if canEdit %}
+                        <form method="post" action="{{ path('app_product_delete', {'id': product.id}) }}" style="flex:1;" onsubmit="return confirm('Delete {{ product.name }}?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                            <button type="submit" class="btn-action btn-delete" style="width:100%;">
+                                <i data-lucide="trash-2" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> Delete
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="btn-action btn-disabled" style="flex:1;">Delete</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon-wrap"><i data-lucide="shirt" style="width:28px;height:28px;stroke:var(--ink-soft);stroke-width:1.5;"></i></div>
+            <h3>No Products Found</h3>
+            <p>Start by creating your first product in the VeraBelle collection</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

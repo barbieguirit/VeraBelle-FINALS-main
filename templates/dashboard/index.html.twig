@@ -1,616 +1,260 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}Dashboard - VeraBelle Collection{% endblock %}
+{% block title %}Dashboard — VeraBelle Collection{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
 <style>
-    /* Activity 2: Authentication Alert Styles */
-    .auth-alert {
-        margin-bottom: 24px;
-        border-radius: 16px;
-        padding: 20px 28px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        border: 2px solid;
-        animation: slideDown 0.4s ease-out;
+    :root {
+        --mauve:#C4A0A0; --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A;
+        --charcoal:#3A3232; --warm-gray:#7A6F6F; --ivory:#F9F4EE; --parchment:#EFE6D8;
+        --blush:#E8CECE; --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(58,50,50,0.08); --shadow-sm:0 2px 12px rgba(58,50,50,0.06);
+        --shadow-md:0 8px 32px rgba(58,50,50,0.10); --r:16px; --r-sm:10px;
     }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
+    @keyframes up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-    @keyframes slideDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    /* ── HERO ── */
+    .hero {
+        background: linear-gradient(135deg, #2A2020 0%, var(--charcoal) 100%);
+        border-radius: var(--r); padding: 40px 48px; margin-bottom: 24px;
+        display: flex; align-items: center; justify-content: space-between;
+        position: relative; overflow: hidden; animation: up 0.4s ease both;
+        border: 1px solid rgba(196,160,160,0.1);
     }
+    .hero::before { content:''; position:absolute; top:-80px; right:80px; width:320px; height:320px; background:radial-gradient(circle,rgba(196,160,160,0.12) 0%,transparent 65%); pointer-events:none; }
+    .hero::after  { content:''; position:absolute; bottom:-80px; right:-40px; width:280px; height:280px; background:radial-gradient(circle,rgba(143,175,140,0.08) 0%,transparent 65%); pointer-events:none; }
+    .hero-left { position:relative; z-index:1; }
+    .hero-tag { display:inline-flex; align-items:center; gap:8px; font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:12px; }
+    .hero-tag::before { content:''; display:block; width:24px; height:1px; background:var(--gold); }
+    .hero-name { font-family:'Nunito',sans-serif; font-size:34px; font-weight:800; color:#fff; line-height:1.1; margin-bottom:8px; }
+    .hero-name em { font-style:italic; color:var(--mauve); }
+    .hero-sub { font-size:13px; color:rgba(255,255,255,0.38); font-weight:300; }
+    .hero-right { position:relative; z-index:1; text-align:right; }
+    .hero-day { font-family:'Nunito',sans-serif; font-size:80px; font-weight:800; color:rgba(255,255,255,0.06); line-height:1; }
+    .hero-date { font-size:11px; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.25); margin-top:-8px; }
 
-    .auth-alert.admin {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-        border-color: #28a745;
-        color: #155724;
+    /* ── METRICS ── */
+    .metrics { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:24px; animation:up 0.4s 0.08s ease both; }
+    .mc {
+        background:var(--white); border-radius:var(--r-sm); padding:20px 18px;
+        border:1px solid var(--border); position:relative; overflow:hidden;
+        transition:all 0.22s; text-decoration:none; display:block;
     }
+    .mc:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:transparent; }
+    .mc::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; opacity:0; transition:opacity 0.22s; border-radius:0 0 var(--r-sm) var(--r-sm); }
+    .mc:hover::after { opacity:1; }
+    .mc.m1::after { background:linear-gradient(90deg,var(--mauve),var(--deep-mauve)); }
+    .mc.m2::after { background:linear-gradient(90deg,var(--sage),var(--deep-sage)); }
+    .mc.m3::after { background:linear-gradient(90deg,var(--gold),#b8924a); }
+    .mc.m4::after { background:linear-gradient(90deg,var(--mauve),var(--sage)); }
+    .mc.m5::after { background:linear-gradient(90deg,var(--deep-sage),#3a5238); }
+    .mc.m6::after { background:linear-gradient(90deg,var(--gold),var(--mauve)); }
+    .mc-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+    .mc.m1 .mc-icon { background:rgba(196,160,160,0.15); }
+    .mc.m2 .mc-icon { background:rgba(143,175,140,0.15); }
+    .mc.m3 .mc-icon { background:rgba(201,169,110,0.12); }
+    .mc.m4 .mc-icon { background:rgba(196,160,160,0.1); }
+    .mc.m5 .mc-icon { background:rgba(92,122,90,0.12); }
+    .mc.m6 .mc-icon { background:rgba(201,169,110,0.1); }
+    .mc-val { font-family:'Nunito',sans-serif; font-size:26px; font-weight:800; color:var(--charcoal); line-height:1; margin-bottom:4px; }
+    .mc-lbl { font-size:11px; color:var(--warm-gray); font-weight:500; text-transform:uppercase; letter-spacing:0.05em; }
 
-    .auth-alert.user {
-        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
-        border-color: #17a2b8;
-        color: #0c5460;
-    }
+    /* ── GRID ── */
+    .dash-grid { display:grid; grid-template-columns:1fr 360px; gap:20px; animation:up 0.4s 0.15s ease both; }
 
-    .auth-alert-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 8px;
-    }
+    /* ── PANEL ── */
+    .panel { background:var(--white); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; }
+    .ph { padding:20px 24px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+    .pt { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--charcoal); }
+    .pl { font-size:12px; color:var(--deep-sage); text-decoration:none; font-weight:600; transition:color 0.2s; }
+    .pl:hover { color:var(--charcoal); }
 
-    .auth-alert-icon {
-        width: 32px;
-        height: 32px;
-    }
+    /* Orders */
+    .order-list { padding:4px 0; }
+    .oi { display:flex; align-items:center; gap:14px; padding:13px 24px; transition:background 0.15s; }
+    .oi:hover { background:var(--ivory); }
+    .oi-num { font-family:'Nunito',sans-serif; font-size:11px; font-weight:700; color:var(--warm-gray); min-width:32px; }
+    .oi-info { flex:1; min-width:0; }
+    .oi-name { font-size:13.5px; font-weight:600; color:var(--charcoal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .oi-date { font-size:11px; color:var(--warm-gray); margin-top:2px; }
+    .oi-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+    .oi-amt { font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--deep-sage); }
+    .oi-badge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; text-transform:capitalize; }
+    .s-pending    { background:rgba(201,169,110,0.12); color:#8a6d2f; border:1px solid rgba(201,169,110,0.25); }
+    .s-completed  { background:rgba(92,122,90,0.12); color:var(--deep-sage); border:1px solid rgba(92,122,90,0.22); }
+    .s-processing { background:rgba(196,160,160,0.12); color:var(--deep-mauve); border:1px solid rgba(196,160,160,0.22); }
+    .s-cancelled  { background:rgba(180,80,80,0.08); color:#b05050; border:1px solid rgba(180,80,80,0.18); }
 
-    .auth-alert-title {
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
+    /* Quick actions */
+    .qa-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:16px; }
+    .qa {
+        display:flex; flex-direction:column; gap:8px; padding:16px 14px;
+        border-radius:12px; background:var(--ivory); border:1px solid var(--border);
+        text-decoration:none; transition:all 0.2s;
     }
+    .qa:hover { background:var(--white); transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+    .qa-ic { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; }
+    .qa-t { font-size:12.5px; font-weight:700; color:var(--charcoal); }
+    .qa-d { font-size:11px; color:var(--warm-gray); line-height:1.4; }
 
-    .auth-alert-message {
-        font-size: 15px;
-        font-weight: 600;
-        margin: 0;
-        padding-left: 44px;
-    }
+    /* Products */
+    .prod-list { padding:4px 0; }
+    .pi { display:flex; align-items:center; justify-content:space-between; padding:12px 24px; transition:background 0.15s; gap:14px; }
+    .pi:hover { background:var(--ivory); }
+    .pi-left { display:flex; align-items:center; gap:12px; min-width:0; }
+    .pi-av { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,rgba(196,160,160,0.15),rgba(143,175,140,0.15)); display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border); overflow:hidden; }
+    .pi-av img { width:100%; height:100%; object-fit:cover; }
+    .pi-name { font-size:13.5px; font-weight:600; color:var(--charcoal); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .pi-right { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    .pi-stock { font-size:11.5px; font-weight:600; padding:4px 10px; border-radius:20px; background:rgba(143,175,140,0.12); color:var(--deep-sage); border:1px solid rgba(143,175,140,0.22); white-space:nowrap; }
+    .pi-price { font-family:'Nunito',sans-serif; font-size:14px; font-weight:700; color:var(--deep-sage); white-space:nowrap; }
 
-    .dashboard-wrapper {
-        min-height: 100vh;
-        padding: 30px 20px;
-        background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
-    }
+    .empty { text-align:center; padding:40px 20px; color:var(--warm-gray); }
+    .empty p { font-size:13px; margin-top:8px; }
 
-    .dashboard-header {
-        margin-bottom: 30px;
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        padding: 40px;
-        border-radius: 20px;
-        color: white;
-        box-shadow: 0 8px 30px rgba(244, 194, 194, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .dashboard-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-    }
-
-    .dashboard-header::after {
-        content: '';
-        position: absolute;
-        bottom: -30%;
-        left: -5%;
-        width: 200px;
-        height: 200px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
-    }
-
-    .dashboard-header h1 {
-        font-size: 36px;
-        font-weight: 700;
-        margin: 0 0 12px 0;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .dashboard-header h1 svg {
-        width: 40px;
-        height: 40px;
-        filter: drop-shadow(0 2px 8px rgba(0,0,0,0.1));
-    }
-
-    .dashboard-header p {
-        font-size: 16px;
-        margin: 0;
-        opacity: 0.95;
-        position: relative;
-        z-index: 1;
-    }
-
-    .metrics-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-        gap: 24px;
-        margin-bottom: 30px;
-    }
-
-    .metric-card {
-        background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-        border-radius: 20px;
-        padding: 28px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-        border: 2px solid transparent;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .metric-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: linear-gradient(90deg, #F4C2C2, #A8BCA1);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.4s ease;
-    }
-
-    .metric-card::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        right: -50px;
-        width: 150px;
-        height: 150px;
-        background: radial-gradient(circle, rgba(244, 194, 194, 0.1) 0%, transparent 70%);
-        border-radius: 50%;
-        transform: translateY(-50%);
-        transition: all 0.4s ease;
-    }
-
-    .metric-card:hover {
-        transform: translateY(-8px) scale(1.02);
-        box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-        border-color: rgba(244, 194, 194, 0.3);
-    }
-
-    .metric-card:hover::before {
-        transform: scaleX(1);
-    }
-
-    .metric-card:hover::after {
-        right: -30px;
-        opacity: 0.8;
-    }
-
-    .metric-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-bottom: 20px;
-        position: relative;
-        z-index: 1;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    }
-
-    .metric-icon svg {
-        width: 28px;
-        height: 28px;
-    }
-
-    .metric-icon.products {
-        background: linear-gradient(135deg, #FFD4D4, #FFE8E8);
-    }
-
-    .metric-icon.products svg {
-        stroke: #F4C2C2;
-    }
-
-    .metric-icon.stocks {
-        background: linear-gradient(135deg, #D4E8FF, #E8F4FF);
-    }
-
-    .metric-icon.stocks svg {
-        stroke: #3498db;
-    }
-
-    .metric-icon.orders {
-        background: linear-gradient(135deg, #FFE8D4, #FFF4E8);
-    }
-
-    .metric-icon.orders svg {
-        stroke: #f39c12;
-    }
-
-    .metric-icon.customers {
-        background: linear-gradient(135deg, #E8D4FF, #F4E8FF);
-    }
-
-    .metric-icon.customers svg {
-        stroke: #9b59b6;
-    }
-
-    .metric-icon.revenue {
-        background: linear-gradient(135deg, #D4FFD4, #E8FFE8);
-    }
-
-    .metric-icon.revenue svg {
-        stroke: #27ae60;
-    }
-
-    .metric-title {
-        font-size: 13px;
-        color: #888;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 12px;
-        position: relative;
-        z-index: 1;
-    }
-
-    .metric-value {
-        font-size: 36px;
-        font-weight: 800;
-        color: #2c2c2c;
-        line-height: 1;
-        position: relative;
-        z-index: 1;
-    }
-
-    .content-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 24px;
-        margin-top: 30px;
-    }
-
-    @media (max-width: 968px) {
-        .content-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    .section-card {
-        background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-        border-radius: 20px;
-        padding: 32px;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.08);
-        border: 2px solid transparent;
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .section-card::before {
-        content: '';
-        position: absolute;
-        top: -100%;
-        left: -100%;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(168, 188, 161, 0.08) 0%, transparent 70%);
-        border-radius: 50%;
-    }
-
-    .section-card:hover {
-        border-color: rgba(168, 188, 161, 0.3);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.12);
-    }
-
-    .section-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 24px;
-        padding-bottom: 20px;
-        border-bottom: 3px solid #f5f5f5;
-        position: relative;
-    }
-
-    .section-header::after {
-        content: '';
-        position: absolute;
-        bottom: -3px;
-        left: 0;
-        width: 60px;
-        height: 3px;
-        background: linear-gradient(90deg, #F4C2C2, #A8BCA1);
-        border-radius: 3px;
-    }
-
-    .section-header h3 {
-        font-size: 20px;
-        font-weight: 700;
-        color: #2c2c2c;
-        margin: 0;
-    }
-
-    .section-icon {
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .section-icon svg {
-        width: 28px;
-        height: 28px;
-        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-    }
-
-    .product-item, .activity-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 18px;
-        border-radius: 12px;
-        margin-bottom: 12px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        background: linear-gradient(135deg, #fafafa 0%, #f8f8f8 100%);
-        border: 2px solid transparent;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .product-item::before, .activity-item::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
-        background: linear-gradient(180deg, #F4C2C2, #A8BCA1);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-    }
-
-    .product-item:hover, .activity-item:hover {
-        background: #fff;
-        border-color: rgba(168, 188, 161, 0.3);
-        transform: translateX(8px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-    }
-
-    .product-item:hover::before, .activity-item:hover::before {
-        opacity: 1;
-    }
-
-    .product-item:last-child, .activity-item:last-child {
-        margin-bottom: 0;
-    }
-
-    .product-name, .order-customer {
-        font-weight: 700;
-        color: #2c2c2c;
-        font-size: 15px;
-    }
-
-    .product-details, .order-details {
-        display: flex;
-        gap: 16px;
-        align-items: center;
-        font-size: 13px;
-    }
-
-    .stock-badge {
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 12px;
-        font-weight: 600;
-        background: linear-gradient(135deg, #D4E8FF, #E8F4FF);
-        color: #2196F3;
-        box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
-    }
-
-    .price-tag, .amount-tag {
-        font-weight: 700;
-        color: #27ae60;
-        font-size: 15px;
-        text-shadow: 0 2px 4px rgba(39, 174, 96, 0.1);
-    }
-
-    .status-badge {
-        padding: 6px 12px;
-        border-radius: 8px;
-        font-size: 11px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    .status-pending {
-        background: linear-gradient(135deg, #FFE8D4, #FFF4E8);
-        color: #FF9800;
-    }
-
-    .status-completed {
-        background: linear-gradient(135deg, #D4FFD4, #E8FFE8);
-        color: #27ae60;
-    }
-
-    .status-processing {
-        background: linear-gradient(135deg, #D4E8FF, #E8F4FF);
-        color: #2196F3;
-    }
-
-    .order-date {
-        color: #999;
-        font-size: 13px;
-    }
-
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-        color: #999;
-    }
-
-    .empty-state-icon {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 16px;
-        opacity: 0.3;
-    }
-
-    .empty-state-icon svg {
-        width: 64px;
-        height: 64px;
-        stroke: currentColor;
-    }
-
-    .empty-state p {
-        font-size: 15px;
-        font-weight: 500;
-    }
+    @media (max-width:1300px) { .metrics { grid-template-columns:repeat(3,1fr); } }
+    @media (max-width:1100px) { .dash-grid { grid-template-columns:1fr; } }
+    @media (max-width:768px)  { .metrics { grid-template-columns:repeat(2,1fr); } .hero { padding:28px 24px; flex-direction:column; gap:16px; align-items:flex-start; } }
 </style>
 
-<div class="dashboard-wrapper">
-    <div style="max-width: 1400px; margin: 0 auto;">
-        
-        {% if is_granted('ROLE_ADMIN') %}
-            <div class="auth-alert admin">
-                <div class="auth-alert-header">
-                    <svg class="auth-alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                        <path d="M9 12l2 2 4-4"></path>
-                    </svg>
-                    <h4 class="auth-alert-title">Admin Access</h4>
-                </div>
-                <p class="auth-alert-message">You are logged in as Admin. You have full access.</p>
-            </div>
-        {% else %}
-            <div class="auth-alert user">
-                <div class="auth-alert-header">
-                    <svg class="auth-alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="12" cy="7" r="4"></circle>
-                    </svg>
-                    <h4 class="auth-alert-title">Staff Access</h4>
-                </div>
-                <p class="auth-alert-message">You are logged in as Staff User. Limited access granted.</p>
-            </div>
-        {% endif %}
-        
-        <!-- Dashboard Header -->
-        <div class="dashboard-header">
-            <h1>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 3v18h18"></path>
-                    <path d="m19 9-5 5-4-4-3 3"></path>
-                </svg>
-                Dashboard Overview
-            </h1>
-            <p>Welcome back! Here's what's happening with your store today.</p>
+<!-- Hero -->
+<div class="hero">
+    <div class="hero-left">
+        <div class="hero-tag">Store Overview</div>
+        <div class="hero-name">Welcome, <em>{{ app.user.email|split('@')[0] }}</em></div>
+        <div class="hero-sub">{% if is_granted('ROLE_ADMIN') %}Full admin access · All data visible{% else %}Staff access · Limited permissions apply{% endif %}</div>
+    </div>
+    <div class="hero-right">
+        <div class="hero-day">{{ "now"|date("d") }}</div>
+        <div class="hero-date">{{ "now"|date("l, F Y") }}</div>
+    </div>
+</div>
+
+<!-- Metrics -->
+<div class="metrics">
+    <a href="{{ path('app_product_index') }}" class="mc m1">
+        <div class="mc-icon"><i data-lucide="shirt" style="width:18px;height:18px;stroke:var(--deep-mauve);stroke-width:1.75;"></i></div>
+        <div class="mc-val">{{ totalProducts }}</div><div class="mc-lbl">Products</div>
+    </a>
+    <a href="{{ path('app_stock_index') }}" class="mc m2">
+        <div class="mc-icon"><i data-lucide="package" style="width:18px;height:18px;stroke:var(--deep-sage);stroke-width:1.75;"></i></div>
+        <div class="mc-val">{{ totalStocks }}</div><div class="mc-lbl">Stock Units</div>
+    </a>
+    <a href="{{ path('app_order_index') }}" class="mc m3">
+        <div class="mc-icon"><i data-lucide="shopping-cart" style="width:18px;height:18px;stroke:#b8924a;stroke-width:1.75;"></i></div>
+        <div class="mc-val">{{ totalOrders }}</div><div class="mc-lbl">Orders</div>
+    </a>
+    <a href="{{ path('app_customer_index') }}" class="mc m4">
+        <div class="mc-icon"><i data-lucide="users" style="width:18px;height:18px;stroke:var(--deep-mauve);stroke-width:1.75;"></i></div>
+        <div class="mc-val">{{ totalCustomers }}</div><div class="mc-lbl">Customers</div>
+    </a>
+    <a href="{{ path('app_payment_index') }}" class="mc m5">
+        <div class="mc-icon"><i data-lucide="banknote" style="width:18px;height:18px;stroke:var(--deep-sage);stroke-width:1.75;"></i></div>
+        <div class="mc-val">₱{{ totalRevenue|number_format(0) }}</div><div class="mc-lbl">Revenue</div>
+    </a>
+    <a href="{{ path('app_challenge_admin_list') }}" class="mc m6">
+        <div class="mc-icon"><i data-lucide="trophy" style="width:18px;height:18px;stroke:#b8924a;stroke-width:1.75;"></i></div>
+        <div class="mc-val">{{ activeChallenges }}</div><div class="mc-lbl">Challenges</div>
+    </a>
+</div>
+
+<!-- Grid -->
+<div class="dash-grid">
+    <!-- Recent Orders -->
+    <div class="panel">
+        <div class="ph">
+            <span class="pt">Recent Orders</span>
+            <a href="{{ path('app_order_index') }}" class="pl">View all →</a>
         </div>
-
-        <!-- Metrics Grid -->
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-icon products">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </div>
-                <div class="metric-title">Total Products</div>
-                <div class="metric-value">{{ totalProducts }}</div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-icon stocks">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="3" width="7" height="7"></rect>
-                        <rect x="14" y="14" width="7" height="7"></rect>
-                        <rect x="3" y="14" width="7" height="7"></rect>
-                    </svg>
-                </div>
-                <div class="metric-title">Total Stocks</div>
-                <div class="metric-value">{{ totalStocks }}</div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-icon orders">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="9" cy="21" r="1"></circle>
-                        <circle cx="20" cy="21" r="1"></circle>
-                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                    </svg>
-                </div>
-                <div class="metric-title">Total Orders</div>
-                <div class="metric-value">{{ totalOrders }}</div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-icon customers">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                </div>
-                <div class="metric-title">Total Customers</div>
-                <div class="metric-value">{{ totalCustomers }}</div>
-            </div>
-
-            <div class="metric-card">
-                <div class="metric-icon revenue">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="1" x2="12" y2="23"></line>
-                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-                    </svg>
-                </div>
-                <div class="metric-title">Total Revenue</div>
-                <div class="metric-value">₱{{ totalRevenue|number_format(2, '.', ',') }}</div>
-            </div>
-        </div>
-
- <!-- Content Grid -->
-<div class="content-grid">
-    <!-- Top Products Section -->
-    <div class="section-card">
-        <div class="section-header">
-            <span class="section-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #f39c12;">
-                    <circle cx="12" cy="8" r="7"></circle>
-                    <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                </svg>
-            </span>
-            <h3>Top Products</h3>
-        </div>
-        
-        {% if topProducts is not empty %}
-            {% for product in topProducts %}
-                <div class="product-item">
-                    <div class="product-name">{{ product.name }}</div>
-                    <div class="product-details">
-                        <span class="stock-badge">{{ product.stock }} in stock</span>
-                        <span class="price-tag">₱{{ product.price|number_format(2, '.', ',') }}</span>
+        <div class="order-list">
+            {% if recentOrders is not empty %}
+                {% for order in recentOrders %}
+                <div class="oi">
+                    <div class="oi-num">#{{ order.id }}</div>
+                    <div class="oi-info">
+                        <div class="oi-name">{{ order.customerName }}</div>
+                        <div class="oi-date">{{ order.orderDate|date('M d, Y · H:i') }}</div>
+                    </div>
+                    <div class="oi-right">
+                        <div class="oi-amt">₱{{ order.totalAmount|number_format(2) }}</div>
+                        <span class="oi-badge s-{{ order.orderStatus|lower }}">{{ order.orderStatus }}</span>
                     </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-state-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
-                </div>
-                <p>No products found.</p>
+                {% endfor %}
+            {% else %}
+            <div class="empty">
+                <i data-lucide="shopping-cart" style="width:32px;height:32px;stroke:var(--border);stroke-width:1.5;"></i>
+                <p>No orders yet.</p>
             </div>
-        {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Right -->
+    <div style="display:flex;flex-direction:column;gap:20px;">
+        <!-- Quick Actions -->
+        <div class="panel">
+            <div class="ph"><span class="pt">Quick Actions</span></div>
+            <div class="qa-grid">
+                <a href="{{ path('app_product_new') }}" class="qa">
+                    <div class="qa-ic" style="background:rgba(196,160,160,0.15);"><i data-lucide="shirt" style="width:16px;height:16px;stroke:var(--deep-mauve);stroke-width:1.75;"></i></div>
+                    <div class="qa-t">Add Product</div>
+                    <div class="qa-d">New collection item</div>
+                </a>
+                <a href="{{ path('app_order_new') }}" class="qa">
+                    <div class="qa-ic" style="background:rgba(201,169,110,0.12);"><i data-lucide="shopping-cart" style="width:16px;height:16px;stroke:#b8924a;stroke-width:1.75;"></i></div>
+                    <div class="qa-t">New Order</div>
+                    <div class="qa-d">Manual order entry</div>
+                </a>
+                <a href="{{ path('app_challenge_admin_create') }}" class="qa">
+                    <div class="qa-ic" style="background:rgba(143,175,140,0.15);"><i data-lucide="trophy" style="width:16px;height:16px;stroke:var(--deep-sage);stroke-width:1.75;"></i></div>
+                    <div class="qa-t">New Challenge</div>
+                    <div class="qa-d">Launch a challenge</div>
+                </a>
+                <a href="{{ path('app_customer_new') }}" class="qa">
+                    <div class="qa-ic" style="background:rgba(196,160,160,0.1);"><i data-lucide="user-plus" style="width:16px;height:16px;stroke:var(--deep-mauve);stroke-width:1.75;"></i></div>
+                    <div class="qa-t">Add Customer</div>
+                    <div class="qa-d">Register customer</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- Top Products -->
+        <div class="panel">
+            <div class="ph">
+                <span class="pt">Top Products</span>
+                <a href="{{ path('app_product_index') }}" class="pl">View all →</a>
+            </div>
+            <div class="prod-list">
+                {% if topProducts is not empty %}
+                    {% for product in topProducts %}
+                    <div class="pi">
+                        <div class="pi-left">
+                            <div class="pi-av">
+                                {% if product.image %}
+                                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
+                                {% else %}
+                                    <i data-lucide="shirt" style="width:16px;height:16px;stroke:rgba(143,175,140,0.5);stroke-width:1.5;"></i>
+                                {% endif %}
+                            </div>
+                            <span class="pi-name">{{ product.name }}</span>
+                        </div>
+                        <div class="pi-right">
+                            <span class="pi-stock">{{ product.stock }} units</span>
+                            <span class="pi-price">₱{{ product.price|number_format(2) }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="empty">
+                    <i data-lucide="shirt" style="width:32px;height:32px;stroke:var(--border);stroke-width:1.5;"></i>
+                    <p>No products found.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

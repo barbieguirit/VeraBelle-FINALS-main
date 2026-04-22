@@ -1,342 +1,190 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}{{ product.name }} - VeraBelle Collection{% endblock %}
-
+{% block title %}{{ product.name }} — VeraBelle Collection{% endblock %}
 {% block page_title %}Product Details{% endblock %}
 
 {% block content %}
 <style>
-    .details-wrapper {
-        max-width: 1200px;  /* Changed from 900px to 1200px for wider layout */
-        margin: 0 auto;
+    :root {
+        --mauve:#C4A0A0; --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A;
+        --charcoal:#3A3232; --warm-gray:#7A6F6F; --ivory:#F9F4EE; --parchment:#EFE6D8;
+        --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(58,50,50,0.08); --shadow-sm:0 2px 12px rgba(58,50,50,0.06);
+        --shadow-md:0 8px 32px rgba(58,50,50,0.10); --r:16px; --r-sm:10px;
     }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
 
-    .details-container {
-        background: white;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        border-top: 4px solid;
-        border-image: linear-gradient(90deg, #F4C2C2, #A8BCA1) 1;
+    .pw { max-width:1400px; margin:0 auto; }
+
+    /* Layout */
+    .product-layout { display:grid; grid-template-columns:420px 1fr; gap:28px; align-items:start; }
+
+    /* Image */
+    .product-img-card { background:var(--white); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-sm); position:sticky; top:24px; }
+    .product-img-wrap { aspect-ratio:3/4; background:linear-gradient(135deg,var(--parchment),var(--ivory)); display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .product-img-wrap img { width:100%; height:100%; object-fit:cover; display:block; }
+    .product-img-placeholder { display:flex; align-items:center; justify-content:center; width:100%; height:100%; }
+    .product-img-footer { padding:16px 20px; border-top:1px solid var(--border); display:flex; gap:8px; }
+
+    /* Info panels */
+    .info-stack { display:flex; flex-direction:column; gap:20px; }
+
+    /* Hero panel */
+    .product-hero-panel {
+        background:linear-gradient(135deg,#2A2020,var(--charcoal));
+        border-radius:var(--r); padding:32px 36px;
+        position:relative; overflow:hidden; border:1px solid rgba(196,160,160,0.1);
     }
+    .product-hero-panel::before { content:''; position:absolute; top:-60px; right:40px; width:240px; height:240px; background:radial-gradient(circle,rgba(196,160,160,0.12) 0%,transparent 65%); pointer-events:none; }
+    .ph-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; display:flex; align-items:center; gap:8px; position:relative; z-index:1; }
+    .ph-eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--gold); }
+    .ph-name { font-family:'Nunito',sans-serif; font-size:28px; font-weight:800; color:white; margin-bottom:8px; position:relative; z-index:1; line-height:1.2; }
+    .ph-price { font-family:'Nunito',sans-serif; font-size:40px; font-weight:800; color:var(--mauve); position:relative; z-index:1; line-height:1; }
+    .ph-price span { font-size:20px; font-weight:400; color:rgba(255,255,255,0.4); margin-right:4px; }
+    .ph-badges { display:flex; gap:8px; margin-top:16px; flex-wrap:wrap; position:relative; z-index:1; }
 
-    .card-header {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-        padding: 40px;  /* Increased padding for wider layout */
-        color: white;
-        position: relative;
-        overflow: hidden;
-    }
+    /* Stock badge */
+    .stock-badge { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; }
+    .stock-badge::before { content:''; width:5px; height:5px; border-radius:50%; background:currentColor; opacity:0.7; }
+    .s-high { background:rgba(92,122,90,0.15); color:var(--deep-sage); border:1px solid rgba(92,122,90,0.22); }
+    .s-low  { background:rgba(201,169,110,0.15); color:#8a6d2f; border:1px solid rgba(201,169,110,0.25); }
+    .s-out  { background:rgba(180,80,80,0.1); color:#b05050; border:1px solid rgba(180,80,80,0.2); }
+    .cat-badge { background:rgba(196,160,160,0.15); color:var(--deep-mauve); border:1px solid rgba(196,160,160,0.25); display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; }
 
-    .card-header::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: 0;
-        width: 250px;  /* Increased size for wider layout */
-        height: 250px;
-        background: linear-gradient(135deg, rgba(244, 194, 194, 0.1), rgba(168, 188, 161, 0.1));
-        border-radius: 50%;
-        transform: translate(50%, -50%);
-    }
+    /* Detail panel */
+    .detail-panel { background:var(--white); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-sm); }
+    .dp-head { padding:18px 24px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .dp-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .dp-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--charcoal); }
+    .dp-body { padding:20px 24px; display:flex; flex-direction:column; gap:13px; }
+    .dp-row { display:flex; justify-content:space-between; align-items:center; font-size:13px; padding:10px 14px; background:var(--ivory); border-radius:8px; }
+    .dp-lbl { color:var(--warm-gray); font-weight:500; }
+    .dp-val { font-weight:700; color:var(--charcoal); }
+    .dp-val.green { color:var(--deep-sage); }
+    .dp-desc { font-size:13px; color:var(--warm-gray); line-height:1.8; font-weight:300; padding:16px; background:var(--ivory); border-radius:8px; }
 
-    .card-header h1 {
-        font-size: 32px;  /* Increased font size */
-        font-weight: 700;
-        margin: 0;
-        position: relative;
-        z-index: 1;
-    }
+    /* Actions */
+    .actions-row { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn-edit { display:inline-flex; align-items:center; gap:7px; padding:11px 24px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:white; border-radius:8px; font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; text-decoration:none; transition:all 0.2s; }
+    .btn-edit:hover { opacity:0.9; transform:translateY(-1px); }
+    .btn-back { display:inline-flex; align-items:center; gap:7px; padding:11px 20px; background:var(--ivory); color:var(--warm-gray); border:1px solid var(--border); border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+    .btn-back:hover { background:var(--parchment); color:var(--charcoal); }
+    .btn-delete { display:inline-flex; align-items:center; gap:7px; padding:11px 20px; background:rgba(180,80,80,0.08); color:#b05050; border:1px solid rgba(180,80,80,0.18); border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'Figtree',sans-serif; }
+    .btn-delete:hover { background:#e74c3c; color:white; border-color:#e74c3c; }
 
-    .card-header .subtitle {
-        font-size: 16px;  /* Increased font size */
-        color: rgba(255, 255, 255, 0.8);
-        margin-top: 12px;  /* Increased margin */
-    }
-
-    .card-body {
-        padding: 50px;  /* Increased padding for wider layout */
-    }
-
-    .details-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 35px;  /* Increased gap for wider layout */
-    }
-
-    .detail-row {
-        background: #f8f9fa;
-        padding: 25px;  /* Increased padding */
-        border-radius: 12px;  /* Slightly larger radius */
-        border-left: 5px solid transparent;  /* Thicker border */
-        transition: all 0.3s ease;
-    }
-
-    .detail-row:hover {
-        background: #f0f0f0;
-        border-left-color: #F4C2C2;
-    }
-
-    .detail-row.full-width {
-        grid-column: 1 / -1;
-    }
-
-    .detail-label {
-        display: flex;
-        align-items: center;
-        gap: 10px;  /* Increased gap */
-        font-size: 14px;  /* Slightly larger */
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #718096;
-        margin-bottom: 15px;  /* Increased margin */
-    }
-
-    .detail-label::before {
-        content: '•';
-        color: #F4C2C2;
-        font-size: 24px;  /* Larger bullet */
-    }
-
-    .detail-value {
-        font-size: 18px;  /* Increased font size */
-        color: #2d3748;
-        font-weight: 500;
-        line-height: 1.6;
-    }
-
-    .detail-value.price {
-        font-size: 36px;  /* Larger price */
-        font-weight: 700;
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-    }
-
-    .detail-value.stock {
-        display: inline-block;
-        padding: 10px 22px;  /* Larger padding */
-        border-radius: 25px;  /* Larger radius */
-        font-weight: 600;
-        font-size: 16px;  /* Larger font */
-    }
-
-    .detail-value.stock.high {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-    }
-
-    .detail-value.stock.low {
-        background: rgba(237, 137, 54, 0.15);
-        color: #c05621;
-        border: 1px solid rgba(237, 137, 54, 0.3);
-    }
-
-    .detail-value.stock.out {
-        background: rgba(231, 76, 60, 0.1);
-        color: #c0392b;
-        border: 1px solid rgba(231, 76, 60, 0.2);
-    }
-
-    .detail-value.category {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        padding: 8px 20px;  /* Larger padding */
-        border-radius: 25px;  /* Larger radius */
-        font-size: 16px;  /* Larger font */
-        display: inline-block;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-    }
-
-    .detail-value.description {
-        line-height: 1.8;
-        color: #4a5568;
-        font-size: 16px;  /* Larger font for description */
-    }
-
-    .timestamp {
-        color: #a0aec0;
-        font-size: 15px;  /* Slightly larger */
-    }
-
-    .card-footer {
-        padding: 35px 50px;  /* Increased padding to match body */
-        background: #f8f9fa;
-        display: flex;
-        gap: 15px;  /* Increased gap */
-        justify-content: space-between;
-        align-items: center;
-        border-top: 2px solid #e2e8f0;
-    }
-
-    .btn {
-        padding: 14px 30px;  /* Larger buttons */
-        border-radius: 10px;  /* Larger radius */
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        font-size: 15px;  /* Larger font */
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;  /* Increased gap */
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .btn-back {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-    }
-
-    .btn-back:hover {
-        background: #A8BCA1;
-        color: white;
-        border-color: #A8BCA1;
-        transform: translateX(-3px);
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        color: white;
-        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
-    }
-
-    .btn-edit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
-    }
-
-    .btn-delete {
-        background: rgba(231, 76, 60, 0.1);
-        color: #c0392b;
-        border: 1px solid rgba(231, 76, 60, 0.2);
-    }
-
-    .btn-delete:hover {
-        background: #c0392b;
-        color: white;
-        border-color: #c0392b;
-        transform: translateY(-2px);
-    }
-
-    .action-buttons {
-        display: flex;
-        gap: 15px;  /* Increased gap */
-    }
-
-    @media (max-width: 768px) {
-        .details-wrapper {
-            max-width: 100%;
-        }
-
-        .details-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .card-header {
-            padding: 30px 20px;  /* Adjusted for mobile */
-        }
-
-        .card-header h1 {
-            font-size: 26px;  /* Slightly smaller for mobile */
-        }
-
-        .card-body {
-            padding: 30px 20px;  /* Adjusted for mobile */
-        }
-
-        .card-footer {
-            padding: 25px 20px;  /* Adjusted for mobile */
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn {
-            width: 100%;
-            justify-content: center;
-        }
-
-        .action-buttons {
-            width: 100%;
-            flex-direction: column;
-        }
-    }
-
-    @media (min-width: 769px) and (max-width: 1200px) {
-        .details-wrapper {
-            max-width: 95%;
-            margin: 0 auto;
-        }
-    }
+    @media (max-width:1000px) { .product-layout { grid-template-columns:1fr; } .product-img-card { position:static; } }
 </style>
 
-<div class="details-wrapper">
-    <div class="details-container">
-        <div class="card-header">
-            <h1>{{ product.name }}</h1>
-            <div class="subtitle">View complete product information</div>
+<div class="pw">
+    <div class="product-layout">
+
+        <!-- Left: Image -->
+        <div class="product-img-card">
+            <div class="product-img-wrap">
+                {% if product.image %}
+                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="product-img-placeholder">
+                        <i data-lucide="shirt" style="width:80px;height:80px;stroke:rgba(196,160,160,0.3);stroke-width:0.75;"></i>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="product-img-footer">
+                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn-edit" style="flex:1;justify-content:center;">
+                    <i data-lucide="pencil" style="width:13px;height:13px;stroke:white;stroke-width:2;"></i> Edit
+                </a>
+                <form method="post" action="{{ path('app_product_delete', {'id': product.id}) }}" onsubmit="return confirm('Delete {{ product.name }}?');" style="flex:1;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                    <button type="submit" class="btn-delete" style="width:100%;justify-content:center;">
+                        <i data-lucide="trash-2" style="width:13px;height:13px;stroke:currentColor;stroke-width:2;"></i> Delete
+                    </button>
+                </form>
+            </div>
         </div>
-        
-        <div class="card-body">
-            <div class="details-grid">
-                <div class="detail-row">
-                    <span class="detail-label">Product Name</span>
-                    <div class="detail-value">{{ product.name }}</div>
-                </div>
 
-                <div class="detail-row">
-                    <span class="detail-label">Category</span>
-                    <div class="detail-value category">{{ product.category }}</div>
-                </div>
+        <!-- Right: Info -->
+        <div class="info-stack">
 
-                <div class="detail-row">
-                    <span class="detail-label">Price</span>
-                    <div class="detail-value price">₱{{ product.price }}</div>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Stock</span>
+            <!-- Hero panel -->
+            <div class="product-hero-panel">
+                <div class="ph-eyebrow">Product Details</div>
+                <div class="ph-name">{{ product.name }}</div>
+                <div class="ph-price"><span>₱</span>{{ product.price|number_format(2) }}</div>
+                <div class="ph-badges">
+                    {% if product.category %}
+                        <span class="cat-badge">
+                            <i data-lucide="tag" style="width:10px;height:10px;stroke:currentColor;stroke-width:2;"></i>
+                            {{ product.category.name }}
+                        </span>
+                    {% endif %}
                     {% if product.stock <= 0 %}
-                        <div class="detail-value stock out">Out of stock</div>
+                        <span class="stock-badge s-out">Out of Stock</span>
                     {% elseif product.stock < 20 %}
-                        <div class="detail-value stock low">{{ product.stock }} units</div>
+                        <span class="stock-badge s-low">Low Stock</span>
                     {% else %}
-                        <div class="detail-value stock high">{{ product.stock }} units</div>
+                        <span class="stock-badge s-high">In Stock</span>
                     {% endif %}
                 </div>
+            </div>
 
-                <div class="detail-row full-width">
-                    <span class="detail-label">Description</span>
-                    <div class="detail-value description">{{ product.description }}</div>
+            <!-- Stock & Dates -->
+            <div class="detail-panel">
+                <div class="dp-head">
+                    <div class="dp-icon" style="background:rgba(143,175,140,0.15);">
+                        <i data-lucide="package" style="width:15px;height:15px;stroke:var(--deep-sage);stroke-width:1.75;"></i>
+                    </div>
+                    <span class="dp-title">Inventory & Dates</span>
                 </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Created At</span>
-                    <div class="detail-value timestamp">{{ product.createdAt|date('M d, Y - h:i A') }}</div>
-                </div>
-
-                <div class="detail-row">
-                    <span class="detail-label">Updated At</span>
-                    <div class="detail-value timestamp">{{ product.updatedAt|date('M d, Y - h:i A') }}</div>
+                <div class="dp-body">
+                    <div class="dp-row">
+                        <span class="dp-lbl">Stock Quantity</span>
+                        <span class="dp-val {{ product.stock > 20 ? 'green' : '' }}">{{ product.stock }} units</span>
+                    </div>
+                    <div class="dp-row">
+                        <span class="dp-lbl">Price</span>
+                        <span class="dp-val">₱{{ product.price|number_format(2) }}</span>
+                    </div>
+                    <div class="dp-row">
+                        <span class="dp-lbl">Created</span>
+                        <span class="dp-val">{{ product.createdAt|date('M d, Y') }}</span>
+                    </div>
+                    <div class="dp-row">
+                        <span class="dp-lbl">Last Updated</span>
+                        <span class="dp-val">{{ product.updatedAt|date('M d, Y') }}</span>
+                    </div>
+                    {% if product.createdBy %}
+                    <div class="dp-row">
+                        <span class="dp-lbl">Added By</span>
+                        <span class="dp-val">{{ product.createdBy.email|split('@')[0] }}</span>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
-        </div>
 
-        <div class="card-footer">
-            <a href="{{ path('app_product_index') }}" class="btn btn-back">
-                ← Back to List
-            </a>
-            <div class="action-buttons">
-                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn btn-edit">
-                     Edit Product
+            <!-- Description -->
+            {% if product.description %}
+            <div class="detail-panel">
+                <div class="dp-head">
+                    <div class="dp-icon" style="background:rgba(201,169,110,0.12);">
+                        <i data-lucide="file-text" style="width:15px;height:15px;stroke:var(--gold);stroke-width:1.75;"></i>
+                    </div>
+                    <span class="dp-title">Description</span>
+                </div>
+                <div class="dp-body">
+                    <div class="dp-desc">{{ product.description }}</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Actions -->
+            <div class="actions-row">
                 </a>
-                {{ include('product/_delete_form.html.twig') }}
+                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn-edit">
+                    <i data-lucide="pencil" style="width:13px;height:13px;stroke:white;stroke-width:2;"></i>
+                    Edit Product
+                </a>
             </div>
+
         </div>
     </div>
 </div>

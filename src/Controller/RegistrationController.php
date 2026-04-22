@@ -4,16 +4,14 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use App\Security\UserAuthenticator;
+use App\Service\EmailVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
-use Symfony\Component\Mime\Email;
-use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class RegistrationController extends AbstractController
 {
@@ -22,8 +20,7 @@ class RegistrationController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $passwordHasher,
         EntityManagerInterface $entityManager,
-        MailerInterface $mailer,
-        VerifyEmailHelperInterface $verifyEmailHelper
+        EmailVerificationService $emailVerificationService
     ): Response
     {
         $user = new User();
@@ -40,32 +37,26 @@ class RegistrationController extends AbstractController
                 )
             );
 
+            // New web registrations are customers by default
+            $user->setRoles(['ROLE_USER']);
+
+            // Generate verification token and mark as unverified
+            $verificationToken = $emailVerificationService->generateVerificationToken();
+            $user->setVerificationToken($verificationToken);
+            $user->setIsVerified(false);
+
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // Generate signed email verification link
-          // Generate signed email verification link
-$signatureComponents = $verifyEmailHelper->generateSignature(
-    'app_verify_email', // route name for verification
-    $user->getId(),
-    $user->getEmail(),
-    ['id' => $user->getId()]
-);
+            // Generate verification URL
+            $verificationUrl = $this->generateUrl(
+                'app_verify_email',
+                ['token' => $verificationToken],
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
 
-// Send verification email
-$email = (new Email())
-    ->from('noreply@verabelle.com')
-    ->to($user->getEmail())
-    ->subject('Please Confirm Your Email')
-    ->html(
-        $this->renderView('registration/confirmation_email.html.twig', [
-            'signedUrl' => $signatureComponents->getSignedUrl(),
-            'expirationMessageKey' => $signatureComponents->getExpirationMessageKey(),
-            'expirationMessageData' => $signatureComponents->getExpirationMessageData(),
-        ])
-    );
-
-    $mailer->send($email);
+            // Send verification email
+            $emailVerificationService->sendVerificationEmail($user, $verificationUrl);
 
             $this->addFlash('success', 'Registration successful! Please check your email to verify your account.');
 
@@ -77,37 +68,4 @@ $email = (new Email())
         ]);
     }
 
-    #[Route('/verify/email', name: 'app_verify_email')]
-    public function verifyUserEmail(
-        Request $request,
-        VerifyEmailHelperInterface $verifyEmailHelper,
-        EntityManagerInterface $entityManager
-    ): Response
-    {
-        $userId = $request->get('id');
-
-        if (!$userId) {
-            throw $this->createNotFoundException('No user ID provided.');
-        }
-
-        $user = $entityManager->getRepository(User::class)->find($userId);
-
-        if (!$user) {
-            throw $this->createNotFoundException('User not found.');
-        }
-
-        // Validate the signed URL
-        try {
-            $verifyEmailHelper->validateEmailConfirmation($request->getUri(), $user->getId(), $user->getEmail());
-            $user->setIsVerified(true);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Your email has been verified successfully!');
-        } catch (\Exception $e) {
-            $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('app_register');
-        }
-
-        return $this->redirectToRoute('app_login');
-    }
 }

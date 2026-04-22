@@ -93,6 +93,59 @@
         font-style: italic;
     }
 
+    .file-upload-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-upload-input {
+        display: block;
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        background: #f8f9fa;
+        color: #7f8c8d;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .file-upload-label {
+        display: block;
+        margin-top: 10px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .file-upload-label:hover {
+        color: #F4C2C2;
+    }
+
+    .file-upload-input:focus + .file-upload-label {
+        color: #F4C2C2;
+    }
+
+    .file-name {
+        display: block;
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 8px;
+        font-style: italic;
+    }
+
+    .image-preview {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .image-preview img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
     .input-group {
         position: relative;
     }
@@ -152,7 +205,7 @@
             <p>Add a new product to your VeraBelle Collection inventory</p>
         </div>
 
-        {{ form_start(form) }}
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
 
         <div class="form-group">
             {{ form_label(form.name, 'Product Name') }}
@@ -160,23 +213,39 @@
             {{ form_errors(form.name) }}
         </div>
 
-        <div class="form-row">
-            <div class="form-group">
-                {{ form_label(form.price, 'Price') }}
-                <div class="input-group">
-                    {{ form_widget(form.price, {'attr': {'placeholder': '0.00', 'step': '0.01'}}) }}
-                    <span class="input-icon">₱</span>
-                </div>
-                {{ form_errors(form.price) }}
-                <div class="form-hint">Enter price in Philippine Peso</div>
+        <div class="form-group">
+            {{ form_label(form.image, 'Product Image') }}
+            <div class="file-upload-wrapper">
+                {{ form_widget(form.image, {
+                    'attr': {
+                        'accept': 'image/*',
+                        'id': 'imageUpload',
+                        'class': 'file-upload-input'
+                    }
+                }) }}
+                <label for="imageUpload" class="file-upload-label">Choose product image</label>
+                <span class="file-name" id="fileName"></span>
             </div>
+            {{ form_errors(form.image) }}
+            <div class="form-hint">Supported formats: JPG, PNG, GIF (Max 5MB)</div>
+            <div class="image-preview" id="imagePreview"></div>
+        </div>
 
-            <div class="form-group">
-                {{ form_label(form.stock, 'Stock Quantity') }}
-                {{ form_widget(form.stock, {'attr': {'placeholder': '0', 'min': '0'}}) }}
-                {{ form_errors(form.stock) }}
-                <div class="form-hint">Available quantity in inventory</div>
+        <div class="form-group">
+            {{ form_label(form.price, 'Price') }}
+            <div class="input-group">
+                {{ form_widget(form.price, {'attr': {'placeholder': '0.00', 'step': '0.01'}}) }}
+                <span class="input-icon">₱</span>
             </div>
+            {{ form_errors(form.price) }}
+            <div class="form-hint">Enter price in Philippine Peso</div>
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.stock, 'Stock Quantity') }}
+            {{ form_widget(form.stock, {'attr': {'placeholder': '0', 'min': '0'}}) }}
+            {{ form_errors(form.stock) }}
+            <div class="form-hint">Available quantity in inventory</div>
         </div>
 
         <div class="form-group">
@@ -197,4 +266,46 @@
         {{ form_end(form) }}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageUpload = document.getElementById('imageUpload');
+        const fileNameDisplay = document.getElementById('fileName');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileUploadLabel = document.querySelector('.file-upload-label');
+
+        if (!imageUpload || !fileUploadLabel) {
+            console.error('Image upload elements not found');
+            return;
+        }
+
+        // Make the big upload area clickable
+        fileUploadLabel.addEventListener('click', function(e) {
+            e.preventDefault();
+            imageUpload.click();
+        });
+
+        imageUpload.addEventListener('change', function(e) {
+            const file = this.files[0];
+            
+            if (file) {
+                // Show file name
+                fileNameDisplay.textContent = 'Selected: ' + file.name;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.innerHTML = '<img src="' + event.target.result + '" alt="Image preview">';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileNameDisplay.textContent = '';
+                imagePreview.innerHTML = '';
+            }
+        });
+
+        // Drag and drop functionality
+        // Note: drag-and-drop styling removed for now to simplify behavior
+    });
+</script>
 {% endblock %}

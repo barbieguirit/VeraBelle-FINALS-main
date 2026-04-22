@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Address;
+use App\Repository\ChallengeRepository;
 
 class LandingController extends AbstractController
 {
@@ -29,15 +30,27 @@ class LandingController extends AbstractController
     // Redirects logged-in users to their correct dashboard
     // =========================================================================
     #[Route('/', name: 'app_landing', priority: 10)]
-    public function index(): Response
+    public function index(ChallengeRepository $challengeRepo, \Doctrine\ORM\EntityManagerInterface $em): Response
     {
-        if ($this->getUser()) {
-            return $this->isGranted('ROLE_ADMIN')
-                ? $this->redirectToRoute('app_admin_dashboard')
-                : $this->redirectToRoute('app_dashboard');
-        }
+      $challenges = $challengeRepo->findBy(['status' => 'active'], ['createdAt' => 'DESC'], 3);
 
-        return $this->render('landing/index.html.twig');
+      // Show specific featured products on landing page
+      $featuredNames = ['Noir Essence Top', 'Chérie Flow Dress', 'Midnight Allure', 'Ivory Muse Dress', 'Velvet Reverie Dress'];
+      $products = $em->getRepository(\App\Entity\Product::class)->createQueryBuilder('p')
+          ->where('p.name IN (:names)')
+          ->setParameter('names', $featuredNames)
+          ->getQuery()
+          ->getResult();
+
+      // Fallback to latest products if none of the featured ones exist
+      if (empty($products)) {
+          $products = $em->getRepository(\App\Entity\Product::class)->findBy([], ['createdAt' => 'DESC'], 5);
+      }
+
+      return $this->render('landing/index.html.twig', [
+          'challenges' => $challenges,
+          'products'   => $products,
+      ]);
     }
 
     // =========================================================================
@@ -54,6 +67,12 @@ class LandingController extends AbstractController
     // Sends email via Brevo SMTP (configured in MAILER_DSN)
     // Also hits Brevo Transactional API for reliable delivery tracking
     // =========================================================================
+    #[Route('/contact', name: 'app_contact_page', methods: ['GET'])]
+    public function contactPage(): Response
+    {
+        return $this->render('landing/contact.html.twig');
+    }
+
     #[Route('/contact', name: 'app_contact', methods: ['POST'])]
     public function contact(Request $request, MailerInterface $mailer): Response
     {
@@ -73,12 +92,12 @@ class LandingController extends AbstractController
         // ── Basic validation ──────────────────────────────────────────────────
         if (empty($firstName) || empty($email) || empty($message)) {
             $this->addFlash('contact_error', 'Please fill in all required fields (First Name, Email, Message).');
-            return $this->redirectToRoute('app_landing', ['_fragment' => 'contact']);
+            return $this->redirectToRoute('app_contact_page');
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->addFlash('contact_error', 'Please enter a valid email address.');
-            return $this->redirectToRoute('app_landing', ['_fragment' => 'contact']);
+            return $this->redirectToRoute('app_contact_page');
         }
 
         $fullName   = $firstName . ($lastName ? ' ' . $lastName : '');
@@ -124,7 +143,7 @@ class LandingController extends AbstractController
             );
         }
 
-        return $this->redirectToRoute('app_landing', ['_fragment' => 'contact']);
+        return $this->redirectToRoute('app_contact_page');
     }
 
     // =========================================================================

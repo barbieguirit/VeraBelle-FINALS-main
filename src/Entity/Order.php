@@ -40,7 +40,11 @@ class Order
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $shippingAddress = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $paymentMethod = null;
+
     #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
     private ?User $createdBy = null;
 
     public function __construct()
@@ -147,6 +151,17 @@ class Order
     public function setShippingAddress(?string $shippingAddress): self
     {
         $this->shippingAddress = $shippingAddress;
+        return $this;
+    }
+
+    public function getPaymentMethod(): ?string
+    {
+        return $this->paymentMethod;
+    }
+
+    public function setPaymentMethod(?string $paymentMethod): self
+    {
+        $this->paymentMethod = $paymentMethod;
         return $this;
     }
 

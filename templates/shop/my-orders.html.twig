@@ -1,0 +1,170 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}My Orders — VeraBelle Collection{% endblock %}
+{% block meta_desc %}Track and manage your VeraBelle orders.{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory:#F9F4EE; --parchment:#EFE6D8; --mauve:#C4A0A0; --deep-mauve:#9E6F6F;
+        --sage:#8FAF8C; --deep-sage:#5C7A5A; --charcoal:#3A3232; --warm-gray:#7A6F6F;
+        --blush:#E8CECE; --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(58,50,50,0.08); --shadow-sm:0 2px 12px rgba(58,50,50,0.06);
+        --shadow-md:0 8px 32px rgba(58,50,50,0.10);
+        --serif:'Playfair Display',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:var(--sans); background:var(--ivory); color:var(--charcoal); }
+
+    .page-wrap { max-width:1280px; margin:0 auto; padding:120px 40px 100px; }
+
+    /* Header */
+    .page-header { margin-bottom:48px; }
+    .page-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--deep-mauve); margin-bottom:10px; display:flex; align-items:center; gap:10px; }
+    .page-eyebrow::before { content:''; display:block; width:24px; height:1px; background:var(--deep-mauve); }
+    .page-title { font-family:var(--serif); font-size:clamp(32px,5vw,48px); font-weight:300; color:var(--charcoal); line-height:1.1; margin-bottom:10px; }
+    .page-title em { font-style:italic; color:var(--deep-mauve); }
+    .page-sub { font-size:14px; color:var(--warm-gray); font-weight:300; }
+
+    /* Stats bar */
+    .stats-bar { display:flex; gap:0; background:var(--charcoal); border-radius:14px; overflow:hidden; margin-bottom:36px; }
+    .stat-item { flex:1; padding:20px 24px; border-right:1px solid rgba(255,255,255,0.06); text-align:center; }
+    .stat-item:last-child { border-right:none; }
+    .stat-num { font-family:var(--serif); font-size:28px; font-weight:300; color:var(--mauve); }
+    .stat-lbl { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(255,255,255,0.3); margin-top:4px; }
+
+    /* Order cards */
+    .orders-list { display:flex; flex-direction:column; gap:16px; }
+
+    .order-card {
+        background:var(--white); border-radius:16px; overflow:hidden;
+        border:1px solid var(--border); transition:all 0.25s;
+        box-shadow:var(--shadow-sm);
+    }
+    .order-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:rgba(196,160,160,0.25); }
+
+    .card-top { height:4px; }
+    .top-pending    { background:linear-gradient(90deg,var(--mauve),var(--deep-mauve)); }
+    .top-processing { background:linear-gradient(90deg,var(--sage),var(--deep-sage)); }
+    .top-completed  { background:linear-gradient(90deg,var(--deep-sage),#3a5238); }
+    .top-cancelled  { background:linear-gradient(90deg,#b05050,#8a3030); }
+
+    .card-body { padding:24px 28px; display:grid; grid-template-columns:1fr 1fr 1fr auto; gap:20px; align-items:center; }
+
+    .card-section { display:flex; flex-direction:column; gap:4px; }
+    .cs-label { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--warm-gray); }
+    .cs-value { font-size:15px; font-weight:600; color:var(--charcoal); }
+    .cs-value.amount { font-family:var(--serif); font-size:18px; color:var(--deep-sage); }
+    .cs-value.id { font-family:monospace; font-size:14px; color:var(--warm-gray); }
+
+    .status-badge { display:inline-flex; align-items:center; gap:5px; padding:6px 14px; border-radius:20px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+    .status-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; opacity:0.7; }
+    .s-pending    { background:rgba(196,160,160,0.12); color:var(--deep-mauve); border:1px solid rgba(196,160,160,0.25); }
+    .s-processing { background:rgba(143,175,140,0.12); color:var(--deep-sage); border:1px solid rgba(143,175,140,0.22); }
+    .s-completed  { background:rgba(92,122,90,0.12); color:var(--deep-sage); border:1px solid rgba(92,122,90,0.22); }
+    .s-cancelled  { background:rgba(180,80,80,0.08); color:#b05050; border:1px solid rgba(180,80,80,0.18); }
+
+    .card-footer { padding:0 28px 20px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--border); padding-top:16px; }
+    .footer-meta { font-size:12px; color:var(--warm-gray); display:flex; gap:20px; }
+    .footer-meta span { display:flex; align-items:center; gap:5px; }
+
+    .btn-view { display:inline-flex; align-items:center; gap:6px; padding:10px 22px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:white; border-radius:8px; font-size:12px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; text-decoration:none; transition:all 0.2s; }
+    .btn-view:hover { opacity:0.9; transform:translateY(-1px); }
+
+    /* Empty */
+    .empty-state { text-align:center; padding:80px 40px; background:var(--white); border-radius:20px; border:1px solid var(--border); }
+    .empty-icon { font-size:56px; margin-bottom:20px; opacity:0.4; }
+    .empty-title { font-family:var(--serif); font-size:28px; font-weight:300; color:var(--charcoal); margin-bottom:10px; }
+    .empty-desc { color:var(--warm-gray); font-size:15px; margin-bottom:32px; font-weight:300; }
+    .btn-shop { display:inline-flex; align-items:center; gap:8px; padding:14px 32px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:white; border-radius:10px; text-decoration:none; font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase; transition:all 0.2s; }
+    .btn-shop:hover { opacity:0.9; transform:translateY(-2px); }
+
+    @media (max-width:768px) {
+        .page-wrap { padding:100px 20px 80px; }
+        .card-body { grid-template-columns:1fr 1fr; }
+        .stats-bar { flex-wrap:wrap; }
+        .stat-item { min-width:50%; border-bottom:1px solid rgba(255,255,255,0.06); }
+    }
+</style>
+
+<div class="page-wrap">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="page-eyebrow">Account</div>
+        <h1 class="page-title">My <em>Orders</em></h1>
+        <p class="page-sub">Track and manage all your VeraBelle purchases</p>
+    </div>
+
+    {% if orders|length > 0 %}
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-num">{{ orders|length }}</div>
+            <div class="stat-lbl">Total Orders</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">{{ orders|filter(o => o.orderStatus == 'completed')|length }}</div>
+            <div class="stat-lbl">Completed</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">{{ orders|filter(o => o.orderStatus == 'pending')|length }}</div>
+            <div class="stat-lbl">Pending</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-num">₱{{ totalSpent|number_format(0) }}</div>
+            <div class="stat-lbl">Total Spent</div>
+        </div>
+    </div>
+
+    <!-- Orders -->
+    <div class="orders-list">
+        {% for order in orders %}
+        {% set statusClass = order.orderStatus|lower %}
+        <div class="order-card">
+            <div class="card-top top-{{ statusClass }}"></div>
+            <div class="card-body">
+                <div class="card-section">
+                    <span class="cs-label">Order ID</span>
+                    <span class="cs-value id">#{{ order.id }}</span>
+                </div>
+                <div class="card-section">
+                    <span class="cs-label">Date</span>
+                    <span class="cs-value">{{ order.orderDate|date('M d, Y') }}</span>
+                </div>
+                <div class="card-section">
+                    <span class="cs-label">Total</span>
+                    <span class="cs-value amount">₱{{ order.totalAmount|number_format(2) }}</span>
+                </div>
+                <div class="card-section">
+                    <span class="cs-label">Status</span>
+                    <span class="status-badge s-{{ statusClass }}">{{ order.orderStatus }}</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="footer-meta">
+                    <span>Payment: <strong>{{ order.paymentStatus|capitalize }}</strong></span>
+                    {% if order.paymentMethod %}
+                        <span>Method: <strong>{{ order.paymentMethod|replace({'_':' '})|capitalize }}</strong></span>
+                    {% endif %}
+                    {% if order.shippingAddress %}
+                        <span>📍 {{ order.shippingAddress|slice(0,40) }}{% if order.shippingAddress|length > 40 %}…{% endif %}</span>
+                    {% endif %}
+                </div>
+                <a href="{{ path('app_order_detail', {'id': order.id}) }}" class="btn-view">
+                    View Details →
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🛍️</div>
+        <div class="empty-title">No Orders Yet</div>
+        <p class="empty-desc">You haven't placed any orders yet. Start exploring our collection!</p>
+        <a href="{{ path('app_shop') }}" class="btn-shop">Browse Collection →</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

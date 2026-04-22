@@ -1,0 +1,129 @@
+{% extends 'base_login.html.twig' %}
+
+{% block title %}Customer Login - VeraBelle Collection{% endblock %}
+
+{% block body %}
+<div class="form-container">
+
+    <h2 class="form-heading">Customer sign in</h2>
+    <p class="form-subheading">Access your account to shop, join challenges, and track orders.</p>
+
+    {% if error %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ error.messageKey|trans(error.messageData, 'security') }}
+        </div>
+    {% endif %}
+
+    {# Show errors from Google authenticator (flash messages) #}
+    {% for flash_error in app.flashes('error') %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ flash_error }}
+        </div>
+    {% endfor %}
+
+    {# Show success messages (e.g. email verified) #}
+    {% for flash_success in app.flashes('success') %}
+        <div class="success-message">
+            <i class="fas fa-check-circle"></i>
+            {{ flash_success }}
+        </div>
+    {% endfor %}
+
+    <form method="post">
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <div class="form-group">
+            <label for="inputEmail">Email Address</label>
+            <div class="input-wrap">
+                <i class="input-icon fa-regular fa-envelope"></i>
+                <input type="text"
+                       id="inputEmail"
+                       name="email"
+                       value="{{ last_username }}"
+                       autocomplete="email"
+                       required
+                       autofocus
+                       placeholder="you@example.com">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="inputPassword">Password</label>
+            <div class="input-wrap">
+                <i class="input-icon fa-regular fa-lock"></i>
+                <input type="password"
+                       id="inputPassword"
+                       name="password"
+                       autocomplete="current-password"
+                       required
+                       placeholder="********">
+                <button class="pw-toggle" type="button" onclick="togglePw()" title="Show/hide password">
+                    <i class="fa-regular fa-eye" id="pwIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="options-row">
+            <label class="remember-label">
+                <input type="checkbox" name="_remember_me" id="remember_me">
+                <span>Remember me</span>
+            </label>
+            <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="login-btn" id="submitBtn">
+            <i class="fas fa-sign-in-alt"></i>
+            <span>Sign In</span>
+        </button>
+
+        <div class="divider"><span>or continue with</span></div>
+
+        <a href="{{ path('connect_google_start') }}" class="google-btn">
+            <i class="fab fa-google"></i>
+            <span>Sign in with Google</span>
+        </a>
+    </form>
+
+    <div class="form-footer">
+        <p>Don't have an account? <a href="{{ path('app_register') }}">Create one</a></p>
+        <p>Staff member? <a href="{{ path('app_login') }}">Use the staff portal</a></p>
+        <p class="copy">VeraBelle Collection - {{ "now"|date("Y") }}</p>
+    </div>
+
+</div>
+
+<script>
+    function togglePw() {
+        const input = document.getElementById('inputPassword');
+        const icon  = document.getElementById('pwIcon');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form');
+        const btn  = document.getElementById('submitBtn');
+        if (form && btn) {
+            form.addEventListener('submit', function () {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="position:relative;z-index:1"></i><span>Signing in...</span>';
+                btn.disabled = true;
+            });
+        }
+        const err = document.querySelector('.error-message');
+        if (err) {
+            setTimeout(() => {
+                err.style.transition = 'opacity 0.5s';
+                err.style.opacity = '0';
+                setTimeout(() => err.remove(), 500);
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}

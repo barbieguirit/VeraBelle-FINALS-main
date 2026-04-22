@@ -1,0 +1,200 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}Contact Us — VeraBelle Collection{% endblock %}
+{% block meta_desc %}Get in touch with VeraBelle Collection. We'd love to hear from you.{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory: #F9F4EE; --parchment: #EFE6D8; --mauve: #C4A0A0;
+        --deep-mauve: #9E6F6F; --sage: #8FAF8C; --charcoal: #3A3232;
+        --warm-gray: #7A6F6F; --blush: #E8CECE; --forest: #2D4A3E;
+        --cream: #F5F0E8; --terra: #C4785A;
+    }
+    body { font-family: 'Nunito', sans-serif; background: var(--ivory); color: var(--charcoal); }
+
+    .contact-page { max-width: 1200px; margin: 0 auto; padding: 120px 40px 100px; }
+
+    .contact-page-header { text-align: center; margin-bottom: 72px; }
+    .section-eyebrow {
+        font-size: 10px; font-weight: 800; letter-spacing: 4px;
+        text-transform: uppercase; color: var(--terra); margin-bottom: 12px;
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+    }
+    .section-eyebrow::before, .section-eyebrow::after {
+        content: ''; display: block; width: 32px; height: 1px; background: var(--terra);
+    }
+    .page-title {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-size: clamp(36px, 6vw, 64px); font-weight: 300;
+        color: var(--charcoal); line-height: 1.1; margin-bottom: 16px;
+    }
+    .page-title em { font-style: italic; color: var(--deep-mauve); }
+    .page-subtitle { color: var(--warm-gray); font-size: 15px; font-weight: 300; line-height: 1.7; }
+
+    .contact-grid {
+        display: grid; grid-template-columns: 1fr 1.5fr; gap: 80px; align-items: start;
+    }
+
+    /* Info side */
+    .c-info-title {
+        font-family: 'Playfair Display', serif; font-size: 26px;
+        font-weight: 400; color: var(--charcoal); margin-bottom: 12px;
+    }
+    .c-info-desc { color: var(--warm-gray); font-size: 14px; line-height: 1.8; font-weight: 300; margin-bottom: 40px; }
+    .contact-info-list { display: flex; flex-direction: column; gap: 28px; }
+    .contact-info-item { display: flex; gap: 18px; align-items: flex-start; }
+    .c-icon {
+        width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+        background: linear-gradient(135deg, var(--mauve), var(--deep-mauve));
+        display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .c-label { font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 4px; }
+    .c-val { font-size: 14px; color: var(--charcoal); font-weight: 400; }
+
+    /* Form side */
+    .contact-form-box {
+        background: white; border-radius: 20px; padding: 52px 48px;
+        border: 1px solid rgba(196,160,160,0.15);
+        box-shadow: 0 8px 40px rgba(58,50,50,0.06);
+    }
+    .form-heading {
+        font-family: 'Playfair Display', serif; font-size: 24px;
+        font-weight: 400; color: var(--charcoal); margin-bottom: 32px;
+    }
+    .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .f-group { position: relative; margin-bottom: 24px; }
+    .f-label { display: block; font-size: 10px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--warm-gray); margin-bottom: 8px; }
+    .f-input, .f-select, .f-textarea {
+        width: 100%; background: rgba(239,230,216,0.3); border: 1.5px solid rgba(196,160,160,0.25);
+        border-radius: 10px; padding: 13px 16px; font-family: 'Nunito', sans-serif;
+        font-size: 14px; color: var(--charcoal); outline: none; transition: border-color 0.2s, background 0.2s;
+    }
+    .f-input:focus, .f-select:focus, .f-textarea:focus {
+        border-color: var(--mauve); background: white;
+    }
+    .f-textarea { resize: vertical; min-height: 120px; }
+    .f-submit {
+        width: 100%; padding: 15px; background: linear-gradient(135deg, var(--mauve), var(--deep-mauve));
+        color: white; border: none; border-radius: 10px; font-family: 'Nunito', sans-serif;
+        font-size: 13px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+        cursor: pointer; transition: opacity 0.2s, transform 0.2s;
+    }
+    .f-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    .flash-ok { background: rgba(92,122,90,0.1); border: 1px solid rgba(92,122,90,0.3); color: #3d6b3a; padding: 14px 18px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
+    .flash-err { background: rgba(196,120,90,0.1); border: 1px solid rgba(196,120,90,0.3); color: var(--terra); padding: 14px 18px; border-radius: 10px; margin-bottom: 20px; font-size: 14px; }
+
+    @media (max-width: 900px) {
+        .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+        .contact-page { padding: 100px 24px 80px; }
+        .contact-form-box { padding: 36px 28px; }
+        .f-row { grid-template-columns: 1fr; }
+    }
+</style>
+
+<div class="contact-page">
+    <div class="contact-page-header">
+        <div class="section-eyebrow">Get In Touch</div>
+        <h1 class="page-title">Let's Start a <em>Conversation.</em></h1>
+        <p class="page-subtitle">Whether you have a question, a collaboration idea, or just want to say hello — we'd love to hear from you.</p>
+    </div>
+
+    <div class="contact-grid">
+        <div class="contact-info">
+            <h2 class="c-info-title">We're here for you.</h2>
+            <p class="c-info-desc">Reach out through the form or contact us directly. We typically respond within 24 hours.</p>
+            <div class="contact-info-list">
+                <div class="contact-info-item">
+                    <div class="c-icon">📍</div>
+                    <div>
+                        <div class="c-label">Studio Location</div>
+                        <div class="c-val">Dumaguete City, Negros Oriental 6200</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="c-icon">✉️</div>
+                    <div>
+                        <div class="c-label">Email Us</div>
+                        <div class="c-val">hello@verabellecollection.com</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="c-icon">📱</div>
+                    <div>
+                        <div class="c-label">WhatsApp / Call</div>
+                        <div class="c-val">+63 912 345 6789</div>
+                    </div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="c-icon">🕐</div>
+                    <div>
+                        <div class="c-label">Studio Hours</div>
+                        <div class="c-val">Mon – Sat &nbsp;·&nbsp; 9 AM – 6 PM</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form-box">
+            <p class="form-heading">Send a Message</p>
+
+            {% for msg in app.flashes('contact_success') %}
+                <div class="flash-ok">✓ &nbsp; {{ msg }}</div>
+            {% endfor %}
+            {% for msg in app.flashes('contact_error') %}
+                <div class="flash-err">✗ &nbsp; {{ msg }}</div>
+            {% endfor %}
+
+            <form action="{{ path('app_contact') }}" method="POST" id="contactForm">
+                <input type="hidden" name="_token" value="{{ csrf_token('contact') }}">
+                <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
+                <div class="f-row">
+                    <div class="f-group">
+                        <label class="f-label" for="cf_first">First Name *</label>
+                        <input class="f-input" type="text" id="cf_first" name="firstName" placeholder="Maria" required>
+                    </div>
+                    <div class="f-group">
+                        <label class="f-label" for="cf_last">Last Name</label>
+                        <input class="f-input" type="text" id="cf_last" name="lastName" placeholder="Cruz">
+                    </div>
+                </div>
+                <div class="f-group">
+                    <label class="f-label" for="cf_email">Email Address *</label>
+                    <input class="f-input" type="email" id="cf_email" name="email" placeholder="maria@example.com" required>
+                </div>
+                <div class="f-group">
+                    <label class="f-label" for="cf_phone">Phone / WhatsApp</label>
+                    <input class="f-input" type="tel" id="cf_phone" name="phone" placeholder="+63 9XX XXX XXXX">
+                </div>
+                <div class="f-group">
+                    <label class="f-label" for="cf_subject">Subject *</label>
+                    <select class="f-select" id="cf_subject" name="subject" required>
+                        <option value="" disabled selected>Select a topic…</option>
+                        <option>General Inquiry</option>
+                        <option>Custom Styling Request</option>
+                        <option>Wholesale / Bulk Order</option>
+                        <option>Collaboration / Partnership</option>
+                        <option>Shipping & Delivery</option>
+                        <option>Returns & Exchanges</option>
+                        <option>Press / Media</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+                <div class="f-group">
+                    <label class="f-label" for="cf_msg">Message *</label>
+                    <textarea class="f-textarea" id="cf_msg" name="message" placeholder="Tell us how we can help…" required></textarea>
+                </div>
+                <button type="submit" class="f-submit" id="submitBtn">Send Message</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('contactForm')?.addEventListener('submit', function() {
+    const btn = document.getElementById('submitBtn');
+    if (btn) { btn.textContent = 'Sending…'; btn.disabled = true; }
+});
+</script>
+{% endblock %}

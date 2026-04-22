@@ -115,6 +115,59 @@
         font-style: italic;
     }
 
+    .file-upload-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-upload-input {
+        display: block;
+        width: 100%;
+        padding: 14px 16px;
+        border: 2px dashed #e2e8f0;
+        border-radius: 8px;
+        background: #f8f9fa;
+        color: #7f8c8d;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .file-upload-label {
+        display: block;
+        margin-top: 10px;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .file-upload-label:hover {
+        color: #F4C2C2;
+    }
+
+    .file-upload-input:focus + .file-upload-label {
+        color: #F4C2C2;
+    }
+
+    .file-name {
+        display: block;
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-top: 8px;
+        font-style: italic;
+    }
+
+    .image-preview {
+        margin-top: 15px;
+        text-align: center;
+    }
+
+    .image-preview img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
     .input-group {
         position: relative;
     }
@@ -183,8 +236,46 @@
 
         {{ form_start(form, {
             'action': path('app_product_edit', {'id': product.id}),
-            'method': 'POST'
+            'method': 'POST',
+            'attr': {'enctype': 'multipart/form-data'}
         }) }}
+
+        <!-- Product Image Section -->
+        <div class="form-section">
+            <div class="form-section-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                Product Image
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.image, 'Product Image') }}
+                <div class="file-upload-wrapper">
+                    {{ form_widget(form.image, {
+                        'attr': {
+                            'accept': 'image/*',
+                            'id': 'imageUpload',
+                            'class': 'file-upload-input'
+                        }
+                    }) }}
+                    <label for="imageUpload" class="file-upload-label">Choose product image</label>
+                    <span class="file-name" id="fileName"></span>
+                </div>
+                {{ form_errors(form.image) }}
+                <div class="form-hint">Supported formats: JPG, PNG, GIF (Max 5MB)</div>
+                
+                {% if product.image %}
+                <div class="image-preview" id="imagePreview">
+                    <img src="{{ asset('uploads/' ~ product.image) }}" alt="Current image">
+                </div>
+                {% else %}
+                <div class="image-preview" id="imagePreview"></div>
+                {% endif %}
+            </div>
+        </div>
 
         <!-- Product Information Section -->
         <div class="form-section">
@@ -265,4 +356,83 @@
         {{ form_end(form) }}
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const imageUpload = document.getElementById('imageUpload');
+        const fileNameDisplay = document.getElementById('fileName');
+        const imagePreview = document.getElementById('imagePreview');
+        const fileUploadLabel = document.querySelector('.file-upload-label');
+
+        if (!imageUpload || !fileUploadLabel) {
+            console.error('Image upload elements not found');
+            return;
+        }
+
+        // Make label clickable
+        fileUploadLabel.addEventListener('click', function(e) {
+            e.preventDefault();
+            imageUpload.click();
+        });
+
+        imageUpload.addEventListener('change', function(e) {
+            const file = this.files[0];
+            
+            if (file) {
+                // Show file name
+                fileNameDisplay.textContent = 'Selected: ' + file.name;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.innerHTML = '<img src="' + event.target.result + '" alt="Image preview">';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fileNameDisplay.textContent = '';
+                imagePreview.innerHTML = '';
+            }
+        });
+
+        // Drag and drop functionality
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileUploadLabel.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileUploadLabel.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileUploadLabel.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            fileUploadLabel.style.borderColor = '#F4C2C2';
+            fileUploadLabel.style.backgroundColor = 'rgba(244, 194, 194, 0.05)';
+        }
+
+        function unhighlight(e) {
+            fileUploadLabel.style.borderColor = '#e2e8f0';
+            fileUploadLabel.style.backgroundColor = '#f8f9fa';
+        }
+
+        fileUploadLabel.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            imageUpload.files = files;
+            
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            imageUpload.dispatchEvent(event);
+        }
+    });
+</script>
 {% endblock %}

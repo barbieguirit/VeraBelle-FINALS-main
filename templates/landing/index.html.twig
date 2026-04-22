@@ -5,63 +5,594 @@
 
 {% block body %}
 
+<style>
+:root {
+    --ivory: #F9F4EE;
+    --parchment: #EFE6D8;
+    --mauve: #C4A0A0;
+    --deep-mauve: #9E6F6F;
+    --sage: #8FAF8C;
+    --deep-sage: #5C7A5A;
+    --charcoal: #3A3232;
+    --warm-gray: #7A6F6F;
+    --blush: #E8CECE;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    background-color: var(--ivory);
+    color: var(--charcoal);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', sans-serif;
+    color: var(--charcoal);
+    font-weight: 700;
+}
+
+em {
+    color: var(--deep-mauve);
+    font-style: normal;
+    font-weight: 700;
+}
+
+.btn-fill {
+    background: linear-gradient(135deg, var(--mauve), var(--deep-mauve));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 13px 28px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-fill:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(158, 111, 111, 0.3);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--deep-sage);
+    border: 2px solid var(--sage);
+    border-radius: 12px;
+    padding: 11px 26px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.btn-outline:hover {
+    background: var(--sage);
+    color: white;
+    border-color: var(--sage);
+}
+
+.section-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    margin-bottom: 12px;
+}
+
+.section-title {
+    font-size: 36px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--charcoal);
+    margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+    .section-title {
+        font-size: 28px;
+    }
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--charcoal);
+}
+
+.hero-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--warm-gray);
+    font-weight: 300;
+}
+
+.hero-eyebrow {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 16px;
+}
+
+.story-tagline {
+    font-size: 18px;
+    line-height: 1.5;
+    color: var(--charcoal);
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+.story-body {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    margin-bottom: 16px;
+    font-weight: 300;
+}
+
+.team-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-top: 12px;
+}
+
+.team-role {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 8px;
+}
+
+.team-bio {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--warm-gray);
+    font-weight: 300;
+}
+
+/* Team photos — ensure profile image fills the card nicely */
+.team-photo-fill img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Hide initial letters now that a real photo is used */
+.team-photo-initials {
+    display: none;
+}
+
+.contact-desc {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--warm-gray);
+    margin-bottom: 24px;
+    font-weight: 300;
+}
+
+.c-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245, 240, 232, 0.75);
+    margin-bottom: 4px;
+}
+
+.c-val {
+    font-size: 14px;
+    color: #F5F0E8;
+    font-weight: 600;
+}
+
+.f-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.f-input, .f-select, .f-textarea {
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    color: var(--charcoal);
+    background: rgba(239, 230, 216, 0.5);
+    border: 1.5px solid rgba(196, 160, 160, 0.3);
+    border-radius: 8px;
+    padding: 12px 14px;
+    transition: all 0.3s ease;
+}
+
+.f-input:focus, .f-select:focus, .f-textarea:focus {
+    outline: none;
+    background: #fff;
+    border-color: var(--mauve);
+    box-shadow: 0 0 0 3px rgba(196, 160, 160, 0.12);
+}
+
+.f-submit {
+    background: linear-gradient(135deg, var(--mauve), var(--deep-mauve));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 28px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.f-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(158, 111, 111, 0.3);
+}
+
+.flash-ok {
+    background: rgba(143, 175, 140, 0.15);
+    border-left: 3px solid var(--deep-sage);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    color: var(--deep-sage);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.flash-err {
+    background: rgba(196, 160, 160, 0.15);
+    border-left: 3px solid var(--deep-mauve);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    color: var(--deep-mauve);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.prod-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--charcoal);
+}
+
+.prod-cat {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--warm-gray);
+    margin-bottom: 6px;
+}
+
+.prod-price {
+    font-size: 13px;
+    color: var(--charcoal);
+    font-weight: 600;
+}
+
+.ticker-item {
+    color: var(--warm-gray);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.challenges-section {
+    position: relative;
+    padding: 110px 40px;
+    background: #ffffff;
+}
+
+.challenges-shell {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.challenges-orb {
+    display: none;
+}
+
+.challenges-orb-a {
+    display: none;
+}
+
+.challenges-orb-b {
+    display: none;
+}
+
+.challenges-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 56px;
+}
+
+.challenge-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--deep-sage);
+    margin-bottom: 10px;
+}
+
+.challenge-kicker::before {
+    content: '';
+    width: 22px;
+    height: 1px;
+    background: rgba(92, 122, 90, 0.55);
+}
+
+.challenge-header-copy {
+    max-width: 520px;
+    color: var(--warm-gray);
+    font-size: 15px;
+    line-height: 1.7;
+    font-weight: 300;
+    margin: 0;
+}
+
+.challenges-chip {
+    background: rgba(58, 50, 50, 0.06);
+    border: 1px solid rgba(58, 50, 50, 0.12);
+    border-radius: 999px;
+    padding: 9px 16px;
+    color: var(--charcoal);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.challenges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 22px;
+    margin-bottom: 46px;
+}
+
+.challenge-card {
+    background: rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(196, 160, 160, 0.26);
+    border-radius: 18px;
+    padding: 22px;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column;
+    min-height: 250px;
+    box-shadow: 0 14px 34px rgba(58, 50, 50, 0.07);
+    transition: transform 0.32s ease, box-shadow 0.32s ease, border-color 0.32s ease;
+}
+
+.challenge-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 38px rgba(58, 50, 50, 0.14);
+    border-color: rgba(158, 111, 111, 0.5);
+}
+
+.challenge-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.challenge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--deep-mauve);
+}
+
+.challenge-status::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--deep-mauve);
+    box-shadow: 0 0 0 5px rgba(158, 111, 111, 0.14);
+}
+
+.challenge-date {
+    background: rgba(239, 230, 216, 0.95);
+    border: 1px solid rgba(196, 160, 160, 0.35);
+    border-radius: 999px;
+    padding: 6px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--warm-gray);
+}
+
+.challenge-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 25px;
+    font-weight: 500;
+    line-height: 1.22;
+    color: var(--charcoal);
+    margin: 0 0 12px;
+}
+
+.challenge-copy {
+    color: var(--warm-gray);
+    font-size: 13px;
+    line-height: 1.8;
+    margin: 0;
+}
+
+.challenge-card-footer {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid rgba(196, 160, 160, 0.22);
+}
+
+.challenge-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--deep-mauve);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    transition: gap 0.25s ease, color 0.25s ease;
+}
+
+.challenge-link:hover {
+    gap: 12px;
+    color: #7d5050;
+}
+
+.challenges-empty {
+    text-align: center;
+    padding: 66px 22px;
+    border-radius: 20px;
+    border: 1px solid rgba(196, 160, 160, 0.25);
+    background: rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+    margin-bottom: 46px;
+}
+
+.challenges-empty-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 500;
+    margin: 0 0 10px;
+}
+
+.challenges-empty-copy {
+    color: var(--warm-gray);
+    font-size: 14px;
+    margin: 0;
+}
+
+.challenges-cta {
+    text-align: center;
+}
+
+@media (max-width: 860px) {
+    .challenges-section {
+        padding: 84px 24px;
+    }
+
+    .challenges-header {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 38px;
+    }
+
+    .challenges-grid {
+        gap: 18px;
+    }
+
+    .challenge-card {
+        min-height: 228px;
+    }
+}
+</style>
 {# ══════════════════════════════
-   SECTION 1 — HERO BANNER
+   SECTION 1 — HERO BANNER (full-screen)
 ══════════════════════════════ #}
-<section id="home">
-    <div class="hero-left">
-        <div class="hero-texture"></div>
-        <div class="hero-number" aria-hidden="true">25</div>
+<section id="home" style="position:relative; overflow:hidden; min-height:100vh;">
 
-        <div class="hero-eyebrow">Spring / Summer 2025</div>
+  {# Background Photo — swap URL for your own image anytime #}
+  <img
+    src="/uploads/hero2.jpg"
+    alt="VeraBelle Collection editorial"
+    style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center top; z-index:0;">
 
-        <h1 class="hero-title">
-            Wear Your
-            <em>Story.</em>
-        </h1>
+  {# Dark gradient overlay — left is darker so text pops #}
+  <div style="position:absolute; inset:0; background:linear-gradient(105deg, rgba(20,15,15,0.75) 0%, rgba(20,15,15,0.45) 55%, rgba(20,15,15,0.1) 100%); z-index:1;"></div>
 
-        <p class="hero-desc">
-            VeraBelle Collection is a Dumaguete-born fashion label that dresses
-            bold women in thoughtfully curated, locally inspired clothing.
-        </p>
+  {# Season badge top-right #}
+  <div style="position:absolute; top:28px; right:28px; z-index:3; background:rgba(249,244,238,0.12); border:1px solid rgba(249,244,238,0.25); color:rgba(249,244,238,0.85); font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; padding:7px 16px; border-radius:20px;">
+    SS 2025 Collection
+  </div>
 
-        <div class="hero-actions">
-            <a href="#products" class="btn-fill">Explore Collection</a>
-            <a href="{{ path('app_about') }}" class="btn-outline">Our Story →</a>
-        </div>
+  {# Main content — bottom-left #}
+  <div style="position:relative; z-index:2; display:flex; flex-direction:column; justify-content:flex-end; min-height:100vh; padding:52px 60px;">
+
+    <div style="display:inline-flex; align-items:center; gap:10px; font-size:9px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:rgba(249,244,238,0.65); margin-bottom:20px;">
+      <span style="display:block; width:28px; height:1px; background:rgba(143,175,140,0.8);"></span>
+      Spring / Summer 2025 &nbsp;·&nbsp; Dumaguete City
     </div>
 
-    <div class="hero-right">
-        <div class="hero-img-top">
-            <div class="hero-fashion-text" aria-hidden="true">Vera</div>
-            <div class="hero-collection-pill">SS '25</div>
-            <div class="hero-img-label">Editorial Look 01</div>
-        </div>
-        <div class="hero-img-bottom">
-            <div class="hero-fashion-text" aria-hidden="true">Belle</div>
-            <div class="hero-img-label">Editorial Look 02</div>
-        </div>
+    <h1 style="font-family:'Playfair Display',serif; font-size:72px; font-weight:700; line-height:1.0; color:#F9F4EE; margin-bottom:22px; max-width:560px;">
+      Wear Your<br><em style="font-style:italic; color:#E8CECE;">Story.</em>
+    </h1>
+
+    <p style="font-size:15px; line-height:1.65; color:rgba(249,244,238,0.7); font-weight:300; max-width:400px; margin-bottom:36px;">
+      VeraBelle Collection is a Dumaguete-born fashion label that dresses
+      bold women in thoughtfully curated, locally inspired clothing.
+    </p>
+
+    <div style="display:flex; gap:14px; flex-wrap:wrap; margin-bottom:52px;">
+      <a href="{{ path('app_shop') }}" style="background:rgba(196,160,160,0.92); color:#3A3232; border:none; border-radius:10px; padding:13px 26px; font-family:'Nunito',sans-serif; font-weight:700; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; text-decoration:none;">Explore Collection</a>
+      <a href="{{ path('app_about') }}" style="background:transparent; color:#F9F4EE; border:1.5px solid rgba(249,244,238,0.45); border-radius:10px; padding:12px 24px; font-family:'Nunito',sans-serif; font-weight:600; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; text-decoration:none;">Our Story →</a>
     </div>
 
-    <div class="hero-scroll-cue" aria-hidden="true">
-        <div class="hero-scroll-line"></div>
-        Scroll
+    <div style="display:flex; gap:32px; padding-top:28px; border-top:1px solid rgba(249,244,238,0.15);">
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:#F9F4EE;">5+</div>
+        <div style="font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(249,244,238,0.5); margin-top:3px;">Years</div>
+      </div>
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:#F9F4EE;">200+</div>
+        <div style="font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(249,244,238,0.5); margin-top:3px;">Pieces</div>
+      </div>
+      <div>
+        <div style="font-family:'Playfair Display',serif; font-size:26px; font-weight:700; color:#F9F4EE;">500+</div>
+        <div style="font-size:9px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:rgba(249,244,238,0.5); margin-top:3px;">Clients</div>
+      </div>
     </div>
+  </div>
+
+  {# Scroll cue bottom-right #}
+  <div aria-hidden="true" style="position:absolute; bottom:32px; right:32px; z-index:3; display:flex; flex-direction:column; align-items:center; gap:8px; color:rgba(249,244,238,0.35); font-size:8px; font-weight:700; letter-spacing:2px; text-transform:uppercase;">
+    <div style="width:1px; height:40px; background:rgba(249,244,238,0.25);"></div>
+    Scroll
+  </div>
+
 </section>
-
-{# ── Ticker Tape ── #}
-<div class="ticker" aria-hidden="true">
-    <div class="ticker-inner">
-        {% for i in 1..2 %}
-            <span class="ticker-item">New Arrivals</span>
-            <span class="ticker-item">Free Shipping</span>
-            <span class="ticker-item">Filipino Made</span>
-            <span class="ticker-item">SS 2025 Collection</span>
-            <span class="ticker-item">Sustainable Fashion</span>
-            <span class="ticker-item">Dumaguete Origin</span>
-        {% endfor %}
-    </div>
-</div>
 
 {# ══════════════════════════════
    SECTION 2 — PRODUCTS / COLLECTION
@@ -74,7 +605,7 @@
                 Dressed to<br><em>Be Felt.</em>
             </h2>
         </div>
-        <a href="{{ path('app_product_index') }}" class="see-all-link">
+        <a href="{{ path('app_shop') }}" class="see-all-link">
             View All Pieces →
         </a>
     </div>
@@ -82,89 +613,53 @@
     {# Editorial grid — first card spans 2 rows #}
     <div class="products-editorial">
 
-        {# Large featured card #}
-        <div class="prod-card large reveal">
-            <div class="prod-img">
-                <div class="prod-img-fill" style="background:linear-gradient(155deg, #2D4A3E 0%, #1E3329 100%);">
-                    <div class="prod-img-glyph">Vb</div>
+        {% if products is defined and products|length > 0 %}
+            {% for product in products %}
+            <div class="prod-card {{ loop.first ? 'large' : '' }} reveal" style="transition-delay:{{ loop.index0 * 0.05 }}s">
+                <div class="prod-img">
+                    {% if product.image %}
+                        <img src="/uploads/{{ product.image }}" alt="{{ product.name }}"
+                             style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);">
+                    {% else %}
+                        <div class="prod-img-fill" style="background:linear-gradient(155deg, var(--mauve), var(--deep-mauve));">
+                            <div class="prod-img-glyph">{{ product.name|slice(0,2)|upper }}</div>
+                        </div>
+                    {% endif %}
+                    {% if loop.first %}<span class="prod-badge">New</span>{% endif %}
+                    <div class="prod-hover-cta">
+                        <a href="{{ path('app_product_show', {id: product.id}) }}" class="prod-hover-btn">View Piece</a>
+                        {% if product.stock > 0 %}
+                        <button class="prod-hover-btn" style="background:var(--deep-mauve);color:white;border:none;cursor:pointer;"
+                                onclick="addToCart({{ product.id }}, '{{ product.name|escape('js') }}', {{ product.price }}, this)">Add to Cart</button>
+                        {% endif %}
+                    </div>
                 </div>
-                <span class="prod-badge">New</span>
-                <div class="prod-hover-cta">
-                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
-                </div>
-            </div>
-            <div class="prod-info">
-                <div class="prod-cat">Featured · Dress</div>
-                <div class="prod-name">The Palengke Shift</div>
-                <div class="prod-price"><strong>₱2,450</strong></div>
-            </div>
-        </div>
-
-        {# Small cards right side #}
-        <div class="prod-card reveal" style="transition-delay:0.1s">
-            <div class="prod-img">
-                <div class="prod-img-fill" style="background:linear-gradient(155deg, #C4714A 0%, #A5532E 100%);">
-                    <div class="prod-img-glyph">Co</div>
-                </div>
-                <div class="prod-hover-cta">
-                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
-                </div>
-            </div>
-            <div class="prod-info">
-                <div class="prod-cat">Tops</div>
-                <div class="prod-name">Coral Wrap Blouse</div>
-                <div class="prod-price"><strong>₱1,180</strong></div>
-            </div>
-        </div>
-
-        <div class="prod-card reveal" style="transition-delay:0.15s">
-            <div class="prod-img">
-                <div class="prod-img-fill" style="background:linear-gradient(155deg, #C8B49A 0%, #B09878 100%);">
-                    <div class="prod-img-glyph">Sa</div>
-                </div>
-                <span class="prod-badge" style="background:var(--forest)">Limited</span>
-                <div class="prod-hover-cta">
-                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
+                <div class="prod-info">
+                    <div class="prod-cat">{{ product.category ? product.category.name : 'Collection' }}</div>
+                    <div class="prod-name">{{ product.name }}</div>
+                    <div class="prod-price"><strong>₱{{ "%.0f"|format(product.price) }}</strong></div>
                 </div>
             </div>
-            <div class="prod-info">
-                <div class="prod-cat">Bottoms</div>
-                <div class="prod-name">Sandstone Midi Skirt</div>
-                <div class="prod-price"><strong>₱1,650</strong></div>
-            </div>
-        </div>
-
-        <div class="prod-card reveal" style="transition-delay:0.2s">
-            <div class="prod-img">
-                <div class="prod-img-fill" style="background:linear-gradient(155deg, #4A6741 0%, #344D2D 100%);">
-                    <div class="prod-img-glyph">Fo</div>
+            {% endfor %}
+        {% else %}
+            {# Fallback placeholders if no products in DB #}
+            <div class="prod-card large reveal">
+                <div class="prod-img">
+                    <div class="prod-img-fill" style="background:linear-gradient(155deg, var(--deep-sage), var(--charcoal));">
+                        <div class="prod-img-glyph">Vb</div>
+                    </div>
+                    <span class="prod-badge">New</span>
+                    <div class="prod-hover-cta">
+                        <a href="{{ path('app_shop') }}" class="prod-hover-btn">View Piece</a>
+                    </div>
                 </div>
-                <div class="prod-hover-cta">
-                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
-                </div>
-            </div>
-            <div class="prod-info">
-                <div class="prod-cat">Sets</div>
-                <div class="prod-name">Forest Linen Co-ord</div>
-                <div class="prod-price"><strong>₱3,200</strong></div>
-            </div>
-        </div>
-
-        <div class="prod-card reveal" style="transition-delay:0.25s">
-            <div class="prod-img">
-                <div class="prod-img-fill" style="background:linear-gradient(155deg, #E8C4B0 0%, #D4A892 100%);">
-                    <div class="prod-img-glyph">Bl</div>
-                </div>
-                <div class="prod-hover-cta">
-                    <a href="{{ path('app_product_index') }}" class="prod-hover-btn">View Piece</a>
+                <div class="prod-info">
+                    <div class="prod-cat">Featured · Dress</div>
+                    <div class="prod-name">The Palengke Shift</div>
+                    <div class="prod-price"><strong>₱2,450</strong></div>
                 </div>
             </div>
-            <div class="prod-info">
-                <div class="prod-cat">Accessories</div>
-                <div class="prod-name">Blush Rattan Bag</div>
-                <div class="prod-price"><strong>₱890</strong></div>
-            </div>
-        </div>
+        {% endif %}
 
     </div>
 </section>
@@ -173,7 +668,7 @@
    SECTION 3 — OUR STORY
 ══════════════════════════════ #}
 <section id="story">
-    <div class="story-left">
+    <div class="story-left" style="background:url('/uploads/section3.JPG') center/cover no-repeat;">
         <div class="story-gradient"></div>
         <div class="story-bg-word" aria-hidden="true">VeraBelle</div>
 
@@ -223,6 +718,79 @@
 </section>
 
 {# ══════════════════════════════
+   SECTION — FASHION CHALLENGES
+══════════════════════════════ #}
+<section id="challenges" style="padding:100px 40px; background:var(--ivory); position:relative; overflow:hidden;">
+    <!-- Background decoration -->
+    <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;background:radial-gradient(circle,rgba(196,160,160,0.08) 0%,transparent 65%);pointer-events:none;"></div>
+    <div style="position:absolute;bottom:-80px;left:-80px;width:350px;height:350px;background:radial-gradient(circle,rgba(143,175,140,0.07) 0%,transparent 65%);pointer-events:none;"></div>
+
+    <div style="max-width:1200px;margin:0 auto;position:relative;z-index:1;">
+
+        <!-- Header -->
+        <div class="reveal" style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:56px;flex-wrap:wrap;gap:24px;">
+            <div>
+                <div class="section-eyebrow">Community</div>
+                <h2 class="section-title">Fashion <em>Challenges.</em></h2>
+                <p style="font-size:15px;color:var(--warm-gray);margin-top:12px;font-weight:300;max-width:420px;line-height:1.7;">
+                    Show your style, win prizes, and be part of our growing fashion community.
+                </p>
+            </div>
+            <a href="{{ path('app_challenge_index') }}" class="btn-fill" style="white-space:nowrap;">View All Challenges →</a>
+        </div>
+
+        <!-- Challenge Cards -->
+        {% if challenges is defined and challenges|length > 0 %}
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-bottom:48px;">
+            {% for challenge in challenges %}
+            <article class="reveal" style="background:white;border:1px solid rgba(196,160,160,0.15);border-radius:16px;padding:28px;transition:all 0.3s;transition-delay:{{ loop.index0 * 0.07 }}s;box-shadow:0 2px 12px rgba(58,50,50,0.05);" onmouseover="this.style.transform='translateY(-4px)';this.style.boxShadow='0 12px 32px rgba(58,50,50,0.1)'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 2px 12px rgba(58,50,50,0.05)'">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+                    <span style="display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--deep-mauve);">
+                        <span style="width:7px;height:7px;border-radius:50%;background:var(--deep-mauve);box-shadow:0 0 0 4px rgba(158,111,111,0.15);display:inline-block;"></span>
+                        Active
+                    </span>
+                    <span style="background:var(--parchment);border:1px solid rgba(196,160,160,0.25);border-radius:20px;padding:5px 12px;font-size:10px;font-weight:700;color:var(--warm-gray);">
+                        Ends {{ challenge.endDate|date('M d, Y') }}
+                    </span>
+                </div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:400;color:var(--charcoal);margin:0 0 10px;line-height:1.3;">{{ challenge.title }}</h3>
+                <p style="font-size:13px;color:var(--warm-gray);line-height:1.8;margin:0 0 20px;font-weight:300;">
+                    {{ challenge.description|slice(0,110) }}{% if challenge.description|length > 110 %}…{% endif %}
+                </p>
+                <div style="padding-top:16px;border-top:1px solid rgba(196,160,160,0.15);display:flex;align-items:center;justify-content:space-between;">
+                    <a href="{{ path('app_challenge_view', {id: challenge.id}) }}" style="display:inline-flex;align-items:center;gap:6px;color:var(--deep-mauve);text-decoration:none;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">
+                        View Entries →
+                    </a>
+                    <a href="{{ path('app_challenge_submit', {id: challenge.id}) }}" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:linear-gradient(135deg,var(--mauve),var(--deep-mauve));color:white;border-radius:8px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;text-decoration:none;">
+                        Submit →
+                    </a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="reveal" style="text-align:center;padding:60px 20px;border:1px solid rgba(196,160,160,0.2);border-radius:16px;background:white;margin-bottom:48px;">
+            <div style="font-size:48px;margin-bottom:14px;opacity:0.4;">✨</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:300;color:var(--charcoal);margin-bottom:8px;">Challenges Coming Soon</h3>
+            <p style="color:var(--warm-gray);font-size:14px;font-weight:300;">Stay tuned for exciting fashion challenges and prizes.</p>
+        </div>
+        {% endif %}
+
+        <!-- Hall of Fame teaser -->
+        <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;padding:24px 28px;background:white;border:1px solid rgba(196,160,160,0.2);border-radius:14px;flex-wrap:wrap;gap:16px;box-shadow:0 2px 12px rgba(58,50,50,0.05);">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <span style="font-size:28px;">🏆</span>
+                <div>
+                    <div style="font-size:13px;font-weight:700;color:var(--charcoal);">Hall of Fame</div>
+                    <div style="font-size:12px;color:var(--warm-gray);margin-top:2px;">See our past winners and top entries</div>
+                </div>
+            </div>
+            <a href="{{ path('app_challenge_hall_of_fame') }}" class="btn-fill">View Hall of Fame →</a>
+        </div>
+    </div>
+</section>
+
+{# ══════════════════════════════
    SECTION 4 — OUR TEAM
 ══════════════════════════════ #}
 <section id="team">
@@ -233,32 +801,32 @@
 
     {% set team = [
         {
-            name: 'Vera Santos',
+            name: 'Barbie Guirit',
             role: 'Founder & Creative Director',
             initials: 'VS',
-            bg: 'linear-gradient(155deg, #2D4A3E, #1E3329)',
+            bg: 'linear-gradient(155deg, var(--deep-sage), var(--charcoal))',
             bio: 'The visionary behind every collection. Vera built VeraBelle from a love of fashion and a belief that every Filipino woman deserves to look extraordinary.'
         },
         {
-            name: 'Maria Cruz',
+            name: 'Barbie Guirit',
             role: 'Head of Styling & Curation',
             initials: 'MC',
-            bg: 'linear-gradient(155deg, #C4714A, #A5532E)',
-            bio: 'Maria has an eye that does not miss. She selects and styles every piece in the collection, ensuring each one earns its place.'
+            bg: 'linear-gradient(155deg, var(--mauve), var(--deep-mauve))',
+            bio: 'Barbie has an eye that does not miss. She selects and styles every piece in the collection, ensuring each one earns its place.'
         },
         {
-            name: 'Joel Lim',
+            name: 'Barbie Guirit',
             role: 'Operations & Logistics',
             initials: 'JL',
-            bg: 'linear-gradient(155deg, #4A6741, #344D2D)',
-            bio: 'Joel keeps the wheels turning — from supplier relationships to last-mile delivery. He is the reason your order arrives on time.'
+            bg: 'linear-gradient(155deg, var(--sage), var(--deep-sage))',
+            bio: 'Barbie keeps the wheels turning — from supplier relationships to last-mile delivery. She is the reason your order arrives on time.'
         },
         {
-            name: 'Ana Reyes',
+            name: 'Barbie Guirit',
             role: 'Client Experience Lead',
             initials: 'AR',
-            bg: 'linear-gradient(155deg, #C8B49A, #B09878)',
-            bio: 'Ana is the first voice you hear when you reach out. She treats every client like a VIP because, to us, they are.'
+            bg: 'linear-gradient(155deg, var(--parchment), var(--blush))',
+            bio: 'Barbie is the first voice you hear when you reach out. She treats every client like a VIP because, to us, they are.'
         }
     ] %}
 
@@ -267,7 +835,7 @@
         <div class="team-card reveal" style="transition-delay:{{ i * 0.1 }}s">
             <div class="team-photo">
                 <div class="team-photo-fill" style="background: {{ member.bg }};">
-                    <span class="team-photo-initials">{{ member.initials }}</span>
+                    <img src="/uploads/team.jpg" alt="{{ member.name }}" class="team-photo-img">
                 </div>
                 <div class="team-overlay">
                     <div class="team-social-row">

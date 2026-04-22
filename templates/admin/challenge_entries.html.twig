@@ -1,0 +1,151 @@
+{% extends 'base_dashboard.html.twig' %}
+
+{% block title %}Entries — {{ challenge.title }}{% endblock %}
+{% block page_title %}Challenge Entries{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --mauve:#C4A0A0; --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A;
+        --charcoal:#3A3232; --warm-gray:#7A6F6F; --ivory:#F9F4EE; --parchment:#EFE6D8;
+        --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(58,50,50,0.08); --shadow-sm:0 2px 12px rgba(58,50,50,0.06);
+        --shadow-md:0 8px 32px rgba(58,50,50,0.10); --r:16px; --r-sm:10px;
+    }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
+    .ew { max-width:1400px; margin:0 auto; }
+
+    /* Hero */
+    .entries-hero {
+        background:linear-gradient(135deg,#2A2020,var(--charcoal));
+        border-radius:var(--r); padding:36px 44px; margin-bottom:24px;
+        display:flex; align-items:center; justify-content:space-between;
+        position:relative; overflow:hidden; border:1px solid rgba(196,160,160,0.1);
+    }
+    .entries-hero::before { content:''; position:absolute; top:-60px; right:60px; width:260px; height:260px; background:radial-gradient(circle,rgba(196,160,160,0.12) 0%,transparent 65%); pointer-events:none; }
+    .eh-left { position:relative; z-index:1; }
+    .eh-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+    .eh-eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--gold); }
+    .eh-title { font-family:'Nunito',sans-serif; font-size:28px; font-weight:800; color:white; margin-bottom:6px; }
+    .eh-meta { font-size:13px; color:rgba(255,255,255,0.4); }
+    .eh-badges { display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; }
+    .eh-badge { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; }
+    .badge-count { background:rgba(196,160,160,0.15); color:var(--mauve); border:1px solid rgba(196,160,160,0.25); }
+    .badge-status { background:rgba(143,175,140,0.15); color:var(--sage); border:1px solid rgba(143,175,140,0.25); }
+    .eh-right { position:relative; z-index:1; }
+    .btn-back-hero { display:inline-flex; align-items:center; gap:7px; padding:11px 20px; background:rgba(255,255,255,0.06); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.12); border-radius:8px; font-size:12px; font-weight:600; text-decoration:none; transition:all 0.2s; }
+    .btn-back-hero:hover { background:rgba(255,255,255,0.12); color:white; }
+
+    /* Grid */
+    .entries-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:20px; }
+
+    /* Entry card */
+    .entry-card { background:var(--white); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; transition:all 0.25s; box-shadow:var(--shadow-sm); display:flex; flex-direction:column; }
+    .entry-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-md); border-color:rgba(196,160,160,0.25); }
+
+    .entry-img { width:100%; aspect-ratio:3/4; background:linear-gradient(135deg,var(--parchment),var(--blush,#E8CECE)); position:relative; overflow:hidden; }
+    .entry-img img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.5s; }
+    .entry-card:hover .entry-img img { transform:scale(1.04); }
+    .entry-img-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+    .entry-type-badge { position:absolute; top:10px; right:10px; padding:4px 10px; border-radius:20px; font-size:9px; font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+    .tb-outfit { background:rgba(196,160,160,0.9); color:white; }
+    .tb-design { background:rgba(92,122,90,0.9); color:white; }
+    .rank-badge { position:absolute; top:10px; left:10px; width:32px; height:32px; border-radius:50%; background:white; display:flex; align-items:center; justify-content:center; font-size:16px; box-shadow:0 2px 8px rgba(0,0,0,0.15); }
+
+    .entry-body { padding:18px 20px; flex:1; display:flex; flex-direction:column; gap:10px; }
+    .entry-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--charcoal); line-height:1.3; }
+    .entry-creator { font-size:12px; color:var(--warm-gray); }
+
+    .vote-box { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:var(--ivory); border-radius:8px; }
+    .vote-num { font-family:'Nunito',sans-serif; font-size:22px; font-weight:800; color:var(--deep-mauve); }
+    .vote-lbl { font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--warm-gray); }
+
+    .entry-actions { display:flex; gap:6px; padding-top:10px; border-top:1px solid var(--border); }
+    .btn-action { flex:1; padding:8px 8px; border-radius:8px; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.18s; display:inline-flex; align-items:center; justify-content:center; gap:4px; border:1px solid transparent; font-family:'Figtree',sans-serif; }
+    .btn-rank  { background:rgba(201,169,110,0.12); color:#8a6d2f; border-color:rgba(201,169,110,0.25); }
+    .btn-rank:hover  { background:var(--gold); color:white; border-color:var(--gold); }
+    .btn-del   { background:rgba(180,80,80,0.08); color:#b05050; border-color:rgba(180,80,80,0.18); }
+    .btn-del:hover   { background:#e74c3c; color:white; border-color:#e74c3c; }
+
+    /* Empty */
+    .empty-state { text-align:center; padding:80px 20px; background:var(--white); border-radius:var(--r); border:1px solid var(--border); }
+    .empty-icon { margin-bottom:16px; }
+    .empty-title { font-family:'Nunito',sans-serif; font-size:20px; font-weight:800; color:var(--charcoal); margin-bottom:8px; }
+    .empty-sub { font-size:13px; color:var(--warm-gray); }
+</style>
+
+<div class="ew">
+    <!-- Hero -->
+    <div class="entries-hero">
+        <div class="eh-left">
+            <div class="eh-eyebrow">Challenge Management</div>
+            <div class="eh-title">{{ challenge.title }}</div>
+            <div class="eh-meta">Manage and review all submitted entries</div>
+            <div class="eh-badges">
+                <span class="eh-badge badge-count">
+                    <i data-lucide="image" style="width:10px;height:10px;stroke:currentColor;stroke-width:2;"></i>
+                    {{ entries|length }} Entries
+                </span>
+                <span class="eh-badge badge-status">{{ challenge.status|capitalize }}</span>
+            </div>
+        </div>
+        <div class="eh-right">
+            <a href="{{ path('app_challenge_admin_list') }}" class="btn-back-hero">
+                <i data-lucide="arrow-left" style="width:13px;height:13px;stroke:currentColor;stroke-width:2;"></i>
+                Back to Challenges
+            </a>
+        </div>
+    </div>
+
+    {% if entries|length > 0 %}
+    <div class="entries-grid">
+        {% for entry in entries %}
+        <div class="entry-card">
+            <div class="entry-img">
+                {% if entry.files|length > 0 %}
+                    <img src="{{ entry.files[0] }}" alt="{{ entry.title }}">
+                {% else %}
+                    <div class="entry-img-placeholder">
+                        <i data-lucide="{{ entry.entryType == 'outfit' ? 'shirt' : 'pencil' }}" style="width:56px;height:56px;stroke:rgba(196,160,160,0.3);stroke-width:0.75;"></i>
+                    </div>
+                {% endif %}
+                <span class="entry-type-badge tb-{{ entry.entryType }}">{{ entry.entryType }}</span>
+                {% if entry.rank %}
+                    <div class="rank-badge">{{ entry.rank == 1 ? '🥇' : (entry.rank == 2 ? '🥈' : '🥉') }}</div>
+                {% endif %}
+            </div>
+            <div class="entry-body">
+                <div class="entry-title">{{ entry.title }}</div>
+                <div class="entry-creator">by {{ entry.submittedBy.email|split('@')[0] }}</div>
+                <div class="vote-box">
+                    <div>
+                        <div class="vote-num">{{ entry.voteCount }}</div>
+                        <div class="vote-lbl">Votes</div>
+                    </div>
+                    {% if entry.rank %}
+                        <span style="font-size:11px;font-weight:700;color:var(--gold);">Rank #{{ entry.rank }}</span>
+                    {% endif %}
+                </div>
+                <div class="entry-actions">
+                    <button class="btn-action btn-rank" onclick="alert('Rank management coming soon')">
+                        <i data-lucide="trophy" style="width:11px;height:11px;stroke:currentColor;stroke-width:2;"></i>
+                        {{ entry.rank ? 'Rank ' ~ entry.rank : 'Set Rank' }}
+                    </button>
+                    <button class="btn-action btn-del" onclick="alert('Delete entry?')">
+                        <i data-lucide="trash-2" style="width:11px;height:11px;stroke:currentColor;stroke-width:2;"></i>
+                        Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon"><i data-lucide="inbox" style="width:48px;height:48px;stroke:var(--border);stroke-width:1.5;"></i></div>
+        <div class="empty-title">No Entries Yet</div>
+        <div class="empty-sub">No submissions have been made for this challenge.</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

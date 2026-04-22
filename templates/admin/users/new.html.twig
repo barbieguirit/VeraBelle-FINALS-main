@@ -326,7 +326,7 @@
 <div class="form-container">
     <div class="form-card">
         <div class="form-header">
-            <h2>{% if user is defined %}✏️ Edit User{% else %}➕ Create New User{% endif %}</h2>
+            <h2>{% if user is defined %}✏️ Edit User{% else %}Create New User{% endif %}</h2>
             <p>{% if user is defined %}Update user account details and permissions{% else %}Add a new user to your VeraBelle Collection system{% endif %}</p>
         </div>
 
@@ -345,12 +345,6 @@
         <form method="post" action="{{ user is defined ? path('app_admin_users_edit', {id: user.id}) : path('app_admin_users_new') }}">
             <div class="form-section-title">
                 👤 Account Information
-            </div>
-
-            <div class="form-group">
-                <label for="username">Username <span class="required">*</span></label>
-                <input type="text" id="username" name="username" placeholder="Enter username" 
-                       value="{{ user.username ?? '' }}" required>
             </div>
 
             <div class="form-group">

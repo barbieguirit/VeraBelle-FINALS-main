@@ -1,0 +1,1108 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}Shop VeraBelle Collection{% endblock %}
+{% block meta_desc %}Browse and buy from VeraBelle Collection's curated fashion pieces.{% endblock %}
+
+{% block body %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&family=Pacifico&display=swap');
+
+    :root {
+        --ivory:      #F9F4EE;
+        --parchment:  #EFE6D8;
+        --mauve:      #C4A0A0;
+        --deep-mauve: #9E6F6F;
+        --sage:       #8FAF8C;
+        --deep-sage:  #5C7A5A;
+        --charcoal:   #3A3232;
+        --warm-gray:  #7A6F6F;
+        --blush:      #E8CECE;
+        --gold:       #C9A96E;
+        --serif:      'Playfair Display', Georgia, serif;
+        --sans:       'DM Sans', system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+        font-family: var(--sans);
+        background: var(--ivory);
+        color: var(--charcoal);
+        min-height: 100vh;
+    }
+
+    /* ── PAGE LAYOUT ──────────────────────────────────────────── */
+    .shop-wrapper {
+        display: flex;
+        max-width: 1380px;
+        margin: 0 auto;
+        padding: 120px 40px 100px;
+        gap: 56px;
+        align-items: flex-start;
+    }
+
+    /* ── SIDEBAR ──────────────────────────────────────────────── */
+    .sidebar {
+        flex: 0 0 230px;
+        position: sticky;
+        top: 100px;
+        display: flex;
+        flex-direction: column;
+        gap: 36px;
+    }
+
+    .sidebar-brand {
+        border-bottom: 1px solid rgba(196,160,160,0.25);
+        padding-bottom: 24px;
+    }
+
+    .sidebar-logo {
+        font-family: 'Pacifico', cursive;
+        font-size: 26px;
+        color: var(--charcoal);
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+    .sidebar-logo em { font-style: normal; color: var(--deep-mauve); }
+
+    .sidebar-eyebrow {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--sage);
+    }
+
+    .filter-section { display: flex; flex-direction: column; gap: 10px; }
+
+    .filter-heading {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--warm-gray);
+        margin-bottom: 4px;
+    }
+
+    .filter-opt {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+        padding: 6px 0;
+        border-bottom: 1px solid transparent;
+        transition: all 0.2s;
+    }
+    .filter-opt:hover { border-bottom-color: rgba(196,160,160,0.3); }
+    .filter-opt input[type="checkbox"] {
+        appearance: none;
+        width: 14px; height: 14px;
+        border: 1.5px solid rgba(196,160,160,0.5);
+        border-radius: 3px;
+        background: transparent;
+        cursor: pointer;
+        flex-shrink: 0;
+        position: relative;
+        transition: all 0.2s;
+    }
+    .filter-opt input[type="checkbox"]:checked {
+        background: var(--deep-mauve);
+        border-color: var(--deep-mauve);
+    }
+    .filter-opt input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        color: white;
+        font-size: 9px;
+        font-weight: 800;
+    }
+    .filter-opt span {
+        font-size: 13px;
+        font-weight: 400;
+        color: var(--charcoal);
+        transition: color 0.2s;
+    }
+    .filter-opt:hover span { color: var(--deep-mauve); }
+
+    /* Price range */
+    .price-track {
+        position: relative;
+        height: 3px;
+        background: rgba(196,160,160,0.25);
+        border-radius: 2px;
+        margin: 8px 0 6px;
+    }
+    .price-fill {
+        position: absolute;
+        height: 100%;
+        background: var(--deep-mauve);
+        border-radius: 2px;
+    }
+    .price-slider {
+        width: 100%;
+        -webkit-appearance: none;
+        background: transparent;
+        position: absolute;
+        top: -6px;
+        left: 0;
+        pointer-events: none;
+    }
+    .price-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px; height: 14px;
+        border-radius: 50%;
+        background: var(--deep-mauve);
+        border: 2px solid var(--ivory);
+        box-shadow: 0 1px 4px rgba(158,111,111,0.4);
+        cursor: pointer;
+        pointer-events: all;
+    }
+    .price-display {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--deep-mauve);
+        text-align: right;
+        margin-top: 4px;
+    }
+
+    /* Tag pills */
+    .tag-pills { display: flex; flex-direction: column; gap: 8px; }
+    .tag-pill-label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+    .tag-pill-label input[type="checkbox"] {
+        appearance: none;
+        width: 14px; height: 14px;
+        border: 1.5px solid rgba(196,160,160,0.5);
+        border-radius: 3px;
+        background: transparent;
+        cursor: pointer;
+        flex-shrink: 0;
+        position: relative;
+        transition: all 0.2s;
+    }
+    .tag-pill-label input[type="checkbox"]:checked { background: var(--deep-mauve); border-color: var(--deep-mauve); }
+    .tag-pill-label input[type="checkbox"]:checked::after {
+        content: '✓';
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%,-50%);
+        color: white; font-size: 9px; font-weight: 800;
+    }
+    .tag-pill {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .tag-pill.new      { background: rgba(196,160,160,0.15); color: var(--deep-mauve); border: 1px solid rgba(196,160,160,0.3); }
+    .tag-pill.trending { background: rgba(158,111,111,0.12); color: var(--deep-mauve); border: 1px solid rgba(158,111,111,0.2); }
+    .tag-pill.limited  { background: rgba(201,169,110,0.12); color: var(--gold);       border: 1px solid rgba(201,169,110,0.3); }
+    .tag-pill.in-stock { background: rgba(92,122,90,0.1);    color: var(--deep-sage);  border: 1px solid rgba(92,122,90,0.2); }
+
+    /* ── MAIN CONTENT ─────────────────────────────────────────── */
+    .shop-main { flex: 1; min-width: 0; }
+
+    /* Header */
+    .shop-header {
+        margin-bottom: 52px;
+        position: relative;
+    }
+    .shop-header-eyebrow {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        color: var(--warm-gray);
+        margin-bottom: 10px;
+    }
+    .shop-header h1 {
+        font-family: var(--serif);
+        font-size: 56px;
+        font-weight: 300;
+        color: var(--charcoal);
+        line-height: 1.1;
+        margin-bottom: 14px;
+    }
+    .shop-header h1 em {
+        font-style: italic;
+        color: var(--deep-mauve);
+    }
+    .shop-header p {
+        font-size: 14px;
+        color: var(--warm-gray);
+        max-width: 480px;
+        line-height: 1.7;
+        font-weight: 300;
+    }
+    /* Decorative line */
+    .shop-header::after {
+        content: '';
+        display: block;
+        width: 48px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--mauve), var(--sage));
+        margin-top: 24px;
+    }
+
+    /* Toolbar */
+    .shop-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 36px;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .results-count {
+        font-size: 12px;
+        color: var(--warm-gray);
+        font-weight: 300;
+    }
+    .results-count strong { font-weight: 700; color: var(--charcoal); }
+
+    .sort-select {
+        padding: 9px 14px;
+        background: rgba(239,230,216,0.4);
+        border: 1.5px solid rgba(196,160,160,0.3);
+        border-radius: 8px;
+        font-family: var(--sans);
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--charcoal);
+        cursor: pointer;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .sort-select:focus { border-color: var(--mauve); }
+
+    /* ── PRODUCT GRID ─────────────────────────────────────────── */
+    .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 32px;
+    }
+
+    .product-card {
+        display: flex;
+        flex-direction: column;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(196,160,160,0.12);
+        transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s;
+        animation: cardIn 0.5s ease both;
+    }
+    .product-card:nth-child(2) { animation-delay: 0.06s; }
+    .product-card:nth-child(3) { animation-delay: 0.12s; }
+    .product-card:nth-child(4) { animation-delay: 0.18s; }
+    .product-card:nth-child(5) { animation-delay: 0.24s; }
+    .product-card:nth-child(6) { animation-delay: 0.30s; }
+    @keyframes cardIn {
+        from { opacity:0; transform: translateY(16px); }
+        to   { opacity:1; transform: translateY(0); }
+    }
+    .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 16px 40px rgba(58,50,50,0.1);
+    }
+
+    /* Image area */
+    .product-image {
+        position: relative;
+        width: 100%;
+        height: 280px;
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+    .product-image-bg {
+        width: 100%; height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--serif);
+        font-size: 64px;
+        font-weight: 300;
+        font-style: italic;
+        color: rgba(255,255,255,0.55);
+        letter-spacing: 4px;
+        transition: transform 0.5s cubic-bezier(0.22,1,0.36,1);
+    }
+    .product-card:hover .product-image-bg { transform: scale(1.05); }
+    .product-card:hover .product-image img { transform: scale(1.05); }
+
+    /* Overlay on hover */
+    .product-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(58,50,50,0.38);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+    .product-card:hover .product-overlay { opacity: 1; }
+
+    .overlay-btn {
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-family: var(--sans);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        border: none;
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .overlay-btn:hover { transform: translateY(-2px); }
+    .overlay-btn.view {
+        background: rgba(249,244,238,0.95);
+        color: var(--charcoal);
+    }
+    .overlay-btn.buy {
+        background: var(--deep-mauve);
+        color: white;
+    }
+    .overlay-btn.buy:hover { box-shadow: 0 4px 14px rgba(158,111,111,0.5); }
+    .overlay-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .product-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+    .product-badge.new      { background: var(--blush); color: var(--deep-mauve); }
+    .product-badge.trending { background: var(--deep-mauve); color: white; }
+    .product-badge.limited  { background: var(--gold); color: white; }
+    .product-badge.stock    { background: rgba(92,122,90,0.85); color: white; }
+    .product-badge.outstock { background: rgba(122,111,111,0.7); color: white; }
+
+    /* Product info */
+    .product-info {
+        padding: 20px 22px 22px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .product-category {
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--warm-gray);
+        margin-bottom: 6px;
+    }
+    .product-name {
+        font-family: var(--serif);
+        font-size: 19px;
+        font-weight: 400;
+        color: var(--charcoal);
+        margin-bottom: 8px;
+        line-height: 1.3;
+    }
+    .product-description {
+        font-size: 12px;
+        color: var(--warm-gray);
+        line-height: 1.6;
+        font-weight: 300;
+        flex: 1;
+        margin-bottom: 10px;
+    }
+    .product-stock-left {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+        margin-bottom: 14px;
+    }
+    .product-stock-left.ok { color: var(--deep-sage); }
+    .product-stock-left.low { color: #b26a3c; }
+    .product-stock-left.out { color: #8a8080; }
+    .product-stock-left span {
+        font-weight: 800;
+        font-family: var(--sans);
+    }
+    .product-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 14px;
+        border-top: 1px solid rgba(239,230,216,0.8);
+    }
+    .product-price {
+        font-family: var(--serif);
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--charcoal);
+    }
+    .product-price span {
+        font-size: 13px;
+        font-weight: 300;
+        font-family: 'Nunito', sans-serif;
+        color: var(--warm-gray);
+        margin-right: 2px;
+    }
+
+    /* Quick action buttons (below card) */
+    .product-quick {
+        display: flex;
+        gap: 8px;
+    }
+    .btn-sm {
+        padding: 7px 14px;
+        border-radius: 8px;
+        font-family: var(--sans);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-sm:hover { transform: translateY(-2px); }
+    .btn-sm.view {
+        background: rgba(239,230,216,0.6);
+        color: var(--charcoal);
+        border: 1px solid rgba(196,160,160,0.3);
+    }
+    .btn-sm.view:hover { background: var(--parchment); }
+    .btn-sm.buy {
+        background: linear-gradient(135deg, var(--mauve), var(--deep-mauve));
+        color: white;
+    }
+    .btn-sm.buy:hover { box-shadow: 0 4px 12px rgba(158,111,111,0.3); }
+    .btn-sm:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    /* No results */
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 80px 20px;
+        color: var(--warm-gray);
+    }
+    .no-results h3 {
+        font-family: var(--serif);
+        font-size: 28px;
+        font-weight: 300;
+        color: var(--charcoal);
+        margin-bottom: 8px;
+    }
+    .no-results p { font-size: 14px; font-weight: 300; }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 900px) {
+        .shop-wrapper { flex-direction: column; padding: 100px 24px 80px; gap: 40px; }
+        .sidebar { position: static; flex-direction: row; flex-wrap: wrap; gap: 20px; }
+        .sidebar-brand { width: 100%; }
+        .filter-section { flex: 1; min-width: 160px; }
+    }
+    @media (max-width: 600px) {
+        .shop-header h1 { font-size: 38px; }
+        .shop-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .product-image { height: 220px; }
+    }
+</style>
+
+<div class="shop-wrapper">
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar">
+        <!-- Category -->
+        <div class="filter-section">
+            <div class="filter-heading">Category</div>
+            <label class="filter-opt">
+                <input type="checkbox" value="all" onchange="filterProducts()" checked>
+                <span>All Items</span>
+            </label>
+            <label class="filter-opt">
+                <input type="checkbox" value="dress" onchange="filterProducts()">
+                <span>Dresses</span>
+            </label>
+            <label class="filter-opt">
+                <input type="checkbox" value="top" onchange="filterProducts()">
+                <span>Tops</span>
+            </label>
+            <label class="filter-opt">
+                <input type="checkbox" value="bottom" onchange="filterProducts()">
+                <span>Bottoms</span>
+            </label>
+            <label class="filter-opt">
+                <input type="checkbox" value="set" onchange="filterProducts()">
+                <span>Co-ord Sets</span>
+            </label>
+            <label class="filter-opt">
+                <input type="checkbox" value="jacket" onchange="filterProducts()">
+                <span>Jackets</span>
+            </label>
+        </div>
+
+        <!-- Price -->
+        <div class="filter-section">
+            <div class="filter-heading">Price Range</div>
+            <div class="price-track" id="priceTrack">
+                <div class="price-fill" id="priceFill"></div>
+                <input type="range" id="priceMin" class="price-slider" min="0" max="5000" value="0" oninput="filterProducts()">
+                <input type="range" id="priceMax" class="price-slider" min="0" max="5000" value="5000" oninput="filterProducts()">
+            </div>
+            <div class="price-display">₱<span id="priceMinDisplay">0</span> – ₱<span id="priceMaxDisplay">5,000</span></div>
+        </div>
+
+        <!-- Tags -->
+        <div class="filter-section">
+            <div class="filter-heading">Tags</div>
+            <div class="tag-pills">
+                <label class="tag-pill-label">
+                    <input type="checkbox" value="new" onchange="filterProducts()">
+                    <span class="tag-pill new">New</span>
+                </label>
+                <label class="tag-pill-label">
+                    <input type="checkbox" value="trending" onchange="filterProducts()">
+                    <span class="tag-pill trending">Trending</span>
+                </label>
+                <label class="tag-pill-label">
+                    <input type="checkbox" value="limited" onchange="filterProducts()">
+                    <span class="tag-pill limited">Limited</span>
+                </label>
+                <label class="tag-pill-label">
+                    <input type="checkbox" value="in-stock" onchange="filterProducts()">
+                    <span class="tag-pill in-stock">In Stock</span>
+                </label>
+            </div>
+        </div>
+    </aside>
+
+    <!-- ── MAIN ── -->
+    <main class="shop-main">
+        <div class="shop-header">
+            <div class="shop-header-eyebrow">Shop</div>
+            <h1>Curated <em>Pieces</em></h1>
+            <p>Thoughtfully selected fashion for the modern woman — each piece chosen for beauty, quality, and enduring style.</p>
+        </div>
+
+        <div class="shop-toolbar">
+            <div class="toolbar-right">
+                <div class="results-count"><strong id="resultCount">—</strong> items</div>
+                <select id="sortSelect" class="sort-select" onchange="sortProducts()">
+                    <option value="featured">Featured</option>
+                    <option value="price-low">Price: Low → High</option>
+                    <option value="price-high">Price: High → Low</option>
+                    <option value="newest">Newest</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        {% if products|length > 0 %}
+        <div class="shop-grid" id="productGrid">
+            {% for product in products %}
+            <div class="product-card"
+                 data-category="{{ product.category.name|lower }}"
+                 data-price="{{ product.price }}"
+                 data-tags="in-stock"
+                 data-name="{{ product.name|lower }}">
+                <div class="product-image">
+                    {% if product.image %}
+                        <img src="/uploads/{{ product.image }}" alt="{{ product.name }}"
+                             style="width:100%;height:100%;object-fit:cover;transition:transform 0.5s cubic-bezier(0.22,1,0.36,1);"
+                             class="product-image-bg">
+                    {% else %}
+                        <div class="product-image-bg" style="background: linear-gradient(135deg, var(--parchment), var(--blush));">
+                            {{ product.name|slice(0,2)|upper }}
+                        </div>
+                    {% endif %}
+                    <div class="product-overlay">
+                        <a href="{{ path('app_product_show', {id: product.id}) }}" class="overlay-btn view">
+                            <i class="fa-regular fa-eye"></i> View
+                        </a>
+                        {% if product.stock > 0 %}
+                        <button class="overlay-btn view"
+                                onclick="addToCart({{ product.id }}, '{{ product.name|escape('js') }}', {{ product.price }}, this)">
+                            <i class="fa-regular fa-cart-plus"></i> Cart
+                        </button>
+                        <button class="overlay-btn buy"
+                                onclick="buyNow({{ product.id }}, this)">
+                            <i class="fa-regular fa-bag-shopping"></i> Buy
+                        </button>
+                        {% else %}
+                        <button class="overlay-btn buy" disabled>Out of Stock</button>
+                        {% endif %}
+                    </div>
+                    {% if product.stock > 0 %}
+                        <span class="product-badge stock">In Stock</span>
+                    {% else %}
+                        <span class="product-badge outstock">Out of Stock</span>
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div class="product-category">{{ product.category.name ?? 'Uncategorized' }}</div>
+                    <div class="product-name">{{ product.name }}</div>
+                    <div class="product-description">
+                        {% if product.description %}
+                            {{ product.description|slice(0, 90) }}{% if product.description|length > 90 %}…{% endif %}
+                        {% else %}
+                            A beautiful piece from our curated collection.
+                        {% endif %}
+                    </div>
+                    {% set stockClass = product.stock <= 0 ? 'out' : (product.stock <= 5 ? 'low' : 'ok') %}
+                    <div class="product-stock-left {{ stockClass }}">
+                        {% if product.stock > 0 %}
+                            <span>{{ product.stock }}</span> left in stock
+                        {% else %}
+                            <span>0</span> left in stock
+                        {% endif %}
+                    </div>
+                    <div class="product-footer">
+                        <div class="product-price"><span>₱</span>{{ "%.0f"|format(product.price) }}</div>
+                        <div class="product-quick">
+                            <a href="{{ path('app_product_show', {id: product.id}) }}" class="btn-sm view">View</a>
+                            {% if product.stock > 0 %}
+                            <button class="btn-sm view"
+                                    onclick="addToCart({{ product.id }}, '{{ product.name|escape('js') }}', {{ product.price }}, this)">
+                                + Cart
+                            </button>
+                            <button class="btn-sm buy"
+                                    onclick="buyNow({{ product.id }}, this)">
+                                Buy
+                            </button>
+                            {% else %}
+                            <button class="btn-sm buy" disabled>Sold Out</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% else %}
+
+        <!-- Sample / placeholder products -->
+        <div class="shop-grid" id="productGrid">
+
+            <div class="product-card" data-category="dress" data-price="2450" data-tags="new in-stock" data-name="palengke heritage dress">
+                <div class="product-image">
+                    <div class="product-image-bg" style="background:linear-gradient(135deg,#C4A0A0,#9E6F6F);">PH</div>
+                    <div class="product-overlay">
+                        <button class="overlay-btn view" onclick="alert('Coming soon')"><i class="fa-regular fa-eye"></i> View</button>
+                        <button class="overlay-btn buy" onclick="addToCart()"><i class="fa-regular fa-bag-shopping"></i> Buy</button>
+                    </div>
+                    <span class="product-badge new">New</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Dress</div>
+                    <div class="product-name">Palengke Heritage Dress</div>
+                    <div class="product-description">A breezy linen dress inspired by traditional Filipino market scenes. Perfect for warm weather.</div>
+                    <div class="product-footer">
+                        <div class="product-price"><span>₱</span>2,450</div>
+                        <div class="product-quick">
+                            <button class="btn-sm view" onclick="alert('Coming soon')">View</button>
+                            <button class="btn-sm buy" onclick="addToCart()">Buy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="top" data-price="1180" data-tags="trending in-stock" data-name="coral blush wrap top">
+                <div class="product-image">
+                    <div class="product-image-bg" style="background:linear-gradient(135deg,#E8CECE,#C4A0A0);">CB</div>
+                    <div class="product-overlay">
+                        <button class="overlay-btn view" onclick="alert('Coming soon')"><i class="fa-regular fa-eye"></i> View</button>
+                        <button class="overlay-btn buy" onclick="addToCart()"><i class="fa-regular fa-bag-shopping"></i> Buy</button>
+                    </div>
+                    <span class="product-badge trending">Trending</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Top</div>
+                    <div class="product-name">Coral Blush Wrap Top</div>
+                    <div class="product-description">Versatile wrap top in soft coral. Layer it or wear it solo for effortless elegance.</div>
+                    <div class="product-footer">
+                        <div class="product-price"><span>₱</span>1,180</div>
+                        <div class="product-quick">
+                            <button class="btn-sm view" onclick="alert('Coming soon')">View</button>
+                            <button class="btn-sm buy" onclick="addToCart()">Buy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="set" data-price="3200" data-tags="in-stock" data-name="sage linen co-ord set">
+                <div class="product-image">
+                    <div class="product-image-bg" style="background:linear-gradient(135deg,#8FAF8C,#5C7A5A);">SL</div>
+                    <div class="product-overlay">
+                        <button class="overlay-btn view" onclick="alert('Coming soon')"><i class="fa-regular fa-eye"></i> View</button>
+                        <button class="overlay-btn buy" onclick="addToCart()"><i class="fa-regular fa-bag-shopping"></i> Buy</button>
+                    </div>
+                    <span class="product-badge stock">In Stock</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Co-ord Set</div>
+                    <div class="product-name">Sage Linen Co-ord Set</div>
+                    <div class="product-description">Matching linen co-ord in muted sage green. Crafted for comfort and timeless style.</div>
+                    <div class="product-footer">
+                        <div class="product-price"><span>₱</span>3,200</div>
+                        <div class="product-quick">
+                            <button class="btn-sm view" onclick="alert('Coming soon')">View</button>
+                            <button class="btn-sm buy" onclick="addToCart()">Buy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="bottom" data-price="2850" data-tags="in-stock" data-name="mauve satin midi skirt">
+                <div class="product-image">
+                    <div class="product-image-bg" style="background:linear-gradient(135deg,#C9A96E,#9E8454);">MS</div>
+                    <div class="product-overlay">
+                        <button class="overlay-btn view" onclick="alert('Coming soon')"><i class="fa-regular fa-eye"></i> View</button>
+                        <button class="overlay-btn buy" onclick="addToCart()"><i class="fa-regular fa-bag-shopping"></i> Buy</button>
+                    </div>
+                    <span class="product-badge stock">In Stock</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Skirt</div>
+                    <div class="product-name">Mauve Satin Midi Skirt</div>
+                    <div class="product-description">Elegantly draped satin midi skirt. A statement piece for any occasion, day or night.</div>
+                    <div class="product-footer">
+                        <div class="product-price"><span>₱</span>2,850</div>
+                        <div class="product-quick">
+                            <button class="btn-sm view" onclick="alert('Coming soon')">View</button>
+                            <button class="btn-sm buy" onclick="addToCart()">Buy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="bottom" data-price="1920" data-tags="limited in-stock" data-name="blush linen pants">
+                <div class="product-image">
+                    <div class="product-image-bg" style="background:linear-gradient(135deg,#F0C4C4,#E8CECE);">BP</div>
+                    <div class="product-overlay">
+                        <button class="overlay-btn view" onclick="alert('Coming soon')"><i class="fa-regular fa-eye"></i> View</button>
+                        <button class="overlay-btn buy" onclick="addToCart()"><i class="fa-regular fa-bag-shopping"></i> Buy</button>
+                    </div>
+                    <span class="product-badge limited">Limited</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Bottom</div>
+                    <div class="product-name">Blush Linen Pants</div>
+                    <div class="product-description">Classic wide-leg linen trousers in soft blush. The perfect wardrobe staple for any season.</div>
+                    <div class="product-footer">
+                        <div class="product-price"><span>₱</span>1,920</div>
+                        <div class="product-quick">
+                            <button class="btn-sm view" onclick="alert('Coming soon')">View</button>
+                            <button class="btn-sm buy" onclick="addToCart()">Buy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card" data-category="jacket" data-price="2750" data-tags="in-stock" data-name="forest linen jacket">
+                <div class="product-image">
+                    <div class="product-image-bg" style="background:linear-gradient(135deg,#5C7A5A,#3A5238);">FJ</div>
+                    <div class="product-overlay">
+                        <button class="overlay-btn view" onclick="alert('Coming soon')"><i class="fa-regular fa-eye"></i> View</button>
+                        <button class="overlay-btn buy" onclick="addToCart()"><i class="fa-regular fa-bag-shopping"></i> Buy</button>
+                    </div>
+                    <span class="product-badge stock">In Stock</span>
+                </div>
+                <div class="product-info">
+                    <div class="product-category">Jacket</div>
+                    <div class="product-name">Forest Linen Jacket</div>
+                    <div class="product-description">Structured linen jacket in deep forest green. Layer for dimension and sophistication.</div>
+                    <div class="product-footer">
+                        <div class="product-price"><span>₱</span>2,750</div>
+                        <div class="product-quick">
+                            <button class="btn-sm view" onclick="alert('Coming soon')">View</button>
+                            <button class="btn-sm buy" onclick="addToCart()">Buy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        {% endif %}
+    </main>
+</div>
+
+<script>
+    let allProducts = [];
+
+    function initProducts() {
+        allProducts = Array.from(document.querySelectorAll('#productGrid .product-card'));
+        updateCount();
+        updatePriceFill();
+    }
+
+    function updatePriceFill() {
+        const min = parseInt(document.getElementById('priceMin').value);
+        const max = parseInt(document.getElementById('priceMax').value);
+        const fill = document.getElementById('priceFill');
+        fill.style.left  = (min / 5000 * 100) + '%';
+        fill.style.width = ((max - min) / 5000 * 100) + '%';
+        document.getElementById('priceMinDisplay').textContent = min.toLocaleString();
+        document.getElementById('priceMaxDisplay').textContent = max.toLocaleString();
+    }
+
+    function filterProducts() {
+        updatePriceFill();
+
+        const min = parseInt(document.getElementById('priceMin').value);
+        const max = parseInt(document.getElementById('priceMax').value);
+
+        const catBoxes = Array.from(document.querySelectorAll('.filter-opt input[type="checkbox"]'));
+        const tagBoxes = Array.from(document.querySelectorAll('.tag-pill-label input[type="checkbox"]'));
+
+        const allCat  = catBoxes.find(c => c.value === 'all' && c.checked);
+        const selCats = catBoxes.filter(c => c.checked && c.value !== 'all').map(c => c.value);
+        const selTags = tagBoxes.filter(c => c.checked).map(c => c.value);
+
+        let count = 0;
+        allProducts.forEach(card => {
+            const cat   = card.dataset.category || '';
+            const price = parseInt(card.dataset.price) || 0;
+            const tags  = (card.dataset.tags || '').split(' ');
+
+            const okCat    = allCat || selCats.length === 0 || selCats.some(s => cat === s || cat.startsWith(s));
+            const okTag    = selTags.length === 0 || selTags.some(t => tags.includes(t));
+            const okPrice  = price >= min && price <= max;
+
+            const show = okCat && okTag && okPrice;
+            card.style.display = show ? 'flex' : 'none';
+            if (show) count++;
+        });
+
+        document.getElementById('resultCount').textContent = count;
+
+        // No results message
+        const grid = document.getElementById('productGrid');
+        let noRes = grid.querySelector('.no-results');
+        if (count === 0) {
+            if (!noRes) {
+                noRes = document.createElement('div');
+                noRes.className = 'no-results';
+                noRes.innerHTML = '<h3>Nothing found</h3><p>Try adjusting your filters.</p>';
+                grid.appendChild(noRes);
+            }
+            noRes.style.display = 'block';
+        } else if (noRes) {
+            noRes.style.display = 'none';
+        }
+    }
+
+    function sortProducts() {
+        const val  = document.getElementById('sortSelect').value;
+        const grid = document.getElementById('productGrid');
+        const cards = allProducts.slice();
+
+        cards.sort((a, b) => {
+            const pa = parseInt(a.dataset.price) || 0;
+            const pb = parseInt(b.dataset.price) || 0;
+            if (val === 'price-low')  return pa - pb;
+            if (val === 'price-high') return pb - pa;
+            return 0;
+        });
+        cards.forEach(c => grid.appendChild(c));
+    }
+
+    function updateCount() {
+        document.getElementById('resultCount').textContent = allProducts.length;
+    }
+
+    function buyNow(productId, button) {
+        button.disabled = true;
+        button.textContent = '...';
+        fetch(`/cart/add/${productId}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '{{ path('app_checkout') }}';
+                } else {
+                    alert(data.message || 'Failed to add to cart.');
+                    button.disabled = false;
+                    button.textContent = 'Buy';
+                }
+            })
+            .catch(() => { window.location.href = '{{ path('app_checkout') }}'; });
+    }
+
+    function addToCart(productId, productName, productPrice, button) {
+        // Prevent multiple clicks
+        button.disabled = true;
+        button.textContent = 'Adding...';
+
+        fetch(`/cart/add/${productId}`, { method: 'POST' })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success feedback
+                    button.textContent = '✓ Added!';
+                    button.style.background = 'var(--deep-sage)';
+                    
+                    // Update cart count in navbar if exists
+                    updateCartCount();
+                    
+                    // Reset button after 2s
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.textContent = 'Buy';
+                        button.style.background = 'linear-gradient(135deg, var(--mauve), var(--deep-mauve))';
+                    }, 2000);
+                } else {
+                    alert('Failed to add to cart: ' + (data.message || 'Unknown error'));
+                    button.disabled = false;
+                    button.textContent = 'Buy';
+                }
+            })
+            .catch(err => {
+                alert('Error adding to cart: ' + err.message);
+                button.disabled = false;
+                button.textContent = 'Buy';
+            });
+    }
+
+    function updateCartCount() {
+        // Fetch current cart count and update navbar if exists
+        fetch('/cart', { 
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(data => {
+            const countEl = document.getElementById('cart-count');
+            if (countEl && data.itemCount) {
+                countEl.textContent = data.itemCount;
+                countEl.style.display = 'inline-block';
+            }
+        })
+        .catch(() => {}); // Silently fail
+    }
+
+    document.addEventListener('change', e => {
+        if (e.target.value === 'all' && e.target.checked) {
+            document.querySelectorAll('.filter-opt input:not([value="all"])').forEach(c => c.checked = false);
+            filterProducts();
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initProducts();
+        updateCartCount();
+
+        // Auto-apply search query from URL
+        const searchQuery = {{ searchQuery|default('')|json_encode|raw }};
+        if (searchQuery) {
+            allProducts.forEach(card => {
+                const name = card.dataset.name || '';
+                const cat  = card.dataset.category || '';
+                const show = name.includes(searchQuery.toLowerCase()) || cat.includes(searchQuery.toLowerCase());
+                card.style.display = show ? 'flex' : 'none';
+            });
+            const visible = allProducts.filter(c => c.style.display !== 'none').length;
+            document.getElementById('resultCount').textContent = visible;
+        }
+    });
+</script>
+
+{# Shopping Cart Section #}
+<div style="max-width: 1380px; margin: 60px auto 40px; padding: 0 40px; text-align: center;">
+    <div style="background: linear-gradient(135deg, rgba(158, 111, 111, 0.1), rgba(168, 188, 161, 0.1)); padding: 40px; border-radius: 12px; border: 1px solid rgba(196, 160, 160, 0.2);">
+        <h3 style="font-size: 22px; color: #3A3232; margin-bottom: 12px; font-weight: 600;">Start Shopping</h3>
+        <p style="color: #7A6F6F; font-size: 14px; margin-bottom: 24px; max-width: 600px; margin-left: auto; margin-right: auto;">
+            Click "Buy" to add items to your cart. When you're ready, proceed to checkout to complete your order. 
+            You'll need to be logged in as a customer to complete your purchase.
+        </p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ path('app_cart') }}" 
+               style="
+                   display: inline-flex;
+                   gap: 8px;
+                   align-items: center;
+                   background: linear-gradient(135deg, #8FAF8C, #5C7A5A);
+                   color: white;
+                   padding: 14px 32px;
+                   border-radius: 8px;
+                   text-decoration: none;
+                   font-weight: 600;
+                   font-size: 14px;
+                   transition: all 0.3s ease;
+                   box-shadow: 0 4px 15px rgba(143, 175, 140, 0.3);
+               "
+               onmouseover="this.style.boxShadow = '0 6px 25px rgba(143, 175, 140, 0.4)'; this.style.transform = 'translateY(-2px)';"
+               onmouseout="this.style.boxShadow = '0 4px 15px rgba(143, 175, 140, 0.3)'; this.style.transform = 'translateY(0)';">
+                <span></span> View Cart
+            </a>
+            
+            {% if app.user %}
+                <a href="{{ path('app_my_orders') }}" 
+                   style="
+                       display: inline-flex;
+                       gap: 8px;
+                       align-items: center;
+                       background: linear-gradient(135deg, #C4A0A0, #9E6F6F);
+                       color: white;
+                       padding: 14px 32px;
+                       border-radius: 8px;
+                       text-decoration: none;
+                       font-weight: 600;
+                       font-size: 14px;
+                       transition: all 0.3s ease;
+                       box-shadow: 0 4px 15px rgba(196, 160, 160, 0.3);
+                   "
+                   onmouseover="this.style.boxShadow = '0 6px 25px rgba(196, 160, 160, 0.4)'; this.style.transform = 'translateY(-2px)';"
+                   onmouseout="this.style.boxShadow = '0 4px 15px rgba(196, 160, 160, 0.3)'; this.style.transform = 'translateY(0)';">
+                    <span></span> My Orders
+                </a>
+            {% else %}
+                <a href="{{ path('app_login') }}" 
+                   style="
+                       display: inline-flex;
+                       gap: 8px;
+                       align-items: center;
+                       background: linear-gradient(135deg, #C4A0A0, #9E6F6F);
+                       color: white;
+                       padding: 14px 32px;
+                       border-radius: 8px;
+                       text-decoration: none;
+                       font-weight: 600;
+                       font-size: 14px;
+                       transition: all 0.3s ease;
+                       box-shadow: 0 4px 15px rgba(196, 160, 160, 0.3);
+                   "
+                   onmouseover="this.style.boxShadow = '0 6px 25px rgba(196, 160, 160, 0.4)'; this.style.transform = 'translateY(-2px)';"
+                   onmouseout="this.style.boxShadow = '0 4px 15px rgba(196, 160, 160, 0.3)'; this.style.transform = 'translateY(0)';">
+                    <span></span> Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

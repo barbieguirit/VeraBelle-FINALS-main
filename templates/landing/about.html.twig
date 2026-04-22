@@ -30,6 +30,7 @@
 <section class="about-intro">
     <div class="about-intro-left reveal-left">
         <div class="about-intro-visual">
+            <img src="{{ asset('uploads/bedroom.jpg') }}" alt="The spare bedroom where VeraBelle first began" class="about-intro-photo">
             <div class="about-intro-accent">
                 <div class="about-intro-accent-n">5+</div>
                 <div class="about-intro-accent-l">Years</div>
@@ -59,8 +60,8 @@
         </p>
 
         <div style="margin-top:44px;display:flex;gap:16px;flex-wrap:wrap;">
-            <a href="{{ path('app_landing') }}#products" class="btn-fill">Shop the Collection</a>
-            <a href="{{ path('app_landing') }}#contact" class="btn-outline" style="color:var(--forest);border-color:var(--forest)">Get in Touch →</a>
+            <a href="{{ path('app_shop') }}#products" class="btn-fill">Shop the Collection</a>
+            <a href="{{ path('app_contact') }}#contact" class="btn-outline" style="color:var(--forest);border-color:var(--forest)">Get in Touch →</a>
         </div>
     </div>
 </section>
@@ -80,7 +81,7 @@
     <div class="values-grid">
         <div class="value-card reveal">
             <div class="v-num" aria-hidden="true">01</div>
-            <div class="v-icon">🌿</div>
+            <div class="v-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
             <h3 class="v-title">Local First</h3>
             <p class="v-body">
                 We source from Filipino suppliers, partner with local seamstresses,
@@ -90,7 +91,7 @@
         </div>
         <div class="value-card reveal" style="transition-delay:0.1s">
             <div class="v-num" aria-hidden="true">02</div>
-            <div class="v-icon">👗</div>
+            <div class="v-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 002-2V10h2.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/></svg></div>
             <h3 class="v-title">Intentional Curation</h3>
             <p class="v-body">
                 We don't follow trends — we curate. Every piece enters our collection
@@ -100,7 +101,7 @@
         </div>
         <div class="value-card reveal" style="transition-delay:0.2s">
             <div class="v-num" aria-hidden="true">03</div>
-            <div class="v-icon">♻️</div>
+            <div class="v-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg></div>
             <h3 class="v-title">Sustainable Choices</h3>
             <p class="v-body">
                 We choose natural fabrics, small-batch production, and zero-waste
@@ -109,7 +110,7 @@
         </div>
         <div class="value-card reveal" style="transition-delay:0.15s">
             <div class="v-num" aria-hidden="true">04</div>
-            <div class="v-icon">💪</div>
+            <div class="v-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
             <h3 class="v-title">Women Empowering Women</h3>
             <p class="v-body">
                 Our team is majority women. Our clients are women. Our suppliers
@@ -118,7 +119,7 @@
         </div>
         <div class="value-card reveal" style="transition-delay:0.25s">
             <div class="v-num" aria-hidden="true">05</div>
-            <div class="v-icon">🤝</div>
+            <div class="v-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div>
             <h3 class="v-title">Radical Inclusivity</h3>
             <p class="v-body">
                 Fashion is for everyone. We carry pieces designed to look stunning
@@ -127,7 +128,7 @@
         </div>
         <div class="value-card reveal" style="transition-delay:0.35s">
             <div class="v-num" aria-hidden="true">06</div>
-            <div class="v-icon">💌</div>
+            <div class="v-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
             <h3 class="v-title">Personal Touch</h3>
             <p class="v-body">
                 Every order is packed by hand with a personal note. We know our
@@ -149,7 +150,7 @@
     <div class="process-row">
         <div class="process-step reveal">
             <div class="p-num" aria-hidden="true">01</div>
-            <span class="p-icon">🔍</span>
+            <span class="p-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <h3 class="p-title">Discovery</h3>
             <p class="p-body">
                 We travel, research, and source. Every season begins with deep
@@ -159,7 +160,7 @@
         </div>
         <div class="process-step reveal" style="transition-delay:0.1s">
             <div class="p-num" aria-hidden="true">02</div>
-            <span class="p-icon">✏️</span>
+            <span class="p-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>
             <h3 class="p-title">Curation</h3>
             <p class="p-body">
                 Our team hand-selects every piece against a strict filter: fit,
@@ -169,7 +170,7 @@
         </div>
         <div class="process-step reveal" style="transition-delay:0.2s">
             <div class="p-num" aria-hidden="true">03</div>
-            <span class="p-icon">📸</span>
+            <span class="p-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
             <h3 class="p-title">Styling</h3>
             <p class="p-body">
                 Maria and the team style every collection — showing real women
@@ -179,7 +180,7 @@
         </div>
         <div class="process-step reveal" style="transition-delay:0.3s">
             <div class="p-num" aria-hidden="true">04</div>
-            <span class="p-icon">📦</span>
+            <span class="p-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></span>
             <h3 class="p-title">Delivery</h3>
             <p class="p-body">
                 Each order is carefully packed with a personal note and dispatched
@@ -190,6 +191,54 @@
 </section>
 
 {# ── CTA ── #}
+<section class="about-team" style="padding:100px 56px; background:var(--cream);">
+    <div style="max-width:1200px; margin:0 auto;">
+        <div class="reveal" style="text-align:center; margin-bottom:60px;">
+            <div class="section-eyebrow">The People Behind</div>
+            <h2 class="section-title">Meet Our <em>Team.</em></h2>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:32px;">
+
+            <div class="reveal" style="text-align:center;">
+                <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(155deg,var(--deep-sage),var(--charcoal));margin:0 auto 18px;overflow:hidden;border:3px solid rgba(196,160,160,0.2);">
+                    <img src="/uploads/team.jpg" alt="Barbie Guirit" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--charcoal);margin-bottom:4px;">Barbie Guirit</div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--terra,#C4785A);margin-bottom:10px;">Founder & Creative Director</div>
+                <p style="font-size:13px;color:var(--warm-gray);line-height:1.7;font-weight:300;">The visionary behind every collection. Built VeraBelle from a love of fashion and a belief that every Filipino woman deserves to look extraordinary.</p>
+            </div>
+
+            <div class="reveal" style="text-align:center; transition-delay:0.1s;">
+                <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(155deg,var(--mauve),var(--deep-mauve));margin:0 auto 18px;overflow:hidden;border:3px solid rgba(196,160,160,0.2);">
+                    <img src="/uploads/team.jpg" alt="Barbie Guirit" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--charcoal);margin-bottom:4px;">Barbie Guirit</div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--terra,#C4785A);margin-bottom:10px;">Head of Styling & Curation</div>
+                <p style="font-size:13px;color:var(--warm-gray);line-height:1.7;font-weight:300;">Has an eye that does not miss. Selects and styles every piece in the collection, ensuring each one earns its place.</p>
+            </div>
+
+            <div class="reveal" style="text-align:center; transition-delay:0.2s;">
+                <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(155deg,var(--sage),var(--deep-sage));margin:0 auto 18px;overflow:hidden;border:3px solid rgba(196,160,160,0.2);">
+                    <img src="/uploads/team.jpg" alt="Barbie Guirit" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--charcoal);margin-bottom:4px;">Barbie Guirit</div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--terra,#C4785A);margin-bottom:10px;">Operations & Logistics</div>
+                <p style="font-size:13px;color:var(--warm-gray);line-height:1.7;font-weight:300;">Keeps the wheels turning — from supplier relationships to last-mile delivery. The reason your order arrives on time.</p>
+            </div>
+
+            <div class="reveal" style="text-align:center; transition-delay:0.3s;">
+                <div style="width:120px;height:120px;border-radius:50%;background:linear-gradient(155deg,var(--parchment),var(--blush));margin:0 auto 18px;overflow:hidden;border:3px solid rgba(196,160,160,0.2);">
+                    <img src="/uploads/team.jpg" alt="Barbie Guirit" style="width:100%;height:100%;object-fit:cover;">
+                </div>
+                <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:500;color:var(--charcoal);margin-bottom:4px;">Barbie Guirit</div>
+                <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--terra,#C4785A);margin-bottom:10px;">Client Experience Lead</div>
+                <p style="font-size:13px;color:var(--warm-gray);line-height:1.7;font-weight:300;">The first voice you hear when you reach out. Treats every client like a VIP because, to us, they are.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
 <section class="about-cta-section">
     <div class="section-eyebrow reveal">
         <span style="display:inline-block;width:24px;height:1px;background:rgba(245,240,232,0.4);vertical-align:middle;margin-right:12px"></span>

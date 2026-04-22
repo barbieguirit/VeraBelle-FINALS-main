@@ -1,415 +1,209 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}VeraBelle Collection - Stock Management{% endblock %}
+{% block title %}Stock Management — VeraBelle Collection{% endblock %}
 {% block page_title %}Stock Management{% endblock %}
 
 {% block content %}
 <style>
-    .content-wrapper {
-        max-width: 100%;
+    :root {
+        --blush:#F0C4C4; --sage:#A8BCA1; --sage-deep:#7A9972;
+        --ink:#1A1F2E; --ink-soft:#4A5568; --cream:#FAF8F5;
+        --cream-warm:#F4F0EA; --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(26,31,46,0.08); --shadow-sm:0 2px 12px rgba(26,31,46,0.06);
+        --shadow-md:0 8px 32px rgba(26,31,46,0.10); --radius:16px; --radius-sm:10px;
     }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
-    .stock-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
-    }
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; animation:fadeUp 0.4s ease both; }
+    .page-eyebrow { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:4px; }
+    .page-title { font-family:'Nunito',sans-serif; font-size:26px; font-weight:800; color:var(--ink); line-height:1; }
+    .page-sub { font-size:13px; color:var(--ink-soft); margin-top:2px; }
 
-    .stock-title {
-        font-size: 28px;
-        font-weight: 600;
-        color: #2c3e50;
-        position: relative;
-        padding-left: 15px;
-    }
+    .btn-add { display:inline-flex; align-items:center; gap:8px; padding:11px 22px; background:var(--ink); color:#fff; border-radius:40px; text-decoration:none; font-size:13.5px; font-weight:600; transition:all 0.22s; box-shadow:0 4px 16px rgba(26,31,46,0.18); }
+    .btn-add:hover { background:var(--ink-soft); transform:translateY(-2px); color:#fff; }
+    .btn-add-icon { width:22px; height:22px; background:linear-gradient(135deg,var(--blush),var(--sage)); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 
-    .stock-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 5px;
-        height: 30px;
-        background: linear-gradient(180deg, #F4C2C2, #A8BCA1);
-        border-radius: 3px;
-    }
+    /* Stats */
+    .stats-strip { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:24px; animation:fadeUp 0.4s 0.08s ease both; }
+    .strip-card { background:var(--white); border-radius:var(--radius-sm); padding:18px 20px; border:1px solid var(--border); display:flex; align-items:center; gap:14px; transition:all 0.2s; }
+    .strip-card:hover { box-shadow:var(--shadow-sm); transform:translateY(-2px); }
+    .strip-icon { width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .si-blush { background:rgba(240,196,196,0.18); }
+    .si-sage  { background:rgba(168,188,161,0.18); }
+    .si-red   { background:rgba(231,76,60,0.10); }
+    .si-gold  { background:rgba(201,169,110,0.15); }
+    .strip-val { font-family:'Nunito',sans-serif; font-size:22px; font-weight:800; color:var(--ink); line-height:1; }
+    .strip-lbl { font-size:11.5px; color:var(--ink-soft); margin-top:2px; }
 
-    .btn-add {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        color: #fff;
-        padding: 12px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
-    }
+    /* Grid */
+    .stock-grid-section { background:var(--white); border-radius:var(--radius); border:1px solid var(--border); padding:24px; animation:fadeUp 0.4s 0.16s ease both; }
+    .grid-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+    .grid-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--ink); }
+    .grid-count { background:var(--cream); border-radius:12px; padding:4px 12px; font-size:12px; font-weight:700; color:var(--ink-soft); }
 
-    .btn-add:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
-        color: #fff;
-    }
+    .stock-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:18px; }
 
-    .btn-add span {
-        font-size: 20px;
-        font-weight: bold;
-    }
+    .stock-card { background:var(--white); border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; display:flex; flex-direction:column; transition:all 0.22s; }
+    .stock-card:hover { box-shadow:var(--shadow-md); transform:translateY(-4px); border-color:rgba(240,196,196,0.3); }
+    .card-top-bar { height:4px; }
+    .bar-in  { background:linear-gradient(90deg,var(--sage),var(--sage-deep)); }
+    .bar-out { background:linear-gradient(90deg,#e8a8a8,#c0392b); }
+    .bar-ret { background:linear-gradient(90deg,var(--blush),#e8a8a8); }
+    .bar-adj { background:linear-gradient(90deg,var(--gold),#b8924a); }
 
-    .alert {
-        background: rgba(168, 188, 161, 0.15);
-        border: 1px solid rgba(168, 188, 161, 0.3);
-        color: #5a6d54;
-        padding: 15px 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        font-size: 14px;
-    }
+    .card-header { padding:16px 18px 12px; border-bottom:1px solid var(--border); display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+    .card-product { display:flex; align-items:center; gap:10px; }
+    .prod-icon { width:36px; height:36px; border-radius:9px; background:linear-gradient(135deg,rgba(240,196,196,0.2),rgba(168,188,161,0.2)); display:flex; align-items:center; justify-content:center; border:1px solid var(--border); flex-shrink:0; }
+    .prod-name { font-weight:700; color:var(--ink); font-size:14px; line-height:1.3; }
 
-    .stock-table {
-        background: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-    }
+    .type-badge { display:inline-flex; align-items:center; gap:5px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap; }
+    .badge-in  { background:rgba(168,188,161,0.14); color:var(--sage-deep); border:1px solid rgba(168,188,161,0.25); }
+    .badge-out { background:rgba(231,76,60,0.08); color:#c0392b; border:1px solid rgba(231,76,60,0.18); }
+    .badge-ret { background:rgba(240,196,196,0.15); color:#b86060; border:1px solid rgba(240,196,196,0.3); }
+    .badge-adj { background:rgba(201,169,110,0.12); color:#8a6d2f; border:1px solid rgba(201,169,110,0.25); }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
+    .card-body { padding:14px 18px; display:flex; flex-direction:column; gap:10px; flex:1; }
+    .meta-row { display:flex; justify-content:space-between; align-items:center; font-size:12.5px; }
+    .meta-label { color:var(--ink-soft); font-weight:500; }
+    .meta-value { font-weight:700; color:var(--ink); font-family:'Nunito',sans-serif; }
+    .remarks-text { font-size:12px; color:var(--ink-soft); font-style:italic; padding-top:8px; border-top:1px solid var(--border); line-height:1.5; }
 
-    thead {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-    }
+    .card-actions { display:flex; gap:6px; padding:12px 18px 16px; border-top:1px solid var(--border); }
+    .btn-view   { background:var(--cream); color:var(--ink-soft); border-color:var(--border); }
+    .btn-view:hover   { background:var(--cream-warm); color:var(--ink); }
+    .btn-action { flex:1; padding:8px 10px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; transition:all 0.18s; text-decoration:none; display:inline-flex; align-items:center; justify-content:center; gap:4px; border:1px solid transparent; font-family:'Figtree',sans-serif; }
+    .btn-edit   { background:rgba(240,196,196,0.14); color:#b86060; border-color:rgba(240,196,196,0.3); }
+    .btn-edit:hover   { background:var(--blush); color:#fff; border-color:var(--blush); }
+    .btn-delete { background:rgba(231,76,60,0.07); color:#c0392b; border-color:rgba(231,76,60,0.18); }
+    .btn-delete:hover { background:#e74c3c; color:#fff; border-color:#e74c3c; }
 
-    thead th {
-        padding: 18px 20px;
-        text-align: left;
-        font-weight: 600;
-        color: #fff;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
+    .empty-state { grid-column:1/-1; display:flex; flex-direction:column; align-items:center; padding:80px 20px; text-align:center; gap:10px; }
+    .empty-icon-wrap { width:64px; height:64px; background:var(--cream-warm); border-radius:20px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; }
+    .empty-state h3 { font-family:'Nunito',sans-serif; font-size:17px; font-weight:800; color:var(--ink); }
+    .empty-state p { font-size:13px; color:var(--ink-soft); }
 
-    tbody tr {
-        border-bottom: 1px solid #f0f0f0;
-        transition: all 0.2s ease;
-    }
+    .flash-success { display:flex; align-items:center; gap:10px; padding:13px 18px; background:rgba(122,153,114,0.10); border:1px solid rgba(122,153,114,0.25); border-radius:var(--radius-sm); margin-bottom:20px; font-size:13px; font-weight:500; color:var(--sage-deep); animation:fadeUp 0.3s ease both; }
 
-    tbody tr:hover {
-        background: rgba(244, 194, 194, 0.05);
-    }
-
-    tbody tr:last-child {
-        border-bottom: none;
-    }
-
-    tbody td {
-        padding: 20px;
-        color: #2c3e50;
-        font-size: 14px;
-    }
-
-    .product-cell {
-        font-weight: 500;
-        color: #2c3e50;
-    }
-
-    .type-badge {
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 13px;
-        font-weight: 500;
-        display: inline-block;
-    }
-
-    .type-badge.stock-in {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-    }
-
-    .type-badge.stock-out {
-        background: rgba(231, 76, 60, 0.1);
-        color: #c0392b;
-        border: 1px solid rgba(231, 76, 60, 0.2);
-    }
-
-    .type-badge.returned {
-        background: rgba(244, 194, 194, 0.15);
-        color: #c97878;
-        border: 1px solid rgba(244, 194, 194, 0.3);
-    }
-
-    .quantity-cell {
-        font-weight: 600;
-        color: #2c3e50;
-        font-size: 15px;
-    }
-
-    .date-cell {
-        color: #7f8c8d;
-        font-size: 13px;
-    }
-
-    .remarks-cell {
-        color: #7f8c8d;
-        font-style: italic;
-    }
-
-    .actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .btn-action {
-        padding: 8px 16px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border: none;
-        cursor: pointer;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .btn-edit {
-        background: rgba(244, 194, 194, 0.15);
-        color: #c97878;
-        border: 1px solid rgba(244, 194, 194, 0.3);
-    }
-
-    .btn-edit:hover {
-        background: #F4C2C2;
-        color: #fff;
-        border-color: #F4C2C2;
-    }
-
-    .btn-delete {
-        background: rgba(231, 76, 60, 0.1);
-        color: #c0392b;
-        border: 1px solid rgba(231, 76, 60, 0.2);
-    }
-
-    .btn-delete:hover {
-        background: #c0392b;
-        color: #fff;
-        border-color: #c0392b;
-    }
-
-    .no-records {
-        text-align: center;
-        padding: 60px 20px;
-    }
-
-    .no-records-icon {
-        font-size: 64px;
-        margin-bottom: 20px;
-        opacity: 0.5;
-    }
-
-    .no-records h3 {
-        color: #2c3e50;
-        font-size: 22px;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .no-records p {
-        color: #7f8c8d;
-        font-size: 14px;
-    }
-
-    .index-cell {
-        color: #95a5a6;
-        font-weight: 500;
-    }
-
-    /* ✅ DataTables Customization */
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 15px;
-    }
-
-    /* ✅ Align "Show entries" and "Search" side by side */
-    .dataTables_wrapper .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .dataTables_wrapper .dataTables_length {
-        margin: 0;
-    }
-
-    .dataTables_wrapper .dataTables_filter {
-        margin: 0;
-        text-align: right;
-    }
-
-    .dataTables_wrapper .dataTables_filter label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
-    .dataTables_wrapper .dataTables_filter input {
-        margin-left: 6px;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid #dcdcdc;
-        outline: none;
-        transition: all 0.3s ease;
-    }
-
-    .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: #F4C2C2;
-        box-shadow: 0 0 3px rgba(244, 194, 194, 0.4);
-    }
-
-    .dataTables_wrapper .dataTables_paginate {
-        text-align: right;
-        padding-top: 10px;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        display: inline-block;
-        border-radius: 6px;
-        border: 1px solid #ddd !important;
-        padding: 6px 12px !important;
-        margin: 0 3px !important;
-        font-size: 13px;
-        background: #fff !important;
-        color: #2c3e50 !important;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
-        color: #fff !important;
-        border-color: transparent !important;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
-        color: #fff !important;
-        border: none !important;
-        box-shadow: 0 0 5px rgba(244, 194, 194, 0.3);
-    }
-
-    .dataTables_wrapper .dataTables_info {
-        color: #5a6d54;
-        padding-top: 12px;
-        font-size: 13px;
-    }
+    @media (max-width:900px) { .stats-strip { grid-template-columns:repeat(2,1fr); } }
+    @media (max-width:600px) { .stats-strip { grid-template-columns:1fr; } .page-header { flex-direction:column; align-items:flex-start; } .stock-grid { grid-template-columns:1fr; } }
 </style>
 
-<div class="content-wrapper">
-    <div class="stock-header">
-        <div class="stock-title">Stock Management</div>
-        <a href="{{ path('app_stock_new') }}" class="btn-add">
-            <span>+</span> Add Stock Entry
-        </a>
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Inventory</div>
+        <div class="page-title">Stock Management</div>
+        <div class="page-sub">Track all stock movements and adjustments</div>
     </div>
+    <a href="{{ path('app_stock_new') }}" class="btn-add">
+        <span class="btn-add-icon"><i data-lucide="plus" style="width:13px;height:13px;stroke:white;stroke-width:2.5;"></i></span>
+        Add Stock Entry
+    </a>
+</div>
 
-    {% for message in app.flashes('success') %}
-        <div class="alert">{{ message }}</div>
-    {% endfor %}
+{% for message in app.flashes('success') %}
+    <div class="flash-success">
+        <i data-lucide="check-circle" style="width:16px;height:16px;stroke:var(--sage-deep);stroke-width:2;flex-shrink:0;"></i>
+        {{ message }}
+    </div>
+{% endfor %}
 
-    <div class="stock-table">
-        <table id="stockTable">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Product</th>
-                    <th>Type</th>
-                    <th>Quantity</th>
-                    <th>Date</th>
-                    <th>Remarks</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for stock in stocks %}
-                <tr>
-                    <td class="index-cell">{{ loop.index }}</td>
-                    <td class="product-cell">{{ stock.product.name }}</td>
-                    <td>
-                        {% if stock.type == 'Added' %}
-                            <span class="type-badge stock-in">Stock In</span>
-                        {% elseif stock.type == 'Sold' %}
-                            <span class="type-badge stock-out">Stock Out</span>
-                        {% elseif stock.type == 'Returned' %}
-                            <span class="type-badge returned">Returned</span>
-                        {% endif %}
-                    </td>
-                    <td class="quantity-cell">{{ stock.quantity }}</td>
-                    <td class="date-cell">{{ stock.date|date('M d, Y') }}</td>
-                    <td class="remarks-cell">{{ stock.remarks ?: '—' }}</td>
-                    <td>
-                        <div class="actions">
-                            <a href="{{ path('app_stock_edit', {'id': stock.id}) }}" class="btn-action btn-edit">Edit</a>
-                            <form method="post" action="{{ path('app_stock_delete', {'id': stock.id}) }}" 
-                                  style="display:inline;" 
-                                  onsubmit="return confirm('Are you sure you want to delete this stock record?');">
-                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ stock.id) }}">
-                                <button type="submit" class="btn-action btn-delete">Delete</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="7">
-                        <div class="no-records">
-                            <div class="no-records-icon">📦</div>
-                            <h3>No stock records found</h3>
-                            <p>Start by adding your first stock entry</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+<!-- Stats -->
+<div class="stats-strip">
+    <div class="strip-card">
+        <div class="strip-icon si-blush"><i data-lucide="package" style="width:18px;height:18px;stroke:#e8a8a8;stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|length }}</div><div class="strip-lbl">Products</div></div>
+    </div>
+    <div class="strip-card">
+        <div class="strip-icon si-sage"><i data-lucide="arrow-down-circle" style="width:18px;height:18px;stroke:var(--sage-deep);stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|filter(p => p.stock > 5)|length }}</div><div class="strip-lbl">Healthy Stock</div></div>
+    </div>
+    <div class="strip-card">
+        <div class="strip-icon si-red"><i data-lucide="arrow-up-circle" style="width:18px;height:18px;stroke:#c0392b;stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|filter(p => p.stock > 0 and p.stock <= 5)|length }}</div><div class="strip-lbl">Low Stock</div></div>
+    </div>
+    <div class="strip-card">
+        <div class="strip-icon si-gold"><i data-lucide="refresh-cw" style="width:18px;height:18px;stroke:#a07830;stroke-width:1.75;"></i></div>
+        <div><div class="strip-val">{{ products|filter(p => p.stock <= 0)|length }}</div><div class="strip-lbl">Out Of Stock</div></div>
     </div>
 </div>
 
-{# ✅ DataTables Integration #}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
-
-<script>
-    $(document).ready(function() {
-        $('#stockTable').DataTable({
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50],
-            ordering: true,
-            searching: true,
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ entries",
-                info: "Showing _START_ to _END_ of _TOTAL_ entries",
-                paginate: {
-                    previous: "Previous",
-                    next: "Next"
-                }
-            },
-            dom: '<"top"lf>rt<"bottom"ip><"clear">'
-        });
-    });
-</script>
+<!-- Grid -->
+<div class="stock-grid-section">
+    <div class="grid-header">
+        <span class="grid-title">All Products Inventory</span>
+        <span class="grid-count">{{ products|length }} products</span>
+    </div>
+    <div class="stock-grid">
+        {% for product in products %}
+        {% set latest = attribute(latestStocks, product.id)|default(null) %}
+        {% set typeClass = product.stock <= 0 ? 'out' : (product.stock <= 5 ? 'adj' : 'in') %}
+        <div class="stock-card">
+            <div class="card-top-bar bar-{{ typeClass }}"></div>
+            <div class="card-header">
+                <div class="card-product">
+                    <div class="prod-icon"><i data-lucide="shirt" style="width:16px;height:16px;stroke:var(--sage-deep);stroke-width:1.5;"></i></div>
+                    <div class="prod-name">{{ product.name }}</div>
+                </div>
+                <span class="type-badge badge-{{ typeClass }}">
+                    {% if product.stock <= 0 %}
+                        <i data-lucide="alert-triangle" style="width:10px;height:10px;stroke:currentColor;stroke-width:2.5;"></i> Out
+                    {% elseif product.stock <= 5 %}
+                        <i data-lucide="alert-circle" style="width:10px;height:10px;stroke:currentColor;stroke-width:2.5;"></i> Low
+                    {% else %}
+                        <i data-lucide="check-circle" style="width:10px;height:10px;stroke:currentColor;stroke-width:2.5;"></i> Good
+                    {% endif %}
+                </span>
+            </div>
+            <div class="card-body">
+                <div class="meta-row">
+                    <span class="meta-label">Current Stock</span>
+                    <span class="meta-value">{{ product.stock }} units</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Price</span>
+                    <span class="meta-value" style="font-size:12px;">P{{ product.price }}</span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Last Movement</span>
+                    <span class="meta-value" style="font-size:12px;">
+                        {% if latest %}
+                            {{ latest.type }} ({{ latest.quantity }})
+                        {% else %}
+                            No movement yet
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="meta-row">
+                    <span class="meta-label">Updated</span>
+                    <span class="meta-value" style="font-size:12px;">
+                        {% if latest %}
+                            {{ latest.date|date('M d, Y') }}
+                        {% else %}
+                            --
+                        {% endif %}
+                    </span>
+                </div>
+                {% if latest and latest.remarks %}
+                <div class="remarks-text">{{ latest.remarks }}</div>
+                {% endif %}
+            </div>
+            <div class="card-actions">
+                <a href="{{ path('app_stock_new', {'product': product.id}) }}" class="btn-action btn-edit">
+                    <i data-lucide="plus" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> Add Entry
+                </a>
+                <a href="{{ path('app_product_edit', {'id': product.id}) }}" class="btn-action btn-view">
+                    <i data-lucide="pencil-line" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> Edit Product
+                </a>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon-wrap"><i data-lucide="package" style="width:28px;height:28px;stroke:var(--ink-soft);stroke-width:1.5;"></i></div>
+            <h3>No Products Found</h3>
+            <p>Add products first, then manage their stock entries here.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
 {% endblock %}

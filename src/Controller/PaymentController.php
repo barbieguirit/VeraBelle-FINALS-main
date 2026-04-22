@@ -99,6 +99,13 @@ class PaymentController extends AbstractController
     public function verify(Payment $payment, EntityManagerInterface $em): Response
     {
         $payment->setStatus('Paid');
+        // Also update the linked order's payment status
+        if ($payment->getOrder()) {
+            $payment->getOrder()->setPaymentStatus('paid');
+            if (in_array($payment->getOrder()->getOrderStatus(), ['pending', 'new'])) {
+                $payment->getOrder()->setOrderStatus('processing');
+            }
+        }
         $em->flush();
         $this->addFlash('success', '✅ Payment verified!');
         return $this->redirectToRoute('app_payment_index');
@@ -108,6 +115,10 @@ class PaymentController extends AbstractController
     public function refund(Payment $payment, EntityManagerInterface $em): Response
     {
         $payment->setStatus('Refunded');
+        if ($payment->getOrder()) {
+            $payment->getOrder()->setPaymentStatus('refunded');
+            $payment->getOrder()->setOrderStatus('cancelled');
+        }
         $em->flush();
         $this->addFlash('success', '💸 Payment marked as refunded.');
         return $this->redirectToRoute('app_payment_index');

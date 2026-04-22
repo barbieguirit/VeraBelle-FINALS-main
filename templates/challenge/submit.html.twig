@@ -1,0 +1,280 @@
+{% extends 'base_landing.html.twig' %}
+
+{% block title %}Submit Entry — {{ challenge.title }}{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --ivory:#F9F4EE; --parchment:#EFE6D8; --mauve:#C4A0A0;
+        --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A;
+        --charcoal:#3A3232; --warm-gray:#7A6F6F; --blush:#E8CECE;
+        --serif:'Playfair Display',Georgia,serif; --sans:'DM Sans',system-ui,sans-serif;
+    }
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    body { font-family:var(--sans); background:var(--ivory); color:var(--charcoal); }
+
+    .submit-page {
+        max-width: 1100px; margin: 0 auto; padding: 120px 40px 100px;
+        display: grid; grid-template-columns: 1fr 420px; gap: 60px; align-items: start;
+    }
+
+    /* ── LEFT: FORM ── */
+    .form-card {
+        background: white; border-radius: 20px; overflow: hidden;
+        border: 1px solid rgba(196,160,160,0.15);
+        box-shadow: 0 8px 40px rgba(58,50,50,0.06);
+    }
+    .form-card-header {
+        background: var(--charcoal); padding: 32px 36px; position: relative; overflow: hidden;
+    }
+    .form-card-header::before { content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px; background:radial-gradient(circle,rgba(196,160,160,0.15) 0%,transparent 70%); pointer-events:none; }
+    .form-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--mauve); margin-bottom:8px; }
+    .form-title { font-family:var(--serif); font-size:28px; font-weight:300; color:white; line-height:1.2; }
+    .form-title em { font-style:italic; color:var(--blush); }
+    .form-subtitle { font-size:13px; color:rgba(255,255,255,0.45); margin-top:8px; }
+
+    .form-body { padding:36px; }
+
+    .section-label { font-size:10px; font-weight:800; letter-spacing:3px; text-transform:uppercase; color:var(--warm-gray); margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid rgba(196,160,160,0.2); }
+
+    /* Entry type */
+    .type-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:28px; }
+    .type-option { position:relative; }
+    .type-option input[type="radio"] { position:absolute; opacity:0; width:0; height:0; }
+    .type-label {
+        display:flex; flex-direction:column; align-items:center; gap:10px;
+        padding:20px 16px; border:2px solid rgba(196,160,160,0.2); border-radius:12px;
+        cursor:pointer; transition:all 0.2s; text-align:center; background:var(--ivory);
+    }
+    .type-label:hover { border-color:var(--mauve); background:white; }
+    .type-option input:checked + .type-label { border-color:var(--deep-mauve); background:rgba(196,160,160,0.08); }
+    .type-icon { width:44px; height:44px; border-radius:12px; background:rgba(196,160,160,0.15); display:flex; align-items:center; justify-content:center; font-size:20px; }
+    .type-name { font-size:13px; font-weight:700; color:var(--charcoal); }
+    .type-desc { font-size:11px; color:var(--warm-gray); line-height:1.4; }
+
+    /* Form fields */
+    .form-group { margin-bottom:22px; }
+    .field-label { display:block; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--warm-gray); margin-bottom:8px; }
+    .field-input, .field-textarea {
+        width:100%; padding:13px 16px; border:1.5px solid rgba(196,160,160,0.25);
+        border-radius:10px; font-family:var(--sans); font-size:14px; color:var(--charcoal);
+        background:#fafafa; transition:all 0.2s;
+    }
+    .field-input:focus, .field-textarea:focus { outline:none; border-color:var(--mauve); background:white; box-shadow:0 0 0 3px rgba(196,160,160,0.1); }
+    .field-textarea { resize:vertical; min-height:110px; }
+
+    /* File upload */
+    .upload-zone {
+        border:2px dashed rgba(196,160,160,0.35); border-radius:12px;
+        padding:36px 24px; text-align:center; cursor:pointer;
+        transition:all 0.2s; background:#fafafa; position:relative;
+    }
+    .upload-zone:hover, .upload-zone.dragover { border-color:var(--mauve); background:rgba(196,160,160,0.05); }
+    .upload-icon { font-size:36px; margin-bottom:10px; }
+    .upload-text { font-size:14px; font-weight:600; color:var(--charcoal); margin-bottom:4px; }
+    .upload-hint { font-size:12px; color:var(--warm-gray); }
+    .upload-zone input[type="file"] { position:absolute; inset:0; opacity:0; cursor:pointer; }
+
+    .file-list { margin-top:12px; display:flex; flex-direction:column; gap:8px; }
+    .file-item { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:rgba(196,160,160,0.08); border-radius:8px; font-size:12px; }
+    .file-name { color:var(--charcoal); font-weight:500; }
+    .file-size { color:var(--warm-gray); margin-left:8px; }
+    .file-remove { background:none; border:none; color:var(--deep-mauve); cursor:pointer; font-size:16px; font-weight:700; padding:0 4px; transition:color 0.2s; }
+    .file-remove:hover { color:#c0392b; }
+
+    /* Actions */
+    .form-actions { display:flex; gap:12px; margin-top:28px; padding-top:24px; border-top:1px solid rgba(196,160,160,0.2); }
+    .btn-submit {
+        flex:1; padding:15px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve));
+        color:white; border:none; border-radius:10px; font-family:var(--sans);
+        font-size:13px; font-weight:700; letter-spacing:1px; text-transform:uppercase;
+        cursor:pointer; transition:all 0.2s;
+    }
+    .btn-submit:hover { opacity:0.9; transform:translateY(-2px); }
+    .btn-cancel {
+        padding:15px 24px; background:transparent; color:var(--warm-gray);
+        border:1.5px solid rgba(196,160,160,0.3); border-radius:10px;
+        font-family:var(--sans); font-size:13px; font-weight:600;
+        text-decoration:none; transition:all 0.2s; display:inline-flex; align-items:center;
+    }
+    .btn-cancel:hover { border-color:var(--mauve); color:var(--deep-mauve); }
+
+    /* ── RIGHT: SIDEBAR ── */
+    .sidebar { display:flex; flex-direction:column; gap:20px; position:sticky; top:100px; }
+
+    .info-card { background:white; border-radius:16px; padding:28px; border:1px solid rgba(196,160,160,0.15); }
+    .info-card-title { font-family:var(--serif); font-size:18px; font-weight:400; color:var(--charcoal); margin-bottom:16px; }
+    .info-item { display:flex; gap:12px; margin-bottom:14px; }
+    .info-item:last-child { margin-bottom:0; }
+    .info-dot { width:8px; height:8px; border-radius:50%; background:var(--mauve); flex-shrink:0; margin-top:5px; }
+    .info-text { font-size:13px; color:var(--warm-gray); line-height:1.6; }
+    .info-text strong { color:var(--charcoal); display:block; margin-bottom:2px; }
+
+    .challenge-card { background:linear-gradient(135deg,var(--charcoal),#4a3a3a); border-radius:16px; padding:28px; color:white; }
+    .ch-label { font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; color:var(--mauve); margin-bottom:8px; }
+    .ch-title { font-family:var(--serif); font-size:20px; font-weight:300; color:white; margin-bottom:8px; }
+    .ch-dates { font-size:12px; color:rgba(255,255,255,0.45); }
+
+    /* Login warning */
+    .login-warn { background:rgba(196,160,160,0.1); border:1px solid rgba(196,160,160,0.3); border-radius:12px; padding:18px 20px; margin-bottom:24px; font-size:13px; color:var(--deep-mauve); }
+    .login-warn a { color:var(--deep-mauve); font-weight:700; }
+
+    @media (max-width:900px) {
+        .submit-page { grid-template-columns:1fr; padding:100px 24px 80px; gap:32px; }
+        .sidebar { position:static; }
+    }
+</style>
+
+<div class="submit-page">
+
+    <!-- Form -->
+    <div>
+        {% if not app.user %}
+        <div class="login-warn">
+            ⚠️ You must be <a href="{{ path('app_login') }}">logged in</a> to submit an entry.
+            Don't have an account? <a href="{{ path('app_register') }}">Register here</a>.
+        </div>
+        {% endif %}
+
+        <div class="form-card">
+            <div class="form-card-header">
+                <div class="form-eyebrow">Fashion Challenge</div>
+                <div class="form-title">Submit Your <em>Entry</em></div>
+                <div class="form-subtitle">{{ challenge.title }}</div>
+            </div>
+            <div class="form-body">
+                <form method="POST" enctype="multipart/form-data">
+
+                    <div class="section-label">Entry Type</div>
+                    <div class="type-grid">
+                        <label class="type-option">
+                            <input type="radio" name="entryType" value="outfit" checked>
+                            <div class="type-label">
+                                <div class="type-icon">👕</div>
+                                <div class="type-name">Outfit Styling</div>
+                                <div class="type-desc">Photos featuring VeraBelle pieces</div>
+                            </div>
+                        </label>
+                        <label class="type-option">
+                            <input type="radio" name="entryType" value="design">
+                            <div class="type-label">
+                                <div class="type-icon">✏️</div>
+                                <div class="type-name">Original Design</div>
+                                <div class="type-desc">Sketches or digital designs</div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="section-label">Entry Details</div>
+
+                    <div class="form-group">
+                        <label class="field-label">Entry Title *</label>
+                        <input type="text" name="title" class="field-input" placeholder="Give your entry a catchy name..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="field-label">Description</label>
+                        <textarea name="description" class="field-textarea" placeholder="Tell us about your inspiration, color palette, mood, or design story..."></textarea>
+                    </div>
+
+                    <div class="section-label" style="margin-top:8px;">Upload Files</div>
+                    <div class="form-group">
+                        <div class="upload-zone" id="uploadZone">
+                            <div class="upload-icon">📸</div>
+                            <div class="upload-text">Click or drag images here</div>
+                            <div class="upload-hint">JPG, PNG, GIF · Max 5MB each · Up to 5 files</div>
+                            <input type="file" id="fileInput" name="files[]" multiple accept="image/*" onchange="handleFileSelect(event)">
+                        </div>
+                        <div class="file-list" id="fileList"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{{ path('app_challenge_view', {id: challenge.id}) }}" class="btn-cancel">← Cancel</a>
+                        <button type="submit" class="btn-submit">Submit Entry →</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="challenge-card">
+            <div class="ch-label">Active Challenge</div>
+            <div class="ch-title">{{ challenge.title }}</div>
+            <div class="ch-dates">
+                {{ challenge.startDate|date('M d') }} – {{ challenge.endDate|date('M d, Y') }}
+            </div>
+        </div>
+
+        <div class="info-card">
+            <div class="info-card-title">Submission Guidelines</div>
+            <div class="info-item">
+                <div class="info-dot"></div>
+                <div class="info-text"><strong>Outfit Category</strong>Submit 3–5 high-quality photos featuring VeraBelle pieces in creative settings.</div>
+            </div>
+            <div class="info-item">
+                <div class="info-dot"></div>
+                <div class="info-text"><strong>Design Category</strong>Share original sketches or digital designs inspired by the challenge theme.</div>
+            </div>
+            <div class="info-item">
+                <div class="info-dot"></div>
+                <div class="info-text"><strong>File Requirements</strong>JPG or PNG format, max 5MB per file, up to 5 files total.</div>
+            </div>
+            <div class="info-item">
+                <div class="info-dot"></div>
+                <div class="info-text"><strong>One Entry Per Person</strong>Make it count — quality over quantity.</div>
+            </div>
+        </div>
+
+        {% if challenge.prizes is defined and challenge.prizes %}
+        <div class="info-card">
+            <div class="info-card-title">Prizes</div>
+            {% if challenge.prizes.outfit is defined and challenge.prizes.outfit %}
+            <div class="info-item">
+                <div class="info-dot"></div>
+                <div class="info-text"><strong>Outfit Winner</strong>{{ challenge.prizes.outfit }}</div>
+            </div>
+            {% endif %}
+            {% if challenge.prizes.design is defined and challenge.prizes.design %}
+            <div class="info-item">
+                <div class="info-dot"></div>
+                <div class="info-text"><strong>Design Winner</strong>{{ challenge.prizes.design }}</div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const uploadZone = document.getElementById('uploadZone');
+const fileInput  = document.getElementById('fileInput');
+const fileList   = document.getElementById('fileList');
+let selectedFiles = [];
+
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+uploadZone.addEventListener('drop', e => { e.preventDefault(); uploadZone.classList.remove('dragover'); addFiles(e.dataTransfer.files); });
+
+function handleFileSelect(e) { addFiles(e.target.files); }
+
+function addFiles(files) {
+    selectedFiles = [...selectedFiles, ...Array.from(files)].slice(0, 5);
+    renderFileList();
+}
+
+function renderFileList() {
+    fileList.innerHTML = selectedFiles.map((f, i) => `
+        <div class="file-item">
+            <span><span class="file-name">${f.name}</span><span class="file-size">(${(f.size/1024/1024).toFixed(1)}MB)</span></span>
+            <button type="button" class="file-remove" onclick="removeFile(${i})">×</button>
+        </div>`).join('');
+    const dt = new DataTransfer();
+    selectedFiles.forEach(f => dt.items.add(f));
+    fileInput.files = dt.files;
+}
+
+function removeFile(i) { selectedFiles.splice(i, 1); renderFileList(); }
+</script>
+{% endblock %}

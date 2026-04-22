@@ -1,375 +1,176 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}VeraBelle Collection - Categories{% endblock %}
+{% block title %}Categories — VeraBelle Collection{% endblock %}
 {% block page_title %}Categories{% endblock %}
 
 {% block content %}
 <style>
-    .content-wrapper {
-        max-width: 100%;
+    :root {
+        --blush:#F0C4C4; --sage:#A8BCA1; --sage-deep:#7A9972;
+        --ink:#1A1F2E; --ink-soft:#4A5568; --cream:#FAF8F5;
+        --cream-warm:#F4F0EA; --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(26,31,46,0.08); --shadow-sm:0 2px 12px rgba(26,31,46,0.06);
+        --shadow-md:0 8px 32px rgba(26,31,46,0.10); --radius:16px; --radius-sm:10px;
     }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
 
-    .categories-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .categories-title {
-        font-size: 28px;
-        font-weight: 600;
-        color: #2c3e50;
-        position: relative;
-        padding-left: 15px;
-    }
-
-    .categories-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 5px;
-        height: 30px;
-        background: linear-gradient(180deg, #F4C2C2, #A8BCA1);
-        border-radius: 3px;
-    }
+    .page-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px; animation:fadeUp 0.4s ease both; }
+    .page-eyebrow { font-size:10px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:4px; }
+    .page-title { font-family:'Nunito',sans-serif; font-size:26px; font-weight:800; color:var(--ink); line-height:1; }
+    .page-sub { font-size:13px; color:var(--ink-soft); margin-top:2px; }
 
     .btn-add {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        color: #fff;
-        padding: 12px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
+        display:inline-flex; align-items:center; gap:8px; padding:11px 22px;
+        background:var(--ink); color:#fff; border-radius:40px; text-decoration:none;
+        font-size:13.5px; font-weight:600; transition:all 0.22s;
+        box-shadow:0 4px 16px rgba(26,31,46,0.18);
     }
+    .btn-add:hover { background:var(--ink-soft); transform:translateY(-2px); color:#fff; }
+    .btn-add-icon { width:22px; height:22px; background:linear-gradient(135deg,var(--blush),var(--sage)); border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
 
-    .btn-add:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
+    /* Panel */
+    .panel { background:var(--white); border-radius:var(--radius); border:1px solid var(--border); overflow:hidden; animation:fadeUp 0.4s 0.08s ease both; }
+    .panel-header { padding:20px 24px 16px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); }
+    .panel-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--ink); }
+    .panel-count { background:var(--cream); border-radius:12px; padding:4px 12px; font-size:12px; font-weight:700; color:var(--ink-soft); }
+
+    /* Table */
+    .cat-table { width:100%; border-collapse:collapse; }
+    .cat-table thead th {
+        padding:12px 20px; text-align:left; font-size:10px; font-weight:700;
+        letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-soft);
+        background:var(--cream); border-bottom:1px solid var(--border);
     }
+    .cat-table tbody td { padding:14px 20px; border-bottom:1px solid var(--border); vertical-align:middle; font-size:13.5px; color:var(--ink); }
+    .cat-table tbody tr:last-child td { border-bottom:none; }
+    .cat-table tbody tr:hover td { background:var(--cream); }
 
-    .btn-add span {
-        font-size: 20px;
-        font-weight: bold;
-    }
+    .cat-name-cell { display:flex; align-items:center; gap:10px; }
+    .cat-icon { width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg,rgba(240,196,196,0.2),rgba(168,188,161,0.2)); display:flex; align-items:center; justify-content:center; border:1px solid var(--border); flex-shrink:0; }
+    .cat-name { font-weight:600; color:var(--ink); }
+    .cat-id { font-size:11px; color:var(--ink-soft); font-family:'Nunito',sans-serif; font-weight:700; }
 
-    .categories-table {
-        background: #fff;
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        padding: 20px;
-    }
+    .actions { display:flex; gap:6px; align-items:center; }
+    .btn-action { padding:7px 14px; border-radius:8px; text-decoration:none; font-size:12px; font-weight:600; transition:all 0.18s; display:inline-flex; align-items:center; gap:5px; border:1px solid transparent; cursor:pointer; font-family:'Figtree',sans-serif; }
+    .btn-view   { background:var(--cream); color:var(--ink-soft); border-color:var(--border); }
+    .btn-view:hover   { background:var(--cream-warm); color:var(--ink); }
+    .btn-edit   { background:rgba(240,196,196,0.14); color:#b86060; border-color:rgba(240,196,196,0.3); }
+    .btn-edit:hover   { background:var(--blush); color:#fff; border-color:var(--blush); }
+    .btn-delete { background:rgba(231,76,60,0.07); color:#c0392b; border-color:rgba(231,76,60,0.18); }
+    .btn-delete:hover { background:#e74c3c; color:#fff; border-color:#e74c3c; }
+    .btn-disabled { background:rgba(200,200,200,0.12); color:#bbb; border-color:rgba(200,200,200,0.2); cursor:not-allowed; opacity:0.6; pointer-events:none; }
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    thead {
-        background: linear-gradient(135deg, #2c3e50, #34495e);
-    }
-
-    thead th {
-        padding: 18px 20px;
-        text-align: left;
-        font-weight: 600;
-        color: #fff;
-        font-size: 14px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    tbody tr {
-        border-bottom: 1px solid #f0f0f0;
-        transition: all 0.2s ease;
-    }
-
-    tbody tr:hover {
-        background: rgba(244, 194, 194, 0.05);
-    }
-
-    tbody td {
-        padding: 20px;
-        color: #2c3e50;
-        font-size: 14px;
-    }
-
-    .category-name {
-        font-weight: 500;
-        color: #2c3e50;
-    }
-
-    .actions {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .btn-action {
-        padding: 8px 16px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-size: 13px;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        border: none;
-        cursor: pointer;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .btn-view {
-        background: rgba(168, 188, 161, 0.15);
-        color: #5a6d54;
-        border: 1px solid rgba(168, 188, 161, 0.3);
-    }
-
-    .btn-view:hover {
-        background: #A8BCA1;
-        color: #fff;
-    }
-
-    .btn-edit {
-        background: rgba(244, 194, 194, 0.15);
-        color: #c97878;
-        border: 1px solid rgba(244, 194, 194, 0.3);
-    }
-
-    .btn-edit:hover {
-        background: #F4C2C2;
-        color: #fff;
-    }
-
-    .btn-delete {
-        background: rgba(231, 76, 60, 0.1);
-        color: #c0392b;
-        border: 1px solid rgba(231, 76, 60, 0.2);
-    }
-
-    .btn-delete:hover {
-        background: #c0392b;
-        color: #fff;
-    }
-
-    .btn-disabled {
-        background: rgba(200, 200, 200, 0.15);
-        color: #999;
-        border: 1px solid rgba(200, 200, 200, 0.3);
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
-
-    .btn-disabled:hover {
-        background: rgba(200, 200, 200, 0.15);
-        color: #999;
-        transform: none;
-    }
-
-    .no-categories {
-        text-align: center;
-        padding: 60px 20px;
-    }
-
-    .no-categories-icon {
-        font-size: 64px;
-        margin-bottom: 20px;
-        opacity: 0.5;
-    }
-
-    .no-categories h3 {
-        color: #2c3e50;
-        font-size: 22px;
-        margin-bottom: 10px;
-        font-weight: 600;
-    }
-
-    .no-categories p {
-        color: #7f8c8d;
-        font-size: 14px;
-    }
-
-    /* ✅ DataTables Customization */
-    .dataTables_wrapper .dataTables_length,
-    .dataTables_wrapper .dataTables_filter {
-        margin-bottom: 15px;
-    }
-
-    .dataTables_wrapper .top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-
-    .dataTables_wrapper .dataTables_length {
-        margin: 0;
-    }
-
-    .dataTables_wrapper .dataTables_filter {
-        margin: 0;
-        text-align: right;
-    }
-
-    .dataTables_wrapper .dataTables_filter label {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-    }
-
+    /* DataTables overrides */
+    .dataTables_wrapper { padding:0; }
+    .dataTables_wrapper .dataTables_length { padding:14px 20px 0; }
+    .dataTables_wrapper .dataTables_filter { padding:14px 20px 0; text-align:right; }
+    .dataTables_wrapper .dataTables_length label,
+    .dataTables_wrapper .dataTables_filter label { font-size:12px; color:var(--ink-soft); }
+    .dataTables_wrapper .dataTables_length select,
     .dataTables_wrapper .dataTables_filter input {
-        margin-left: 6px;
-        padding: 6px 12px;
-        border-radius: 6px;
-        border: 1px solid #dcdcdc;
-        outline: none;
-        transition: all 0.3s ease;
+        padding:6px 10px; border:1px solid var(--border); border-radius:7px;
+        background:var(--cream); font-size:12px; color:var(--ink); outline:none;
+        font-family:'Figtree',sans-serif; margin:0 4px;
     }
-
-    .dataTables_wrapper .dataTables_filter input:focus {
-        border-color: #F4C2C2;
-        box-shadow: 0 0 3px rgba(244, 194, 194, 0.4);
-    }
-
-    .dataTables_wrapper .dataTables_paginate {
-        text-align: right;
-        padding-top: 10px;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button {
-        display: inline-block;
-        border-radius: 6px;
-        border: 1px solid #ddd !important;
-        padding: 6px 12px !important;
-        margin: 0 3px !important;
-        font-size: 13px;
-        background: #fff !important;
-        color: #2c3e50 !important;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
-        color: #fff !important;
-        border-color: transparent !important;
-    }
-
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1) !important;
-        color: #fff !important;
-        border: none !important;
-        box-shadow: 0 0 5px rgba(244, 194, 194, 0.3);
-    }
-
-    .dataTables_wrapper .dataTables_info {
-        color: #5a6d54;
-        padding-top: 12px;
-        font-size: 13px;
-    }
+    .dataTables_wrapper .dataTables_filter input:focus { border-color:var(--blush); box-shadow:0 0 0 3px rgba(240,196,196,0.15); }
+    .dataTables_wrapper .dataTables_info { padding:12px 20px; font-size:12px; color:var(--ink-soft); }
+    .dataTables_wrapper .dataTables_paginate { padding:12px 20px; display:flex; justify-content:flex-end; gap:4px; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button { padding:6px 12px !important; border-radius:7px !important; font-size:12px; font-weight:600; color:var(--ink-soft) !important; cursor:pointer; border:1px solid var(--border) !important; background:var(--cream) !important; transition:all 0.2s; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover { background:var(--cream-warm) !important; color:var(--ink) !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current { background:var(--ink) !important; color:#fff !important; border-color:var(--ink) !important; }
+    .dataTables_wrapper .dataTables_paginate .paginate_button.disabled { opacity:0.4; cursor:not-allowed; }
+    table.dataTable thead th { border-bottom:1px solid var(--border) !important; }
+    table.dataTable.no-footer { border-bottom:none !important; }
+    .top-bar { display:flex; justify-content:space-between; align-items:center; padding:14px 20px 0; }
 </style>
 
-<div class="content-wrapper">
-    <div class="categories-header">
-        <div class="categories-title">All Categories</div>
-        <a href="{{ path('app_category_new') }}" class="btn-add">
-            <span>+</span> Add New Category
-        </a>
+<div class="page-header">
+    <div>
+        <div class="page-eyebrow">Inventory</div>
+        <div class="page-title">Categories</div>
+        <div class="page-sub">Manage your product categories</div>
     </div>
-
-    <div class="categories-table">
-        <table id="categoriesTable">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Category Name</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for category in categories %}
-                {# 🔐 Role-Based Access Control Logic #}
-                {% set isAdmin = is_granted('ROLE_ADMIN') %}
-                {% set isCreator = category.createdBy and app.user and category.createdBy.id == app.user.id %}
-                {% set canEdit = isAdmin or isCreator %}
-                {% set canDelete = isAdmin or isCreator %}
-                
-                <tr>
-                    <td>{{ category.id }}</td>
-                    <td class="category-name">{{ category.name }}</td>
-                    <td>
-                        <div class="actions">
-                            {# ✅ Everyone can view #}
-                            <a href="{{ path('app_category_show', {'id': category.id}) }}" class="btn-action btn-view">View</a>
-                            
-                            {# ✅ Edit: Admin or Creator only #}
-                            {% if canEdit %}
-                                <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn-action btn-edit">Edit</a>
-                            {% else %}
-                                <span class="btn-action btn-disabled" title="You don't have permission to edit this category">Edit</span>
-                            {% endif %}
-                            
-                            {# ✅ Delete: Admin or Creator only with confirmation #}
-                            {% if canDelete %}
-                                <form method="post" action="{{ path('app_category_delete', {'id': category.id}) }}"
-                                      style="display:inline;"
-                                      onsubmit="return confirm('Are you sure you want to delete {{ category.name }}?');">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
-                                    <button type="submit" class="btn-action btn-delete">Delete</button>
-                                </form>
-                            {% else %}
-                                <span class="btn-action btn-disabled" title="You don't have permission to delete this category">Delete</span>
-                            {% endif %}
-                        </div>
-                    </td>
-                </tr>
-                {% else %}
-                <tr>
-                    <td colspan="3">
-                        <div class="no-categories">
-                            <div class="no-categories-icon">📁</div>
-                            <h3>No categories found</h3>
-                            <p>Start by adding your first category</p>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <a href="{{ path('app_category_new') }}" class="btn-add">
+        <span class="btn-add-icon"><i data-lucide="plus" style="width:13px;height:13px;stroke:white;stroke-width:2.5;"></i></span>
+        Add Category
+    </a>
 </div>
 
-{# ✅ DataTables Integration #}
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+<div class="panel">
+    <div class="panel-header">
+        <span class="panel-title">All Categories</span>
+        <span class="panel-count">{{ categories|length }} items</span>
+    </div>
 
+    <table class="cat-table" id="categoriesTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Category Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for category in categories %}
+            {% set isAdmin = is_granted('ROLE_ADMIN') %}
+            {% set isCreator = category.createdBy is defined and category.createdBy and app.user and category.createdBy.id == app.user.id %}
+            {% set canEdit = isAdmin or isCreator %}
+            <tr>
+                <td><span class="cat-id">#{{ category.id }}</span></td>
+                <td>
+                    <div class="cat-name-cell">
+                        <div class="cat-icon"><i data-lucide="tag" style="width:14px;height:14px;stroke:var(--sage-deep);stroke-width:1.75;"></i></div>
+                        <span class="cat-name">{{ category.name }}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="actions">
+                        <a href="{{ path('app_category_show', {'id': category.id}) }}" class="btn-action btn-view">
+                            <i data-lucide="eye" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> View
+                        </a>
+                        {% if canEdit %}
+                            <a href="{{ path('app_category_edit', {'id': category.id}) }}" class="btn-action btn-edit">
+                                <i data-lucide="pencil" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> Edit
+                            </a>
+                            <form method="post" action="{{ path('app_category_delete', {'id': category.id}) }}" style="display:inline;" onsubmit="return confirm('Delete {{ category.name }}?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                                <button type="submit" class="btn-action btn-delete">
+                                    <i data-lucide="trash-2" style="width:12px;height:12px;stroke:currentColor;stroke-width:2;"></i> Delete
+                                </button>
+                            </form>
+                        {% else %}
+                            <span class="btn-action btn-disabled">Edit</span>
+                            <span class="btn-action btn-disabled">Delete</span>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
 <script>
-    $(document).ready(function() {
-        $('#categoriesTable').DataTable({
-            pageLength: 10,
-            lengthMenu: [5, 10, 25, 50],
-            ordering: true,
-            searching: true,
-            language: {
-                search: "Search:",
-                lengthMenu: "Show _MENU_ categories",
-                info: "Showing _START_ to _END_ of _TOTAL_ categories",
-                paginate: {
-                    previous: "Previous",
-                    next: "Next"
-                }
-            },
-            dom: '<"top"lf>rt<"bottom"ip><"clear">'
-        });
+$(document).ready(function() {
+    $('#categoriesTable').DataTable({
+        pageLength: 10,
+        lengthMenu: [10, 25, 50],
+        order: [[0, 'asc']],
+        columnDefs: [{ orderable: false, targets: 2 }],
+        language: {
+            searchPlaceholder: 'Search categories...',
+            lengthMenu: 'Show _MENU_ entries',
+            info: 'Showing _START_ to _END_ of _TOTAL_ categories',
+            paginate: { previous: '←', next: '→' }
+        },
+        dom: '<"top-bar"lf>rt<"bottom"ip>'
     });
+});
 </script>
 {% endblock %}

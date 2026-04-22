@@ -1,331 +1,163 @@
 {% extends 'base_dashboard.html.twig' %}
 
-{% block title %}My Profile - VeraBelle Collection{% endblock %}
+{% block title %}My Profile — VeraBelle Collection{% endblock %}
 {% block page_title %}My Profile{% endblock %}
 
 {% block content %}
 <style>
-    .content-wrapper {
-        max-width: 1200px;
-        margin: 0 auto;
+    :root {
+        --mauve:#C4A0A0; --deep-mauve:#9E6F6F; --sage:#8FAF8C; --deep-sage:#5C7A5A;
+        --charcoal:#3A3232; --warm-gray:#7A6F6F; --ivory:#F9F4EE; --parchment:#EFE6D8;
+        --gold:#C9A96E; --white:#FFFFFF;
+        --border:rgba(58,50,50,0.08); --shadow-sm:0 2px 12px rgba(58,50,50,0.06);
+        --shadow-md:0 8px 32px rgba(58,50,50,0.10); --r:16px; --r-sm:10px;
     }
+    * { font-family:'Figtree',sans-serif; box-sizing:border-box; }
+    .pw { max-width:1000px; margin:0 auto; }
 
-    .page-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
-        padding-bottom: 20px;
-        border-bottom: 2px solid #f0f0f0;
+    /* Flash */
+    .flash { display:flex; align-items:center; gap:10px; padding:12px 16px; border-radius:var(--r-sm); margin-bottom:20px; font-size:13px; font-weight:500; }
+    .flash-success { background:rgba(92,122,90,0.10); border:1px solid rgba(92,122,90,0.25); color:var(--deep-sage); }
+
+    /* Hero */
+    .profile-hero {
+        background:linear-gradient(135deg,#2A2020,var(--charcoal));
+        border-radius:var(--r); padding:40px 48px; margin-bottom:24px;
+        display:flex; align-items:center; gap:28px;
+        position:relative; overflow:hidden; border:1px solid rgba(196,160,160,0.1);
     }
+    .profile-hero::before { content:''; position:absolute; top:-60px; right:60px; width:260px; height:260px; background:radial-gradient(circle,rgba(196,160,160,0.12) 0%,transparent 65%); pointer-events:none; }
+    .ph-avatar { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--mauve),var(--sage)); display:flex; align-items:center; justify-content:center; font-family:'Nunito',sans-serif; font-size:32px; font-weight:800; color:white; flex-shrink:0; border:3px solid rgba(255,255,255,0.1); position:relative; z-index:1; }
+    .ph-info { flex:1; position:relative; z-index:1; }
+    .ph-eyebrow { font-size:10px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--gold); margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+    .ph-eyebrow::before { content:''; display:block; width:20px; height:1px; background:var(--gold); }
+    .ph-name { font-family:'Nunito',sans-serif; font-size:26px; font-weight:800; color:white; margin-bottom:4px; }
+    .ph-email { font-size:13px; color:rgba(255,255,255,0.4); margin-bottom:12px; }
+    .ph-badges { display:flex; gap:8px; flex-wrap:wrap; }
+    .ph-badge { display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:20px; font-size:11px; font-weight:700; }
+    .pb-role   { background:rgba(196,160,160,0.15); color:var(--mauve); border:1px solid rgba(196,160,160,0.25); }
+    .pb-active { background:rgba(92,122,90,0.15); color:var(--sage); border:1px solid rgba(92,122,90,0.25); }
+    .pb-verified { background:rgba(201,169,110,0.15); color:var(--gold); border:1px solid rgba(201,169,110,0.25); }
 
-    .page-title {
-        font-size: 28px;
-        font-weight: 600;
-        color: #2c3e50;
-        position: relative;
-        padding-left: 15px;
-    }
+    /* Grid */
+    .profile-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
 
-    .page-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 5px;
-        height: 30px;
-        background: linear-gradient(180deg, #F4C2C2, #A8BCA1);
-        border-radius: 3px;
-    }
+    /* Panels */
+    .panel { background:var(--white); border-radius:var(--r); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadow-sm); }
+    .panel.full { grid-column:1/-1; }
+    .ph2 { padding:18px 24px 14px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:10px; }
+    .ph2-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+    .ph2-title { font-family:'Nunito',sans-serif; font-size:15px; font-weight:800; color:var(--charcoal); }
+    .pb { padding:20px 24px; display:flex; flex-direction:column; gap:10px; }
+    .pr { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--ivory); border-radius:8px; font-size:13px; }
+    .pr-lbl { color:var(--warm-gray); font-weight:500; }
+    .pr-val { font-weight:700; color:var(--charcoal); }
+    .pr-val.green { color:var(--deep-sage); }
+    .pr-val.red   { color:#b05050; }
 
-    .alert {
-        background: rgba(168, 188, 161, 0.15);
-        border: 1px solid rgba(168, 188, 161, 0.3);
-        color: #5a6d54;
-        padding: 15px 20px;
-        border-radius: 8px;
-        margin-bottom: 25px;
-        font-size: 14px;
-    }
+    /* Form */
+    .form-group { margin-bottom:18px; }
+    .form-label { display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--warm-gray); margin-bottom:7px; }
+    .form-input { width:100%; padding:11px 14px; border:2px solid #e2e8f0; border-radius:8px; font-size:14px; color:var(--charcoal); background:#f8f9fa; font-family:'Figtree',sans-serif; transition:all 0.2s; }
+    .form-input:focus { outline:none; border-color:var(--mauve); background:#fff; box-shadow:0 0 0 3px rgba(196,160,160,0.1); }
+    .form-hint { font-size:11px; color:var(--warm-gray); margin-top:5px; font-style:italic; }
+    .btn-submit { display:inline-flex; align-items:center; gap:8px; padding:11px 28px; background:linear-gradient(135deg,var(--mauve),var(--deep-mauve)); color:#fff; border:none; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; transition:all 0.3s; font-family:'Figtree',sans-serif; box-shadow:0 4px 15px rgba(196,160,160,0.3); }
+    .btn-submit:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(196,160,160,0.4); }
 
-    .profile-grid {
-        display: grid;
-        grid-template-columns: 350px 1fr;
-        gap: 30px;
-    }
-
-    .profile-card {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        padding: 40px;
-        border-radius: 12px;
-        text-align: center;
-        color: white;
-        box-shadow: 0 4px 20px rgba(244, 194, 194, 0.3);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .profile-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        pointer-events: none;
-    }
-
-    .profile-avatar {
-        width: 120px;
-        height: 120px;
-        background: white;
-        color: #F4C2C2;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 48px;
-        font-weight: bold;
-        margin: 0 auto 20px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-        border: 4px solid rgba(255, 255, 255, 0.3);
-    }
-
-    .profile-card h2 {
-        margin: 15px 0 10px 0;
-        font-size: 26px;
-        font-weight: 600;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    .role-badge {
-        margin: 15px 0;
-    }
-
-    .badge {
-        display: inline-block;
-        padding: 6px 14px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        margin: 0 5px;
-    }
-
-    .badge-danger {
-        background: rgba(231, 76, 60, 0.9);
-        color: white;
-        border: 1px solid rgba(231, 76, 60, 0.3);
-    }
-
-    .badge-info {
-        background: rgba(52, 152, 219, 0.9);
-        color: white;
-        border: 1px solid rgba(52, 152, 219, 0.3);
-    }
-
-    .status-badge {
-        margin: 10px 0;
-    }
-
-    .badge-success {
-        background: rgba(39, 174, 96, 0.9);
-        color: white;
-        border: 1px solid rgba(39, 174, 96, 0.3);
-    }
-
-    .badge-secondary {
-        background: rgba(149, 165, 166, 0.9);
-        color: white;
-        border: 1px solid rgba(149, 165, 166, 0.3);
-    }
-
-    .profile-details {
-        background: white;
-        padding: 40px;
-        border-radius: 12px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    }
-
-    .profile-details h3 {
-        margin-bottom: 25px;
-        color: #2c3e50;
-        font-size: 22px;
-        font-weight: 600;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-        position: relative;
-    }
-
-    .profile-details h3::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 60px;
-        height: 2px;
-        background: linear-gradient(90deg, #F4C2C2, #A8BCA1);
-    }
-
-    .info-grid {
-        display: grid;
-        gap: 18px;
-        margin-bottom: 30px;
-    }
-
-    .info-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 18px 20px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-        border-left: 4px solid transparent;
-    }
-
-    .info-item:hover {
-        background: rgba(244, 194, 194, 0.05);
-        border-left-color: #F4C2C2;
-        transform: translateX(5px);
-    }
-
-    .info-item strong {
-        color: #7f8c8d;
-        font-size: 14px;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .info-item span {
-        color: #2c3e50;
-        font-size: 15px;
-        font-weight: 500;
-    }
-
-    .profile-actions {
-        margin-top: 30px;
-        padding-top: 30px;
-        border-top: 2px solid #f0f0f0;
-        display: flex;
-        gap: 12px;
-    }
-
-    .btn {
-        padding: 12px 25px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-size: 15px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        border: none;
-        cursor: pointer;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #F4C2C2, #A8BCA1);
-        color: white;
-        box-shadow: 0 4px 15px rgba(244, 194, 194, 0.3);
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(244, 194, 194, 0.4);
-        text-decoration: none;
-    }
-
-    @media (max-width: 968px) {
-        .profile-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .profile-card {
-            order: 1;
-        }
-
-        .profile-details {
-            order: 2;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .profile-details {
-            padding: 25px 20px;
-        }
-
-        .info-item {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 8px;
-        }
-    }
+    @media (max-width:900px) { .profile-grid { grid-template-columns:1fr; } .profile-hero { flex-direction:column; align-items:flex-start; padding:28px 24px; } }
 </style>
 
-<div class="content-wrapper">
-    <div class="page-header">
-        <h1 class="page-title">My Profile</h1>
-    </div>
-
-    {% for message in app.flashes('success') %}
-        <div class="alert">{{ message }}</div>
+<div class="pw">
+    {% for msg in app.flashes('success') %}
+        <div class="flash flash-success">
+            <i data-lucide="check-circle" style="width:16px;height:16px;stroke:currentColor;stroke-width:2;flex-shrink:0;"></i>
+            {{ msg }}
+        </div>
     {% endfor %}
 
-    <div class="profile-grid">
-        <div class="profile-card">
-            <div class="profile-avatar">
-                {{ user.username|slice(0, 1)|upper }}
-            </div>
-            <h2>{{ user.username }}</h2>
-            <p class="role-badge">
+    <!-- Hero -->
+    <div class="profile-hero">
+        <div class="ph-avatar">{{ user.email|slice(0,1)|upper }}</div>
+        <div class="ph-info">
+            <div class="ph-eyebrow">My Profile</div>
+            <div class="ph-name">{{ user.email|split('@')[0] }}</div>
+            <div class="ph-email">{{ user.email }}</div>
+            <div class="ph-badges">
                 {% for role in user.roles %}
                     {% if role != 'ROLE_USER' %}
-                        <span class="badge badge-{{ role == 'ROLE_ADMIN' ? 'danger' : 'info' }}">
-                            {{ role|replace({'ROLE_': ''}) }}
+                        <span class="ph-badge pb-role">
+                            <i data-lucide="shield" style="width:10px;height:10px;stroke:currentColor;stroke-width:2;"></i>
+                            {{ role|replace({'ROLE_':''}) }}
                         </span>
                     {% endif %}
                 {% endfor %}
-            </p>
-            <p class="status-badge">
-                <span class="badge badge-{{ user.status == 'active' ? 'success' : 'secondary' }}">
-                    {{ user.status|upper }}
-                </span>
-            </p>
-        </div>
-
-        <div class="profile-details">
-            <h3>Account Information</h3>
-            <div class="info-grid">
-                <div class="info-item">
-                    <strong>Username:</strong>
-                    <span>{{ user.username }}</span>
-                </div>
-                <div class="info-item">
-                    <strong>Email:</strong>
-                    <span>{{ user.email ?? 'Not set' }}</span>
-                </div>
-                <div class="info-item">
-                    <strong>Account Created:</strong>
-                    <span>{{ user.createdAt ? user.createdAt|date('F d, Y') : 'N/A' }}</span>
-                </div>
-                <div class="info-item">
-                    <strong>Verified:</strong>
-                    <span>{{ user.isVerified ? ' Yes' : ' No' }}</span>
-                </div>
-            </div>
-
-            <div class="profile-actions">
-                <a href="{{ path('app_profile_change_password') }}" class="btn btn-primary">
-                     Change Password
-                </a>
+                <span class="ph-badge pb-active">{{ user.status|capitalize }}</span>
+                {% if user.isVerified %}
+                    <span class="ph-badge pb-verified">
+                        <i data-lucide="check" style="width:10px;height:10px;stroke:currentColor;stroke-width:2.5;"></i>
+                        Verified
+                    </span>
+                {% endif %}
             </div>
         </div>
+    </div>
+
+    <!-- Grid -->
+    <div class="profile-grid">
+
+        <!-- Account Info -->
+        <div class="panel">
+            <div class="ph2">
+                <div class="ph2-icon" style="background:rgba(143,175,140,0.15);">
+                    <i data-lucide="user" style="width:15px;height:15px;stroke:var(--deep-sage);stroke-width:1.75;"></i>
+                </div>
+                <span class="ph2-title">Account Information</span>
+            </div>
+            <div class="pb">
+                <div class="pr"><span class="pr-lbl">Email</span><span class="pr-val" style="font-size:12px;">{{ user.email }}</span></div>
+                <div class="pr"><span class="pr-lbl">Member Since</span><span class="pr-val">{{ user.createdAt ? user.createdAt|date('M d, Y') : 'N/A' }}</span></div>
+                <div class="pr">
+                    <span class="pr-lbl">Email Verified</span>
+                    <span class="pr-val {{ user.isVerified ? 'green' : 'red' }}">{{ user.isVerified ? '✓ Yes' : '✗ No' }}</span>
+                </div>
+                <div class="pr">
+                    <span class="pr-lbl">Status</span>
+                    <span class="pr-val green">{{ user.status|capitalize }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Change Password -->
+        <div class="panel">
+            <div class="ph2">
+                <div class="ph2-icon" style="background:rgba(196,160,160,0.15);">
+                    <i data-lucide="lock" style="width:15px;height:15px;stroke:var(--deep-mauve);stroke-width:1.75;"></i>
+                </div>
+                <span class="ph2-title">Change Password</span>
+            </div>
+            <div class="pb">
+                <form method="POST" action="{{ path('app_profile_change_password') }}">
+                    <div class="form-group">
+                        <label class="form-label">Current Password</label>
+                        <input type="password" name="current_password" class="form-input" placeholder="Enter current password" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" name="new_password" class="form-input" placeholder="Min. 8 characters" required>
+                        <div class="form-hint">At least 8 characters long</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" name="confirm_password" class="form-input" placeholder="Repeat new password" required>
+                    </div>
+                    <button type="submit" class="btn-submit">
+                        <i data-lucide="save" style="width:14px;height:14px;stroke:white;stroke-width:2;"></i>
+                        Update Password
+                    </button>
+                </form>
+            </div>
+        </div>
+
     </div>
 </div>
 {% endblock %}

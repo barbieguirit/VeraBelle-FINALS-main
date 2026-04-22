@@ -55,7 +55,7 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_customer_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_customer_show', methods: ['GET'], requirements: ['id' => '\\d+'])]
     public function show(Customer $customer): Response
     {
         return $this->render('customer/show.html.twig', [
@@ -63,7 +63,7 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_customer_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'app_customer_edit', methods: ['GET', 'POST'], requirements: ['id' => '\\d+'])]
     public function edit(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(CustomerType::class, $customer);
@@ -82,7 +82,7 @@ class CustomerController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_customer_delete', methods: ['POST'])]
+    #[Route('/{id}', name: 'app_customer_delete', methods: ['POST'], requirements: ['id' => '\\d+'])]
     public function delete(Request $request, Customer $customer, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {

@@ -8,7 +8,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&family=Pacifico&display=swap" rel="stylesheet">
 
     <style>
         /* ══════════════════════════════════════════════════════
@@ -24,6 +24,10 @@
             --terra:      #f5c2c2;
             --blush:      #E8C4B0;
             --ink:        #1A1A18;
+            --charcoal:   #3A3232;
+            --deep-mauve: #9E6F6F;
+            --mauve:      #C4A0A0;
+            --deep-sage:  #5C7A5A;
             --warm-gray:  #8C8479;
             --light-line: rgba(45,74,62,0.15);
             --serif:      'Playfair Display', Georgia, serif;
@@ -38,69 +42,37 @@
             background: var(--cream);
             color: var(--ink);
             overflow-x: hidden;
-            cursor: none;
         }
 
-        /* ── CUSTOM CURSOR ── */
-        .cursor {
-            width: 10px; height: 10px;
-            background: var(--terra);
-            border-radius: 50%;
-            position: fixed; top: 0; left: 0;
-            pointer-events: none; z-index: 9999;
-            transform: translate(-50%,-50%);
-            transition: transform 0.1s, width 0.3s, height 0.3s, background 0.3s;
-            mix-blend-mode: multiply;
-        }
-        .cursor-ring {
-            width: 38px; height: 38px;
-            border: 1px solid var(--forest);
-            border-radius: 50%;
-            position: fixed; top: 0; left: 0;
-            pointer-events: none; z-index: 9998;
-            transform: translate(-50%,-50%);
-            transition: transform 0.18s ease-out, width 0.3s, height 0.3s, opacity 0.3s;
-            opacity: 0.6;
-        }
-        .cursor.active { width: 6px; height: 6px; }
-        .cursor-ring.active { width: 52px; height: 52px; opacity: 0.3; }
+
 
         /* ── NAVBAR ── */
         .navbar {
             position: fixed; top: 0; left: 0; right: 0;
             z-index: 500;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 28px 56px;
+            padding: 15px 56px;
             transition: padding 0.4s, background 0.4s, backdrop-filter 0.4s;
-        }
-        .navbar.scrolled {
-            padding: 16px 56px;
-            background: rgba(245,240,232,0.94);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--light-line);
+            background: var(--cream);
         }
         .nav-logo {
-            font-family: var(--serif);
-            font-size: 22px; font-weight: 500;
-            color: var(--cream); letter-spacing: 0.06em;
+            font-family: 'Pacifico', cursive;
+            font-size: 25px; font-weight: 400;
+            color: var(--charcoal); letter-spacing: 0;
             text-decoration: none;
-            display: flex; flex-direction: column; line-height: 1;
+            display: flex; flex-direction: column; align-items: center; line-height: 1;
             transition: color 0.4s;
         }
-        /* When scrolled — navbar has light background, switch logo to dark */
-        .navbar.scrolled .nav-logo {
-            color: var(--forest);
+        .nav-belle {
+            color: var(--deep-mauve);
         }
         .nav-logo sub {
             font-family: var(--sans);
             font-size: 9px; font-weight: 300;
             letter-spacing: 0.35em; text-transform: uppercase;
-            color: var(--blush); font-style: normal;
+            color: var(--forest); font-style: normal;
             margin-top: 3px;
             transition: color 0.4s;
-        }
-        .navbar.scrolled .nav-logo sub {
-            color: var(--terra);
         }
         .nav-center {
             display: flex; gap: 40px;
@@ -109,13 +81,9 @@
         .nav-center a {
             font-size: 11px; font-weight: 400;
             letter-spacing: 0.2em; text-transform: uppercase;
-            color: rgba(245,240,232,0.85); text-decoration: none;
+            color: var(--forest); text-decoration: none;
             position: relative; padding-bottom: 3px;
             transition: color 0.3s;
-        }
-        /* Nav links switch to dark when scrolled */
-        .navbar.scrolled .nav-center a {
-            color: var(--ink);
         }
         .nav-center a::after {
             content: '';
@@ -123,10 +91,24 @@
             height: 1px; background: var(--terra);
             transition: left 0.3s, right 0.3s;
         }
-        .nav-center a:hover { color: var(--cream); }
-        .navbar.scrolled .nav-center a:hover { color: var(--forest); }
+        .nav-center a:hover { color: var(--terra); }
         .nav-center a:hover::after { left: 0; right: 0; }
         .nav-right { display: flex; gap: 16px; align-items: center; }
+        .nav-icon {
+            background: none; border: none;
+            color: var(--forest); font-size: 16px;
+            cursor: pointer; padding: 4px; transition: color 0.3s;
+            position: relative; display: flex; align-items: center;
+        }
+        .nav-icon:hover { color: var(--terra); }
+        .nav-icon svg { width: 20px; height: 20px; }
+        .cart-count, .wishlist-count {
+            position: absolute; top: -8px; right: -8px;
+            background: var(--terra); color: var(--cream);
+            border-radius: 50%; width: 18px; height: 18px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 600;
+        }
         .nav-btn {
             font-size: 10px; font-weight: 500;
             letter-spacing: 0.25em; text-transform: uppercase;
@@ -136,6 +118,80 @@
             border: 1px solid var(--forest);
         }
         .nav-btn:hover { background: var(--terra); border-color: var(--terra); }
+        .nav-btn-outline {
+            font-size: 10px; font-weight: 500;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--forest); background: transparent;
+            padding: 11px 22px; text-decoration: none;
+            transition: color 0.3s, border-color 0.3s;
+            border: 1px solid var(--forest);
+        }
+        .nav-btn-outline:hover { color: var(--terra); border-color: var(--terra); }
+        .login-dropdown { position: relative; }
+        .login-toggle {
+            font-size: 10px; font-weight: 500;
+            letter-spacing: 0.25em; text-transform: uppercase;
+            color: var(--forest); background: transparent;
+            padding: 11px 22px; text-decoration: none;
+            transition: color 0.3s, border-color 0.3s;
+            border: 1px solid var(--forest);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .login-toggle::after {
+            content: '\25BE';
+            font-size: 10px;
+            letter-spacing: 0;
+        }
+        .login-toggle:hover { color: var(--terra); border-color: var(--terra); }
+        .login-menu {
+            position: absolute; top: calc(100% + 8px); right: 0;
+            min-width: 190px; background: var(--cream);
+            border: 1px solid rgba(45,74,62,0.15);
+            box-shadow: 0 14px 30px rgba(26,26,24,0.12);
+            display: none; flex-direction: column; z-index: 510;
+        }
+        .login-menu a {
+            font-size: 10px; font-weight: 500;
+            letter-spacing: 0.22em; text-transform: uppercase;
+            color: var(--forest); text-decoration: none;
+            padding: 14px 18px; transition: color 0.3s, background 0.3s;
+        }
+        .login-menu a:hover { background: rgba(245,194,194,0.2); color: var(--terra); }
+        .login-dropdown:hover .login-menu,
+        .login-dropdown:focus-within .login-menu {
+            display: flex;
+        }
+        
+        /* Search Modal */
+        .search-modal {
+            display: none; position: fixed; inset: 0; z-index: 1000;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        .search-modal.open { display: flex; }
+        .search-modal-content {
+            background: var(--cream); padding: 48px 56px;
+            border-radius: 0; width: 90%; max-width: 600px;
+            position: relative;
+        }
+        .search-modal-close {
+            position: absolute; top: 20px; right: 24px;
+            background: none; border: none; font-size: 24px;
+            color: var(--forest); cursor: pointer;
+        }
+        .search-modal h2 {
+            font-family: var(--serif); font-size: 28px;
+            color: var(--forest); margin-bottom: 24px;
+        }
+        .search-input {
+            width: 100%; padding: 14px 0; font-size: 14px;
+            border: none; border-bottom: 2px solid var(--forest);
+            background: transparent; font-family: var(--sans);
+            color: var(--ink); outline: none;
+            transition: border-color 0.3s;
+        }
+        .search-input::placeholder { color: rgba(26,26,24,0.4); }
+        .search-input:focus { border-color: var(--terra); }
         .hamburger {
             display: none; flex-direction: column; gap: 5px;
             cursor: none; background: none; border: none; padding: 4px;
@@ -566,13 +622,13 @@
         /* ══ CONTACT ══ */
         #contact {
             padding: 110px 56px;
-            background: var(--forest);
+            background: #2A2020;
             position: relative; overflow: hidden;
         }
         .contact-bg-text {
             font-family: var(--serif); font-style: italic;
             font-size: clamp(80px, 14vw, 180px); font-weight: 700;
-            color: rgba(255,255,255,0.03);
+            color: rgba(196,160,160,0.04);
             position: absolute; bottom: -20px; right: -10px;
             user-select: none; line-height: 0.9; letter-spacing: -0.04em;
         }
@@ -580,13 +636,13 @@
             display: grid; grid-template-columns: 1fr 1.4fr;
             gap: 100px; align-items: start; position: relative; z-index: 2;
         }
-        .contact-left .section-eyebrow { color: var(--terra); }
-        .contact-left .section-eyebrow::before { background: var(--terra); }
+        .contact-left .section-eyebrow { color: var(--mauve); }
+        .contact-left .section-eyebrow::before { background: var(--mauve); }
         .contact-left .section-title { color: var(--cream); }
         .contact-left .section-title em { color: var(--blush); }
         .contact-desc {
             margin-top: 24px; font-size: 14px; font-weight: 300;
-            line-height: 1.9; color: rgba(245,240,232,0.58);
+            line-height: 1.9; color: rgba(245,240,232,0.5);
         }
         .contact-info-list {
             margin-top: 48px; display: flex; flex-direction: column; gap: 28px;
@@ -594,79 +650,86 @@
         .contact-info-item { display: flex; gap: 18px; align-items: flex-start; }
         .c-icon {
             width: 42px; height: 42px; flex-shrink: 0;
-            background: rgba(245,240,232,0.08);
-            border: 1px solid rgba(245,240,232,0.12);
+            background: rgba(196,160,160,0.12);
+            border: 1px solid rgba(196,160,160,0.2);
+            border-radius: 10px;
             display: flex; align-items: center; justify-content: center;
             font-size: 16px;
         }
         .c-label {
             font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase;
-            color: var(--terra); margin-bottom: 4px;
+            color: var(--mauve); margin-bottom: 4px;
         }
-        .c-val { font-size: 13px; color: rgba(245,240,232,0.75); }
+        .c-val { font-size: 13px; color: rgba(245,240,232,0.65); }
 
         /* CONTACT FORM */
         .contact-form-box {
             background: var(--cream);
             padding: 56px 52px;
             position: relative;
+            border-radius: 16px;
         }
         .contact-form-box::before {
             content: '';
             position: absolute; top: 0; left: 0;
-            width: 4px; height: 100%; background: var(--terra);
+            width: 4px; height: 100%;
+            background: linear-gradient(180deg, var(--mauve), var(--sage));
+            border-radius: 16px 0 0 16px;
         }
         .form-heading {
             font-family: var(--serif); font-size: 28px; font-weight: 400;
-            color: var(--forest); margin-bottom: 36px;
+            color: var(--charcoal); margin-bottom: 36px;
         }
         .f-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .f-group { margin-bottom: 28px; position: relative; }
         .f-label {
             display: block; font-size: 9px; font-weight: 500;
             letter-spacing: 0.3em; text-transform: uppercase;
-            color: var(--terra); margin-bottom: 10px;
+            color: var(--deep-mauve); margin-bottom: 10px;
         }
         .f-input, .f-textarea, .f-select {
             width: 100%; background: transparent;
-            border: none; border-bottom: 1px solid rgba(45,74,62,0.25);
+            border: none; border-bottom: 1px solid rgba(196,160,160,0.3);
             padding: 12px 0; font-size: 14px; font-weight: 300;
-            color: var(--ink); font-family: var(--sans);
+            color: var(--charcoal); font-family: var(--sans);
             outline: none; transition: border-color 0.3s;
         }
         .f-input:focus, .f-textarea:focus, .f-select:focus {
-            border-color: var(--terra);
+            border-color: var(--deep-mauve);
         }
-        .f-input::placeholder, .f-textarea::placeholder { color: rgba(26,26,24,0.3); }
+        .f-input::placeholder, .f-textarea::placeholder { color: rgba(58,50,50,0.3); }
         .f-textarea { resize: vertical; min-height: 110px; }
-        .f-select { cursor: none; }
+        .f-select { cursor: pointer; }
         .f-underline {
             position: absolute; bottom: 0; left: 0;
-            width: 0; height: 1px; background: var(--terra);
+            width: 0; height: 1px; background: var(--deep-mauve);
             transition: width 0.4s;
         }
         .f-group:focus-within .f-underline { width: 100%; }
         .f-submit {
             width: 100%; padding: 18px;
-            background: var(--forest); color: var(--cream);
-            border: none; font-family: var(--sans);
-            font-size: 10px; font-weight: 500; letter-spacing: 0.28em;
-            text-transform: uppercase; cursor: none;
-            transition: background 0.3s; margin-top: 8px;
+            background: linear-gradient(135deg, var(--mauve), var(--deep-mauve));
+            color: white;
+            border: none; border-radius: 8px; font-family: var(--sans);
+            font-size: 10px; font-weight: 600; letter-spacing: 0.28em;
+            text-transform: uppercase; cursor: pointer;
+            transition: opacity 0.3s, transform 0.2s; margin-top: 8px;
         }
-        .f-submit:hover { background: var(--terra); }
+        .f-submit:hover { opacity: 0.9; transform: translateY(-1px); }
         .f-submit:disabled { opacity: 0.6; }
         .flash-ok {
             padding: 16px 20px; margin-bottom: 24px;
-            background: rgba(74,103,65,0.12);
-            border-left: 3px solid var(--moss);
-            color: var(--forest); font-size: 13px;
+            background: rgba(92,122,90,0.1);
+            border-left: 3px solid var(--sage);
+            border-radius: 0 8px 8px 0;
+            color: var(--deep-sage); font-size: 13px;
         }
         .flash-err {
             padding: 16px 20px; margin-bottom: 24px;
-            background: rgba(196,113,74,0.12);
-            border-left: 3px solid var(--terra);
-            color: var(--terra); font-size: 13px;
+            background: rgba(196,160,160,0.1);
+            border-left: 3px solid var(--mauve);
+            border-radius: 0 8px 8px 0;
+            color: var(--deep-mauve); font-size: 13px;
         }
 
         /* ══ FOOTER ══ */
@@ -684,7 +747,7 @@
             font-family: var(--serif); font-size: 30px; font-weight: 500;
             color: var(--cream); letter-spacing: 0.04em; margin-bottom: 16px;
         }
-        .footer-brand span { color: var(--terra); font-style: italic; }
+        .footer-brand span { color: #f5c2c2; font-style: italic; }
         .footer-tagline {
             font-size: 13px; font-weight: 300;
             line-height: 1.8; margin-bottom: 32px;
@@ -765,15 +828,21 @@
         .about-intro-left { position: relative; }
         .about-intro-visual {
             width: 100%; aspect-ratio: 3/4;
-            background: linear-gradient(160deg, var(--parchment), #C8B89A);
-            display: flex; align-items: center; justify-content: center;
+            background: #d8cfbf;
             position: relative; overflow: hidden;
         }
+        .about-intro-photo {
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+        }
         .about-intro-visual::after {
-            content: 'VB';
-            font-family: var(--serif); font-style: italic; font-weight: 700;
-            font-size: 120px; color: rgba(255,255,255,0.12);
-            letter-spacing: -0.06em;
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.03) 0%, rgba(0,0,0,0.15) 100%);
+            pointer-events: none;
         }
         .about-intro-accent {
             position: absolute; bottom: -16px; right: -16px;
@@ -900,7 +969,7 @@
 
         /* ══ RESPONSIVE ══ */
         @media (max-width: 1100px) {
-            .nav-center, .nav-btn { display: none; }
+            .nav-center, .nav-btn, .nav-btn-outline, .login-dropdown { display: none; }
             .hamburger { display: flex; }
             #home { grid-template-columns: 1fr; }
             .hero-left { padding: 130px 32px 72px; }
@@ -939,37 +1008,81 @@
 </head>
 <body>
 
-<!-- Custom Cursor -->
-<div class="cursor" id="cur"></div>
-<div class="cursor-ring" id="curRing"></div>
-
 <!-- Mobile Nav -->
 <div class="mobile-nav" id="mobileNav">
     <button class="mobile-nav-close" onclick="closeMobileNav()">✕</button>
     <a href="{{ path('app_landing') }}" onclick="closeMobileNav()">Home</a>
     <a href="{{ path('app_landing') }}#products" onclick="closeMobileNav()">Collection</a>
-    <a href="{{ path('app_landing') }}#story" onclick="closeMobileNav()">Our Story</a>
+    <a href="{{ path('app_challenge_index') }}" onclick="closeMobileNav()">Challenges</a>
     <a href="{{ path('app_about') }}" onclick="closeMobileNav()">About Us</a>
-    <a href="{{ path('app_landing') }}#team" onclick="closeMobileNav()">Our Team</a>
-    <a href="{{ path('app_landing') }}#contact" onclick="closeMobileNav()">Contact</a>
-    <a href="{{ path('app_login') }}" style="font-size:20px;letter-spacing:0.15em;color:rgba(245,240,232,0.45)">Staff Login</a>
+    <a href="{{ path('app_contact_page') }}" onclick="closeMobileNav()">Contact</a>
+    {% if app.user %}
+        <a href="{{ path('app_logout') }}" onclick="closeMobileNav()" style="font-size:20px;letter-spacing:0.15em;color:rgba(245,240,232,0.6)">Logout</a>
+    {% else %}
+        <a href="{{ path('app_login') }}" onclick="closeMobileNav()" style="font-size:20px;letter-spacing:0.15em;color:rgba(245,240,232,0.6)">Login</a>
+    {% endif %}
+</div>
+
+<!-- Search Modal -->
+<div class="search-modal" id="searchModal">
+    <div class="search-modal-content">
+        <button class="search-modal-close" onclick="closeSearch()">✕</button>
+        <h2>Search Collection</h2>
+        <input type="text" class="search-input" placeholder="Search for styles, colors, sizes..." id="searchInput" onkeypress="handleSearch(event)">
+        <div id="searchResults" style="margin-top: 24px;"></div>
+    </div>
 </div>
 
 <!-- Navbar -->
 <nav class="navbar" id="navbar">
     <a href="{{ path('app_landing') }}" class="nav-logo">
-        VeraBelle
-        <sub>Collection</sub>
+        <span style="display: inline;">Vera<span class="nav-belle">Belle</span></span>
     </a>
     <ul class="nav-center">
-        <li><a href="{{ path('app_landing') }}#products">Collection</a></li>
-        <li><a href="{{ path('app_landing') }}#story">Our Story</a></li>
+        <li><a href="{{ path('app_landing') }}">Home</a></li>
+        <li><a href="{{ path('app_shop') }}#products">Collection</a></li>
+        <li><a href="{{ path('app_challenge_index') }}">Challenges</a></li>
         <li><a href="{{ path('app_about') }}">About</a></li>
-        <li><a href="{{ path('app_landing') }}#team">Our Team</a></li>
-        <li><a href="{{ path('app_landing') }}#contact">Contact</a></li>
+        <li><a href="{{ path('app_contact_page') }}">Contact</a></li>
     </ul>
     <div class="nav-right">
-        <a href="{{ path('app_login') }}" class="nav-btn">Staff Portal</a>
+        <button class="nav-icon" id="searchBtn" title="Search" onclick="openSearch()">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="8" cy="8" r="6"></circle>
+                <line x1="12" y1="12" x2="18" y2="18"></line>
+            </svg>
+        </button>
+        <a href="{{ path('app_cart') }}" class="nav-icon" title="Cart" style="position:relative; text-decoration:none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            <span id="nav-cart-count" style="display:none; position:absolute; top:-6px; right:-6px; background:var(--terra,#C4785A); color:white; font-size:9px; font-weight:800; width:16px; height:16px; border-radius:50%; align-items:center; justify-content:center;"></span>
+        </a>
+        <div class="login-dropdown">
+            {% if app.user %}
+                <button class="login-toggle" type="button" aria-haspopup="true" aria-expanded="false">{{ app.user.email|split('@')[0] }}</button>
+                <div class="login-menu" role="menu">
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_admin_dashboard') }}" role="menuitem">Dashboard</a>
+                        <a href="{{ path('app_profile') }}" role="menuitem">Profile</a>
+                    {% elseif is_granted('ROLE_STAFF') %}
+                        <a href="{{ path('app_dashboard') }}" role="menuitem">Dashboard</a>
+                        <a href="{{ path('app_profile') }}" role="menuitem">Profile</a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" role="menuitem">Dashboard</a>
+                    {% endif %}
+                    <a href="{{ path('app_logout') }}" role="menuitem">Logout</a>
+                </div>
+            {% else %}
+                <button class="login-toggle" type="button" aria-haspopup="true" aria-expanded="false">Login</button>
+                <div class="login-menu" role="menu">
+                    <a href="{{ path('app_login') }}" role="menuitem">Login</a>
+                    <a href="{{ path('app_login') }}" role="menuitem">Dashboard</a>
+                </div>
+            {% endif %}
+        </div>
         <button class="hamburger" id="hamburger" onclick="openMobileNav()">
             <span></span><span></span><span></span>
         </button>
@@ -1010,17 +1123,17 @@
                 <li><a href="{{ path('app_landing') }}#team">Our Team</a></li>
                 <li><a href="{{ path('app_landing') }}#story">Our Story</a></li>
                 <li><a href="{{ path('app_landing') }}#contact">Contact</a></li>
-                <li><a href="{{ path('app_login') }}">Staff Login</a></li>
+                <li><a href="{{ app.user ? path('app_logout') : path('app_login') }}">{{ app.user ? 'Logout' : 'Staff Login' }}</a></li>
             </ul>
         </div>
         <div class="footer-col">
-            <h5>Support</h5>
+            <h5>Community</h5>
             <ul class="footer-links">
-                <li><a href="{{ path('app_landing') }}#contact">FAQ</a></li>
-                <li><a href="{{ path('app_landing') }}#contact">Sizing Guide</a></li>
-                <li><a href="{{ path('app_landing') }}#contact">Shipping Info</a></li>
-                <li><a href="{{ path('app_landing') }}#contact">Returns</a></li>
-                <li><a href="{{ path('app_landing') }}#contact">Care Instructions</a></li>
+                <li><a href="{{ path('app_challenge_index') }}">Fashion Challenges</a></li>
+                <li><a href="{{ path('app_challenge_hall_of_fame') }}">Hall of Fame</a></li>
+                <li><a href="{{ path('app_about') }}">About Us</a></li>
+                <li><a href="{{ path('app_landing') }}#contact">Contact</a></li>
+                <li><a href="{{ app.user ? path('app_logout') : path('app_login') }}">{{ app.user ? 'Logout' : 'Staff Login' }}</a></li>
             </ul>
         </div>
     </div>
@@ -1035,29 +1148,72 @@
 </footer>
 
 <script>
-// ── Custom Cursor
-const cur = document.getElementById('cur');
-const curRing = document.getElementById('curRing');
-if (cur && curRing) {
-    let rx = 0, ry = 0;
-    document.addEventListener('mousemove', e => {
-        cur.style.left = e.clientX + 'px';
-        cur.style.top  = e.clientY + 'px';
-        rx += (e.clientX - rx) * 0.12;
-        ry += (e.clientY - ry) * 0.12;
-        curRing.style.left = rx + 'px';
-        curRing.style.top  = ry + 'px';
-    });
-    const raf = () => {
-        curRing.style.left = rx + 'px';
-        curRing.style.top  = ry + 'px';
-        requestAnimationFrame(raf);
-    };
-    raf();
-    document.querySelectorAll('a, button, .prod-card, .team-card').forEach(el => {
-        el.addEventListener('mouseenter', () => { cur.classList.add('active'); curRing.classList.add('active'); });
-        el.addEventListener('mouseleave', () => { cur.classList.remove('active'); curRing.classList.remove('active'); });
-    });
+// ── Search Functions
+function openSearch() {
+    document.getElementById('searchModal').classList.add('open');
+    document.getElementById('searchInput').focus();
+}
+
+function closeSearch() {
+    document.getElementById('searchModal').classList.remove('open');
+    document.getElementById('searchResults').innerHTML = '';
+}
+
+function handleSearch(event) {
+    if (event.key === 'Enter') {
+        const query = document.getElementById('searchInput').value.trim();
+        if (query) {
+            window.location.href = '{{ path('app_shop') }}?q=' + encodeURIComponent(query);
+        }
+    }
+}
+
+// Close search modal on background click
+document.addEventListener('DOMContentLoaded', () => {
+    const searchModal = document.getElementById('searchModal');
+    if (searchModal) {
+        searchModal.addEventListener('click', (e) => {
+            if (e.target === searchModal) closeSearch();
+        });
+    }
+    updateNavCartCount();
+});
+
+// ── Cart
+function addToCart(productId, productName, productPrice, button) {
+    if (button) { button.disabled = true; button.textContent = 'Adding...'; }
+    fetch(`/cart/add/${productId}`, { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                updateNavCartCount(data.cartCount);
+                if (button) {
+                    const orig = button.textContent;
+                    button.textContent = '✓ Added!';
+                    setTimeout(() => { button.disabled = false; button.textContent = orig === 'Adding...' ? 'Add to Cart' : orig; }, 2000);
+                }
+            } else {
+                if (button) { button.disabled = false; button.textContent = 'Add to Cart'; }
+                alert(data.message || 'Could not add to cart.');
+            }
+        })
+        .catch(() => { if (button) { button.disabled = false; button.textContent = 'Add to Cart'; } });
+}
+
+function updateNavCartCount(count) {
+    const badge = document.getElementById('nav-cart-count');
+    if (!badge) return;
+    if (count !== undefined) {
+        if (count > 0) { badge.textContent = count; badge.style.display = 'inline-flex'; }
+        else { badge.style.display = 'none'; }
+        return;
+    }
+    fetch('/cart', { headers: { 'Accept': 'application/json' } })
+        .then(r => r.json())
+        .then(data => {
+            if (data.itemCount > 0) { badge.textContent = data.itemCount; badge.style.display = 'inline-flex'; }
+            else { badge.style.display = 'none'; }
+        }).catch(() => {});
 }
 
 // ── Navbar Scroll

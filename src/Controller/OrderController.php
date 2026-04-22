@@ -30,12 +30,8 @@ class OrderController extends AbstractController
         $user = $this->getUser();
         $isAdmin = $this->isGranted('ROLE_ADMIN');
 
-        // Admin sees all orders, Staff sees only their own
-        if ($isAdmin) {
-            $orders = $orderRepository->findAll();
-        } else {
-            $orders = $orderRepository->findBy(['createdBy' => $user]);
-        }
+        // Admin and staff both see all orders
+        $orders = $orderRepository->findBy([], ['orderDate' => 'DESC']);
         
         // Calculate statistics
         $totalOrders = count($orders);
@@ -112,6 +108,14 @@ class OrderController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Auto-update orderStatus based on paymentStatus
+            if ($order->getPaymentStatus() === 'paid' && in_array($order->getOrderStatus(), ['pending', 'new'])) {
+                $order->setOrderStatus('processing');
+            }
+            if ($order->getPaymentStatus() === 'refunded') {
+                $order->setOrderStatus('cancelled');
+            }
+
             $entityManager->flush();
 
             // Log the activity
@@ -172,17 +176,11 @@ class OrderController extends AbstractController
      */
     private function checkOrderAccess(Order $order): void
     {
-        $user = $this->getUser();
-        $isAdmin = $this->isGranted('ROLE_ADMIN');
-
-        // Admin can access all orders
-        if ($isAdmin) {
+        // Admin and staff can access all orders
+        if ($this->isGranted('ROLE_STAFF')) {
             return;
         }
 
-        // Staff can only access their own orders
-        if ($order->getCreatedBy() !== $user) {
-            throw $this->createAccessDeniedException('You do not have permission to access this order.');
-        }
+        throw $this->createAccessDeniedException('You do not have permission to access this order.');
     }
 }

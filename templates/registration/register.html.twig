@@ -1,587 +1,214 @@
-{# templates/registration/register.html.twig #}
 {% extends 'base_login.html.twig' %}
 
 {% block title %}Register - VeraBelle Collection{% endblock %}
 
 {% block body %}
-<div class="login-container">
-    <div class="login-header">
-        <h1>VeraBelle</h1>
-        <p>Create Account</p>
-    </div>
-    
-    <div class="login-body">
-        {% for flash_error in app.flashes('verify_email_error') %}
-            <div class="error-message">
-                <i class="fas fa-exclamation-circle"></i>
-                {{ flash_error }}
-            </div>
-        {% endfor %}
+<div class="form-container">
 
-        {% if app.user %}
-            <div class="success-message">
-                <i class="fas fa-check-circle"></i>
-            You are already logged in as {{ app.user.email }}.
-                <a href="{{ path('app_logout') }}" class="logout-link">Logout</a>
-            </div>
-        {% else %}
-            {{ form_start(registrationForm, {'attr': {'class': 'registration-form'}}) }}
-                {{ form_errors(registrationForm) }}
+    <h2 class="form-heading">Create account</h2>
+    <p class="form-subheading">Join VeraBelle — it's free & lovely. ✨</p>
 
-                {# EMAIL FIELD ADDED #}
-                <div class="form-group">
-                    <label for="{{ registrationForm.email.vars.id }}">
-                        <i class="fas fa-envelope"></i> Email
-                    </label>
-                    <div class="input-with-icon">
-                        <span class="input-icon">✉️</span>
-                        {{ form_widget(registrationForm.email, {
-                            'attr': {
-                                'class': 'form-control',
-                                'placeholder': 'Enter your email address',
-                                'autocomplete': 'email'
-                            }
-                        }) }}
-                    </div>
-                    <div class="form-help">
-                        <i class="fas fa-info-circle"></i> We will send a verification link to this email
-                    </div>
-                    {{ form_errors(registrationForm.email) }}
-                </div>
-
-                <div class="form-group">
-                    <label for="{{ registrationForm.plainPassword.vars.id }}">
-                        <i class="fas fa-lock"></i> Password
-                    </label>
-                    <div class="input-with-icon">
-                        <span class="input-icon">🔒</span>
-                        {{ form_widget(registrationForm.plainPassword, {
-                            'attr': {
-                                'class': 'form-control',
-                                'placeholder': 'Create a strong password',
-                                'autocomplete': 'new-password'
-                            }
-                        }) }}
-                    </div>
-                    <div class="form-help">
-                        <i class="fas fa-info-circle"></i> At least 8 characters with letters and numbers
-                    </div>
-                    {{ form_errors(registrationForm.plainPassword) }}
-                </div>
-
-                {# FIXED CHECKBOX STRUCTURE #}
-                <div class="terms-container">
-                    <label class="custom-checkbox-label" for="{{ registrationForm.agreeTerms.vars.id }}">
-                        {{ form_widget(registrationForm.agreeTerms, {
-                            'attr': {
-                                'class': 'checkbox-hidden',
-                                'required': 'required'
-                            }
-                        }) }}
-                        <span class="custom-checkbox"></span>
-                        <span class="checkbox-text">
-                            I agree to the 
-                            <a href="#" class="terms-link">Terms & Conditions</a>
-                            and 
-                            <a href="#" class="terms-link">Privacy Policy</a>
-                        </span>
-                    </label>
-                    {{ form_errors(registrationForm.agreeTerms) }}
-                </div>
-
-                <button type="submit" class="login-btn register-btn">
-                    <i class="fas fa-user-plus"></i> Create Account
-                </button>
-            {{ form_end(registrationForm) }}
-        {% endif %}
-
-        <div class="login-footer">
-            <p class="footer-text">
-                Already have an account? 
-                <a href="{{ path('app_login') }}" class="auth-link">
-                    <i class="fas fa-sign-in-alt"></i> Sign In Here
-                </a>
-            </p>
-            <p class="copyright">
-                VeraBelle Collection Admin Panel © {{ "now"|date("Y") }}
-            </p>
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="error-message">
+            <i class="fas fa-exclamation-circle"></i>
+            {{ flash_error }}
         </div>
+    {% endfor %}
+
+    {% if app.user %}
+        <div class="success-message">
+            <i class="fas fa-check-circle"></i>
+            You are already logged in as {{ app.user.email }}.
+            <a href="{{ path('app_logout') }}" style="color:var(--deep-mauve);font-weight:600;margin-left:4px;">Logout</a>
+        </div>
+    {% else %}
+
+        {{ form_start(registrationForm, {'attr': {'class': 'registration-form'}}) }}
+            {{ form_errors(registrationForm) }}
+
+            <div class="form-group">
+                <label for="{{ registrationForm.email.vars.id }}">Email Address</label>
+                <div class="input-wrap">
+                    <i class="input-icon fa-regular fa-envelope"></i>
+                    {{ form_widget(registrationForm.email, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': 'you@example.com',
+                            'autocomplete': 'email'
+                        }
+                    }) }}
+                </div>
+                <p class="form-help">We'll send a verification link to this email</p>
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ registrationForm.plainPassword.vars.id }}">Password</label>
+                <div class="input-wrap">
+                    <i class="input-icon fa-regular fa-lock"></i>
+                    {{ form_widget(registrationForm.plainPassword, {
+                        'attr': {
+                            'class': 'form-control',
+                            'placeholder': '••••••••',
+                            'autocomplete': 'new-password',
+                            'id': 'reg-password'
+                        }
+                    }) }}
+                    <button class="pw-toggle" type="button" onclick="toggleRegPw()" title="Show/hide password">
+                        <i class="fa-regular fa-eye" id="regPwIcon"></i>
+                    </button>
+                </div>
+                <p class="form-help">At least 8 characters with letters and numbers</p>
+                <div class="strength-indicator" id="strengthIndicator" style="display:none;">
+                    <div class="strength-text">Strength: <span class="strength-value">Weak</span></div>
+                    <div class="strength-bar-container">
+                        <div class="strength-bar" id="strengthBar"></div>
+                    </div>
+                </div>
+                {{ form_errors(registrationForm.plainPassword) }}
+            </div>
+
+            <div class="terms-container">
+                <label class="terms-label" for="{{ registrationForm.agreeTerms.vars.id }}">
+                    {{ form_widget(registrationForm.agreeTerms, {'attr': {'class': 'checkbox-hidden'}}) }}
+                    <span class="custom-checkbox" id="customCheck"></span>
+                    <span class="checkbox-text">
+                        I agree to the
+                        <a href="#" class="terms-link">Terms & Conditions</a>
+                        and
+                        <a href="#" class="terms-link">Privacy Policy</a>
+                    </span>
+                </label>
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <button type="submit" class="login-btn">
+                <span>Create Account</span>
+            </button>
+        {{ form_end(registrationForm) }}
+
+    {% endif %}
+
+    <div class="form-footer">
+        <p>Already have an account? <a href="{{ path('app_login') }}">Sign in</a></p>
+        <p class="copy">VeraBelle Collection &nbsp;✦&nbsp; {{ "now"|date("Y") }}</p>
     </div>
+
 </div>
 
 <style>
-    /* Custom styles for registration page */
-    .login-header p {
-        color: #A8BCA1;
-        font-size: 14px;
-        letter-spacing: 2px;
-        margin-top: 5px;
-    }
-    
-    .success-message {
-        background: rgba(46, 204, 113, 0.1);
-        border: 1px solid rgba(46, 204, 113, 0.3);
-        border-radius: 8px;
-        padding: 12px 15px;
-        margin-bottom: 20px;
-        color: #27ae60;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-    
-    .success-message i {
-        font-size: 16px;
-    }
-    
-    .logout-link {
-        color: #F4C2C2;
-        text-decoration: none;
-        font-weight: 600;
-        margin-left: 5px;
-        transition: color 0.3s;
-    }
-    
-    .logout-link:hover {
-        color: #e8b3b3;
-        text-decoration: underline;
-    }
-    
-    .registration-form {
-        margin-top: 10px;
-    }
-    
-    .form-group {
-        margin-bottom: 25px;
-    }
-    
-    .form-group label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 8px;
-        color: #2c3e50;
-        font-weight: 500;
-        font-size: 14px;
-    }
-    
-    .form-group label i {
-        color: #F4C2C2;
-    }
-    
-    .input-with-icon {
-        position: relative;
-    }
-    
-    .input-icon {
-        position: absolute;
-        left: 15px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #95a5a6;
-        font-size: 16px;
-    }
-    
-    .form-control {
+    .input-wrap .form-control {
         width: 100%;
-        padding: 15px 15px 15px 45px;
-        border: 2px solid #e0e0e0;
-        border-radius: 10px;
-        font-size: 15px;
-        transition: all 0.3s ease;
-        background: #f8f9fa;
-        color: #2c3e50;
-    }
-    
-    .form-control:focus {
+        padding: 13px 40px 13px 42px;
+        background: rgba(239,230,216,0.5);
+        border: 1.5px solid rgba(196,160,160,0.3);
+        border-radius: 12px;
+        font-family: 'Nunito', sans-serif;
+        font-size: 14px;
+        color: var(--charcoal);
         outline: none;
-        border-color: #F4C2C2;
-        background: white;
-        box-shadow: 0 0 0 3px rgba(244, 194, 194, 0.2);
-        transform: translateY(-1px);
+        transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
     }
-    
-    .form-help {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        margin-top: 6px;
-        font-size: 12px;
-        color: #7f8c8d;
+    .input-wrap .form-control::placeholder { color: rgba(122,111,111,0.45); }
+    .input-wrap .form-control:focus {
+        background: #fff;
+        border-color: var(--mauve);
+        box-shadow: 0 0 0 3px rgba(196,160,160,0.12);
     }
-    
-    .form-help i {
-        font-size: 11px;
-    }
-    
-    /* FIXED CHECKBOX STYLES */
-    .terms-container {
-        margin: 30px 0 25px 0;
-        padding: 0;
-    }
-    
-    /* Custom checkbox label - NOW WRAPS THE CHECKBOX */
-    .custom-checkbox-label {
-        display: flex;
-        align-items: flex-start;
-        cursor: pointer;
-        font-size: 14px;
-        color: #2c3e50;
-        line-height: 1.5;
-        user-select: none;
-        padding: 2px 0;
-        position: relative;
-    }
-    
-    /* Completely hide the native checkbox */
-    .checkbox-hidden {
-        position: absolute;
-        opacity: 0;
-        width: 0;
-        height: 0;
-        margin: 0;
-        padding: 0;
-    }
-    
-    /* Custom checkbox visual element */
-    .custom-checkbox {
-        position: relative;
-        top: 2px;
-        flex-shrink: 0;
-        width: 18px;
-        height: 18px;
-        margin-right: 10px;
-        border: 2px solid #e0e0e0;
-        border-radius: 4px;
-        background-color: white;
-        transition: all 0.3s;
-    }
-    
-    /* Checked state - FIXED SELECTOR */
-.checkbox-hidden:checked + .custom-checkbox {
-    background-color: #F4C2C2;
-    border-color: #F4C2C2;
-}
-
-.checkbox-hidden:checked + .custom-checkbox::before {
-    content: '✓';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-}
-    
-    /* Hover state */
-    .custom-checkbox-label:hover .custom-checkbox {
-        border-color: #F4C2C2;
-    }
-    
-  .checkbox-hidden:focus + .custom-checkbox {
-    box-shadow: 0 0 0 3px rgba(244, 194, 194, 0.3);
-    border-color: #F4C2C2;
-}
-    .checkbox-text {
-        flex: 1;
-        display: inline;
-    }
-    
-    .terms-link {
-        color: #F4C2C2;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.3s;
-    }
-    
-    .terms-link:hover {
-        color: #e8b3b3;
-        text-decoration: underline;
-    }
-    
-    .register-btn {
-        background: linear-gradient(135deg, #A8BCA1, #95a78d);
-        position: relative;
-        overflow: hidden;
-        margin-top: 10px;
-    }
-    
-    .register-btn::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-        transition: left 0.5s;
-    }
-    
-    .register-btn:hover::before {
-        left: 100%;
-    }
-    
-    .register-btn:hover {
-        background: linear-gradient(135deg, #95a78d, #A8BCA1);
-        transform: translateY(-2px);
-    }
-    
-    .footer-text {
-        text-align: center;
-        color: #7f8c8d;
-        font-size: 14px;
-        margin-top: 25px;
-        padding-top: 20px;
-        border-top: 1px solid #eee;
-    }
-    
-    .auth-link {
-        color: #F4C2C2;
-        text-decoration: none;
-        font-weight: 600;
-        margin-left: 5px;
-        transition: color 0.3s;
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .auth-link:hover {
-        color: #e8b3b3;
-        text-decoration: underline;
-    }
-    
-    .copyright {
-        text-align: center;
-        color: #95a5a6;
-        font-size: 12px;
-        margin-top: 10px;
-    }
-    
-    /* Form error styles */
-    .form-error {
-        color: #e74c3c;
-        font-size: 13px;
-        margin-top: 5px;
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .form-error i {
-        font-size: 12px;
-    }
-    
-    /* Responsive design */
-    @media (max-width: 480px) {
-        .login-container {
-            border-radius: 15px;
-        }
-        
-        .login-header, .login-body {
-            padding: 30px 20px;
-        }
-        
-        .custom-checkbox-label {
-            font-size: 13px;
-        }
-        
-        .terms-link {
-            display: inline-block;
-            margin: 2px 0;
-        }
-    }
-    
-    /* Animation for form elements */
-    @keyframes slideUp {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    .form-group {
-        animation: slideUp 0.3s ease-out;
-    }
-    
-    .terms-container {
-        animation: slideUp 0.3s ease-out;
-        animation-delay: 0.4s;
-        animation-fill-mode: both;
+    @keyframes shake {
+        0%,100% { transform: translateX(0); }
+        20%,60%  { transform: translateX(-5px); }
+        40%,80%  { transform: translateX(5px); }
     }
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Password strength indicator
-        const passwordInput = document.getElementById('{{ registrationForm.plainPassword.vars.id }}');
-        if (passwordInput) {
-            passwordInput.addEventListener('input', function() {
-                const password = this.value;
-                const strengthBar = document.querySelector('.strength-bar');
-                
-                if (!strengthBar) {
-                    // Create strength indicator
-                    const strengthIndicator = document.createElement('div');
-                    strengthIndicator.className = 'strength-indicator';
-                    strengthIndicator.innerHTML = `
-                        <div class="strength-text">Password strength: <span class="strength-value">Weak</span></div>
-                        <div class="strength-bar-container">
-                            <div class="strength-bar"></div>
-                        </div>
-                    `;
-                    
-                    const formGroup = this.closest('.form-group');
-                    if (formGroup) {
-                        formGroup.appendChild(strengthIndicator);
-                    }
-                }
-                
-                updatePasswordStrength(password);
+    function toggleRegPw() {
+        const input = document.getElementById('reg-password')
+                   || document.querySelector('.input-wrap input[type="password"], .input-wrap input[type="text"]');
+        const icon  = document.getElementById('regPwIcon');
+        if (!input) return;
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.replace('fa-eye', 'fa-eye-slash');
+        } else {
+            input.type = 'password';
+            icon.classList.replace('fa-eye-slash', 'fa-eye');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const customBox = document.getElementById('customCheck');
+        const hiddenCb  = document.querySelector('.checkbox-hidden');
+
+        function syncBox() {
+            if (!customBox || !hiddenCb) return;
+            if (hiddenCb.checked) {
+                customBox.style.background  = '#9E6F6F';
+                customBox.style.borderColor = '#9E6F6F';
+                customBox.textContent       = '\u2713';
+            } else {
+                customBox.style.background  = 'rgba(239,230,216,0.45)';
+                customBox.style.borderColor = 'rgba(196,160,160,0.5)';
+                customBox.textContent       = '';
+            }
+        }
+
+        if (customBox && hiddenCb) {
+            customBox.addEventListener('click', function (e) {
+                e.preventDefault(); e.stopPropagation();
+                hiddenCb.checked = !hiddenCb.checked;
+                syncBox();
+            });
+            const cbText = document.querySelector('.checkbox-text');
+            if (cbText) {
+                cbText.addEventListener('click', function (e) {
+                    if (e.target.tagName === 'A') return;
+                    e.preventDefault();
+                    hiddenCb.checked = !hiddenCb.checked;
+                    syncBox();
+                });
+            }
+            hiddenCb.addEventListener('change', syncBox);
+            syncBox();
+        }
+
+        const pwInput   = document.querySelector('input[autocomplete="new-password"]');
+        const indicator = document.getElementById('strengthIndicator');
+        const bar       = document.getElementById('strengthBar');
+        const val       = document.querySelector('.strength-value');
+        if (pwInput && indicator) {
+            pwInput.addEventListener('input', function () {
+                const p = this.value;
+                if (!p) { indicator.style.display = 'none'; return; }
+                indicator.style.display = 'block';
+                let s = 0;
+                if (p.length >= 8)           s += 25;
+                if (/[A-Z]/.test(p))         s += 25;
+                if (/[0-9]/.test(p))         s += 25;
+                if (/[^A-Za-z0-9]/.test(p))  s += 25;
+                bar.style.width = s + '%';
+                const map = { 25:['#C4A0A0','Weak'], 50:['#e0c080','Fair'], 75:['#8FAF8C','Good'], 100:['#5C7A5A','Strong'] };
+                const [color, text] = map[s] || map[25];
+                bar.style.backgroundColor = color;
+                val.textContent = text;
+                val.style.color = color;
             });
         }
-        
-        function updatePasswordStrength(password) {
-            const strengthBar = document.querySelector('.strength-bar');
-            const strengthValue = document.querySelector('.strength-value');
-            
-            if (!strengthBar || !strengthValue) return;
-            
-            let strength = 0;
-            let color = '#e74c3c'; // Red
-            let text = 'Weak';
-            
-            // Check password strength
-            if (password.length >= 8) strength += 25;
-            if (/[A-Z]/.test(password)) strength += 25;
-            if (/[0-9]/.test(password)) strength += 25;
-            if (/[^A-Za-z0-9]/.test(password)) strength += 25;
-            
-            // Update UI
-            strengthBar.style.width = strength + '%';
-            
-            if (strength >= 75) {
-                color = '#2ecc71'; // Green
-                text = 'Strong';
-            } else if (strength >= 50) {
-                color = '#f39c12'; // Orange
-                text = 'Good';
-            } else if (strength >= 25) {
-                color = '#f1c40f'; // Yellow
-                text = 'Fair';
-            }
-            
-            strengthBar.style.backgroundColor = color;
-            strengthValue.textContent = text;
-            strengthValue.style.color = color;
-        }
-        
-        // Form validation enhancement
+
         const form = document.querySelector('.registration-form');
         if (form) {
-            form.addEventListener('submit', function(e) {
-                const termsCheckbox = document.getElementById('{{ registrationForm.agreeTerms.vars.id }}');
-                
-                if (termsCheckbox && !termsCheckbox.checked) {
+            form.addEventListener('submit', function (e) {
+                if (hiddenCb && !hiddenCb.checked) {
                     e.preventDefault();
-                    
-                    // Add error animation
-                    const termsContainer = document.querySelector('.terms-container');
-                    termsContainer.style.animation = 'shake 0.5s';
-                    
-                    // Create error message
-                    let errorMessage = termsContainer.querySelector('.terms-error');
-                    if (!errorMessage) {
-                        errorMessage = document.createElement('div');
-                        errorMessage.className = 'form-error terms-error';
-                        errorMessage.innerHTML = '<i class="fas fa-exclamation-circle"></i> You must agree to the terms to continue';
-                        termsContainer.appendChild(errorMessage);
-                    }
-                    
-                    // Remove animation after it plays
-                    setTimeout(() => {
-                        termsContainer.style.animation = '';
-                    }, 500);
-                    
-                    // Scroll to terms
-                    termsContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const tc = document.querySelector('.terms-container');
+                    tc.style.animation = 'none';
+                    tc.offsetHeight;
+                    tc.style.animation = 'shake 0.4s';
+                    tc.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
         }
-        
-        // Simple checkbox toggle - NOW IT WILL WORK!
-        const checkbox = document.getElementById('{{ registrationForm.agreeTerms.vars.id }}');
-        if (checkbox) {
-            // The checkbox is now inside the label, so clicking the label will work natively
-            // But we'll add a visual enhancement
-            checkbox.addEventListener('change', function() {
-                const customCheckbox = this.nextElementSibling;
-                
-                if (this.checked) {
-                    customCheckbox.style.backgroundColor = '#F4C2C2';
-                    customCheckbox.style.borderColor = '#F4C2C2';
-                    customCheckbox.innerHTML = '✓';
-                    customCheckbox.style.color = 'white';
-                    customCheckbox.style.textAlign = 'center';
-                    customCheckbox.style.lineHeight = '14px';
-                    customCheckbox.style.fontSize = '12px';
-                    customCheckbox.style.fontWeight = 'bold';
-                } else {
-                    customCheckbox.style.backgroundColor = 'white';
-                    customCheckbox.style.borderColor = '#e0e0e0';
-                    customCheckbox.innerHTML = '';
-                }
-            });
-            
-            // Trigger initial state
-            checkbox.dispatchEvent(new Event('change'));
-        }
-        
-        // Shake animation for errors
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-            
-            .strength-indicator {
-                margin-top: 8px;
-            }
-            
-            .strength-text {
-                font-size: 12px;
-                color: #7f8c8d;
-                margin-bottom: 4px;
-            }
-            
-            .strength-value {
-                font-weight: 600;
-            }
-            
-            .strength-bar-container {
-                width: 100%;
-                height: 4px;
-                background: #ecf0f1;
-                border-radius: 2px;
-                overflow: hidden;
-            }
-            
-            .strength-bar {
-                height: 100%;
-                width: 0%;
-                border-radius: 2px;
-                transition: width 0.3s, background-color 0.3s;
-            }
-        `;
-        document.head.appendChild(style);
     });
 </script>
 {% endblock %}

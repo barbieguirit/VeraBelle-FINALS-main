@@ -10,6 +10,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class ProductType extends AbstractType
@@ -20,6 +21,12 @@ class ProductType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Product Name',
                 'attr' => ['placeholder' => 'Enter product name'],
+            ])
+            ->add('image', FileType::class, [
+                'label' => 'Product Image',
+                // We'll handle the upload manually in the controller
+                'mapped' => false,
+                'required' => false,
             ])
             ->add('price', NumberType::class, [
                 'label' => 'Price (₱)',
