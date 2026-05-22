@@ -65,7 +65,7 @@ class ApiRegistrationController extends AbstractController
         $user->setPassword(
             $this->passwordHasher->hashPassword($user, $data['password'])
         );
-        $user->setRoles(['ROLE_USER']);
+        $user->setRoles(['ROLE_CUSTOMER']);
 
         $verificationToken = $this->emailVerificationService->generateVerificationToken();
         $user->setVerificationToken($verificationToken);
@@ -106,7 +106,8 @@ class ApiRegistrationController extends AbstractController
                 'id'       => $user->getId(),
                 'email'    => $user->getEmail(),
                 'roles'    => $user->getRoles(),
-                'verified' => $user->isVerified()
+                'verified' => $user->isVerified(),
+                'roleType' => 'customer'
             ]
         ], 201);
     }

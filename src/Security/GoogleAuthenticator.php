@@ -4,6 +4,7 @@ namespace App\Security;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Client\Provider\GoogleClient;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
@@ -18,6 +19,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 
 class GoogleAuthenticator extends OAuth2Authenticator
 {
@@ -25,6 +27,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         private ClientRegistry $clientRegistry,
         private UserRepository $userRepository,
         private UrlGeneratorInterface $urlGenerator,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -55,12 +58,22 @@ class GoogleAuthenticator extends OAuth2Authenticator
                     throw new CustomUserMessageAuthenticationException('No account is registered for this Google email.');
                 }
 
+                // Restrict Google login to staff/admin accounts only
+                $roles = $user->getRoles();
+                if (!in_array('ROLE_STAFF', $roles, true) && !in_array('ROLE_ADMIN', $roles, true)) {
+                    throw new CustomUserMessageAuthenticationException('Google login is restricted to staff accounts.');
+                }
+
+                // Auto-verify staff users and persist the change
                 if (method_exists($user, 'setIsVerified') && !$user->isVerified()) {
                     $user->setIsVerified(true);
+                    $this->entityManager->persist($user);
+                    $this->entityManager->flush();
                 }
 
                 return $user;
-            })
+            }),
+            [new RememberMeBadge()]
         );
     }
 

@@ -41,6 +41,18 @@ class UserFixture extends Fixture
         $staff->setPassword($hashedPassword);
         $manager->persist($staff); 
 
+        $customer = new \App\Entity\User();
+        $customer->setEmail('customer@gmail.com');
+        $customer->setRoles(['ROLE_CUSTOMER']);
+        $customer->setStatus('active');
+        $customer->setIsVerified(true);
+        $hashedPassword = $this->passwordHasher->hashPassword(
+            $customer,
+            'customerpass'
+        );
+        $customer->setPassword($hashedPassword);
+        $manager->persist($customer);
+
         $manager->flush();
     }
 }

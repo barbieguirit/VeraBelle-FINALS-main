@@ -20,11 +20,17 @@ class AuthenticationListener
     {
         if ($event instanceof LoginSuccessEvent) {
             $user = $event->getUser();
+
             if ($user instanceof User) {
                 $this->activityLogger->logLogin($user);
             }
-        } elseif ($event instanceof LogoutEvent) {
+
+            return;
+        }
+
+        if ($event instanceof LogoutEvent) {
             $token = $event->getToken();
+
             if ($token && $token->getUser() instanceof User) {
                 $this->activityLogger->logLogout($token->getUser());
             }

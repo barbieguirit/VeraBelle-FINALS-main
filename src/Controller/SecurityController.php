@@ -15,29 +15,40 @@ class SecurityController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('security/login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+        ]);
     }
 
     #[Route(path: '/login/customer', name: 'app_customer_login')]
     public function customerLogin(AuthenticationUtils $authenticationUtils): Response
     {
-        // Redirect if already logged in
-        if ($this->getUser()) {
-            $user = $this->getUser();
-            if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
+        $user = $this->getUser();
+
+        if ($user) {
+            $roles = $user->getRoles();
+
+            if (in_array('ROLE_ADMIN', $roles, true)) {
                 return $this->redirectToRoute('app_admin_dashboard');
             }
-            if (in_array('ROLE_STAFF', $user->getRoles(), true)) {
+
+            if (in_array('ROLE_STAFF', $roles, true)) {
                 return $this->redirectToRoute('app_dashboard');
+            }
+
+            if (in_array('ROLE_CUSTOMER', $roles, true)) {
+                return $this->redirectToRoute('app_landing');
             }
         }
 
-        // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-        return $this->render('security/customer_login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
+        return $this->render('security/customer_login.html.twig', [
+            'last_username' => $lastUsername,
+            'error' => $error,
+        ]);
     }
 
     #[Route(path: '/customer/login', name: 'app_customer_login_legacy')]

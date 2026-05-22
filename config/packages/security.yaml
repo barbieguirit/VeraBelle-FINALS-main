@@ -18,6 +18,10 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
+        api_mobile_public:
+            pattern: ^/api/mobile/products$
+            security: false
+
         login:
             pattern: ^/api/login
             stateless: true
@@ -28,6 +32,11 @@ security:
                 password_path: password
                 success_handler: App\Security\JWTAuthenticationSuccessHandler
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        api_mobile:
+            pattern: ^/api/mobile
+            stateless: true
+            jwt: ~
 
         api_platform:
             pattern: ^/api
@@ -124,6 +133,10 @@ security:
           roles: PUBLIC_ACCESS
         - path: ^/api/register
           roles: PUBLIC_ACCESS
+        - path: ^/api/mobile/products$
+          roles: PUBLIC_ACCESS
+        - path: ^/api/customer
+          roles: ROLE_CUSTOMER
         - path: ^/api
           roles: IS_AUTHENTICATED
 
