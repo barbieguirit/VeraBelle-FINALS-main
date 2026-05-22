@@ -23,4 +23,5 @@ yarn-error.log
 
 ###> lexik/jwt-authentication-bundle ###
 /config/jwt/*.pem
+/.railway_mysql_vars.json
 ###< lexik/jwt-authentication-bundle ###

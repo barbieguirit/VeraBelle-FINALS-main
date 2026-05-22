@@ -8,7 +8,7 @@ services:
       MYSQL_USER: verabelle
       MYSQL_PASSWORD: 1234
     ports:
-      - "3310:3306"
+      - "${MYSQL_HOST_PORT:-3310}:3306"
     volumes:
       - verabelle_mysql_data:/var/lib/mysql
     networks:
@@ -16,13 +16,12 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    restart: unless-stopped
     environment:
       PMA_HOST: mysql
       PMA_USER: verabelle
       PMA_PASSWORD: 1234
     ports:
-      - "8083:80"
+      - "${PHPMYADMIN_HOST_PORT:-8083}:80"
     depends_on:
       - mysql
     networks:
