@@ -14,14 +14,17 @@ if [ -f package.json ]; then
 fi
 
 echo "==> Write JWT keys from env variables (if provided)"
-if [ -n "${JWT_PRIVATE:-}" ] && [ -n "${JWT_PUBLIC:-}" ]; then
-  mkdir -p config/jwt
+mkdir -p config/jwt
+if [ -s config/jwt/private.pem ] && [ -s config/jwt/public.pem ]; then
+  echo "JWT key files already exist; leaving them untouched"
+elif [ -n "${JWT_PRIVATE:-}" ] && [ -n "${JWT_PUBLIC:-}" ]; then
   printf '%s' "$JWT_PRIVATE" > config/jwt/private.pem
   printf '%s' "$JWT_PUBLIC"  > config/jwt/public.pem
   chmod 600 config/jwt/private.pem || true
-  echo "Wrote config/jwt/private.pem and public.pem"
+  echo "Wrote config/jwt/private.pem and public.pem from environment variables"
 else
-  echo "JWT_PRIVATE or JWT_PUBLIC not provided; skipping writing keys"
+  echo "JWT_PRIVATE or JWT_PUBLIC not provided; generating a new keypair"
+  php scripts/generate_jwt_keys.php
 fi
 
 echo "==> Run migrations (if any)"

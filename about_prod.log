@@ -1,0 +1,29 @@
+{"message":"User Deprecated: Class \"Doctrine\\ORM\\Proxy\\Autoloader\" is deprecated. Use native lazy objects instead. (Autoloader.php:74 called by DoctrineBundle.php:134, https://github.com/doctrine/orm/pull/12005, package doctrine/orm)","context":{"exception":{"class":"ErrorException","message":"User Deprecated: Class \"Doctrine\\ORM\\Proxy\\Autoloader\" is deprecated. Use native lazy objects instead. (Autoloader.php:74 called by DoctrineBundle.php:134, https://github.com/doctrine/orm/pull/12005, package doctrine/orm)","code":0,"file":"C:\\Users\\kyle\\midterm-project\\vendor\\doctrine\\deprecations\\src\\Deprecation.php:208"}},"level":200,"level_name":"INFO","channel":"deprecation","datetime":"2026-05-22T00:12:02.843374+00:00","extra":{}}
+ -------------------- --------------------------------- 
+  Symfony                                               
+ -------------------- --------------------------------- 
+  Version              7.3.3                            
+  Long-Term Support    No                               
+  End of maintenance   01/2026 Expired                  
+  End of life          01/2026 Expired                  
+ -------------------- --------------------------------- 
+  Kernel                                                
+ -------------------- --------------------------------- 
+  Type                 App\Kernel                       
+  Environment          prod                             
+  Debug                false                            
+  Charset              UTF-8                            
+  Cache directory      ./var/cache/prod (6.9 MiB)       
+  Build directory      ./var/cache/prod (6.9 MiB)       
+  Log directory        ./var/log (4.5 MiB)              
+ -------------------- --------------------------------- 
+  PHP                                                   
+ -------------------- --------------------------------- 
+  Version              8.5.4                            
+  Architecture         64 bits                          
+  Intl locale          n/a                              
+  Timezone             UTC (2026-05-22T00:12:03+00:00)  
+  OPcache              Enabled                          
+  APCu                 Not installed                    
+  Xdebug               Not installed                    
+ -------------------- --------------------------------- 
