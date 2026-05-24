@@ -23,16 +23,10 @@ class NoCacheListener
         $request = $event->getRequest();
         $response = $event->getResponse();
 
-        // Only apply to authenticated pages (exclude login page)
         $route = $request->attributes->get('_route');
-        
-        // Skip for login and public pages
-        if (in_array($route, ['app_login', 'app_register'])) {
-            return;
-        }
 
-        // If user is authenticated, add no-cache headers
-        if ($this->security->getUser()) {
+        // Login and registration forms should never be cached, otherwise the CSRF token can go stale.
+        if (in_array($route, ['app_login', 'app_customer_login', 'app_customer_login_legacy', 'app_register'], true) || $this->security->getUser()) {
             $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
             $response->headers->set('Pragma', 'no-cache');
             $response->headers->set('Expires', '0');
