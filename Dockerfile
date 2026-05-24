@@ -56,7 +56,7 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri 's!DocumentRoot /var/www/html!DocumentRoot ${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri 's!<Directory /var/www/html>!<Directory ${APACHE_DOCUMENT_ROOT}>!g' /etc/apache2/apache2.conf /etc/apache2/sites-available/*.conf
 
-RUN chown -R www-data:www-data var public
+RUN mkdir -p var public && chown -R www-data:www-data var public
 
 EXPOSE 80
 CMD ["apache2-foreground"]
