@@ -22,6 +22,9 @@ RUN npm run build
 # Final image with PHP + Apache
 FROM php:8.2-apache
 
+ENV APP_ENV=prod \
+    APP_DEBUG=0
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
