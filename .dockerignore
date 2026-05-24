@@ -1,0 +1,9 @@
+vendor
+node_modules
+var/cache
+var/log
+.env
+.env.local
+.env.*.local
+.git
+tests
