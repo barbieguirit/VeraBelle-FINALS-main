@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
+use App\Repository\UserRepository;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
@@ -36,7 +37,7 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
         '/payment',
     ];
 
-    public function __construct(private UrlGeneratorInterface $urlGenerator)
+    public function __construct(private UrlGeneratorInterface $urlGenerator, private UserRepository $userRepository)
     {
     }
 
@@ -61,7 +62,14 @@ class LoginAuthenticator extends AbstractLoginFormAuthenticator
         );
 
         return new Passport(
-            new UserBadge($email),
+            new UserBadge($email, function (string $userIdentifier) {
+                try {
+                    return $this->userRepository->findOneBy(['email' => $userIdentifier]);
+                } catch (\Throwable $e) {
+                    // Convert repository/DB errors into a user-friendly authentication exception
+                    throw new CustomUserMessageAuthenticationException('Login temporarily unavailable. Please try again later.');
+                }
+            }),
             new PasswordCredentials($request->request->get('password', '')),
             [
                 new CsrfTokenBadge('authenticate', $request->request->get('_csrf_token')),
