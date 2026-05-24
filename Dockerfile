@@ -51,7 +51,11 @@ COPY . .
 
 RUN composer dump-autoload --optimize
 
-RUN a2enmod rewrite
+# Ensure only one Apache MPM is enabled. Disable common conflicting MPMs and enable prefork
+# prefork is compatible with mod_php used in the php:*-apache images.
+RUN a2dismod mpm_event mpm_worker || true \
+    && a2enmod mpm_prefork || true \
+    && a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri 's!DocumentRoot /var/www/html!DocumentRoot ${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri 's!<Directory /var/www/html>!<Directory ${APACHE_DOCUMENT_ROOT}>!g' /etc/apache2/apache2.conf /etc/apache2/sites-available/*.conf
