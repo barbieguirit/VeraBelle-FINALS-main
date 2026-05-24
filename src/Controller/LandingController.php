@@ -32,19 +32,26 @@ class LandingController extends AbstractController
     #[Route('/', name: 'app_landing', priority: 10)]
     public function index(ChallengeRepository $challengeRepo, \Doctrine\ORM\EntityManagerInterface $em): Response
     {
-      $challenges = $challengeRepo->findBy(['status' => 'active'], ['createdAt' => 'DESC'], 3);
+      $challenges = [];
+      $products = [];
 
-      // Show specific featured products on landing page
-      $featuredNames = ['Noir Essence Top', 'Chérie Flow Dress', 'Midnight Allure', 'Ivory Muse Dress', 'Velvet Reverie Dress'];
-      $products = $em->getRepository(\App\Entity\Product::class)->createQueryBuilder('p')
+      try {
+        $challenges = $challengeRepo->findBy(['status' => 'active'], ['createdAt' => 'DESC'], 3);
+
+        // Show specific featured products on landing page
+        $featuredNames = ['Noir Essence Top', 'Chérie Flow Dress', 'Midnight Allure', 'Ivory Muse Dress', 'Velvet Reverie Dress'];
+        $products = $em->getRepository(\App\Entity\Product::class)->createQueryBuilder('p')
           ->where('p.name IN (:names)')
           ->setParameter('names', $featuredNames)
           ->getQuery()
           ->getResult();
 
-      // Fallback to latest products if none of the featured ones exist
-      if (empty($products)) {
+        // Fallback to latest products if none of the featured ones exist
+        if (empty($products)) {
           $products = $em->getRepository(\App\Entity\Product::class)->findBy([], ['createdAt' => 'DESC'], 5);
+        }
+      } catch (\Throwable $e) {
+        error_log('[VeraBelle Landing Error] ' . $e->getMessage());
       }
 
       return $this->render('landing/index.html.twig', [
