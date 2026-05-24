@@ -54,6 +54,8 @@ RUN composer dump-autoload --optimize
 # Ensure only one Apache MPM is enabled. Disable common conflicting MPMs and enable prefork
 # prefork is compatible with mod_php used in the php:*-apache images.
 RUN a2dismod mpm_event mpm_worker || true \
+    && rm -f /etc/apache2/mods-enabled/mpm_event.load /etc/apache2/mods-enabled/mpm_event.conf \
+    && rm -f /etc/apache2/mods-enabled/mpm_worker.load /etc/apache2/mods-enabled/mpm_worker.conf \
     && a2enmod mpm_prefork || true \
     && a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
