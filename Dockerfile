@@ -13,6 +13,9 @@ COPY package.json package-lock.json* ./
 COPY --from=composer /app/vendor ./vendor
 COPY assets/ ./assets
 COPY webpack.config.js ./
+# Ensure local UX packages from composer are available to npm/webpack
+RUN mkdir -p node_modules/@symfony/ux-turbo \
+    && cp -R vendor/symfony/ux-turbo/assets/* node_modules/@symfony/ux-turbo/ || true
 RUN npm ci --silent
 RUN npm run build
 
