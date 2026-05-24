@@ -65,6 +65,10 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri 's!DocumentRoot /var/www/html!DocumentRoot ${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri 's!<Directory /var/www/html>!<Directory ${APACHE_DOCUMENT_ROOT}>!g' /etc/apache2/apache2.conf /etc/apache2/sites-available/*.conf
 
+# Send all non-file routes to Symfony's front controller so paths like /login work.
+RUN printf '<Directory /var/www/html/public>\n    AllowOverride All\n    FallbackResource /index.php\n</Directory>\n' > /etc/apache2/conf-available/symfony-fallback.conf \
+    && a2enconf symfony-fallback
+
 RUN mkdir -p var public && chown -R www-data:www-data var public
 
 # Add entrypoint script to fix Apache MPM conflicts at container start
